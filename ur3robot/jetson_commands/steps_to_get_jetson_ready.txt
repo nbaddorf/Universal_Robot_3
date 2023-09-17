@@ -1,0 +1,3 @@
+run update / upgrade
+install nano
+set boot to cli
