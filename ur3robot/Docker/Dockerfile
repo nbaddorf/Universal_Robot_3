@@ -5,6 +5,7 @@ FROM ros:melodic
 RUN apt-get update \
     && apt-get install -y \
     nano \
+    ros-melodic-rosserial-python\
     && rm -rf /var/lib/apt/lists/*
 
 
