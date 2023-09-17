@@ -30,6 +30,19 @@ RUN apt-get update \
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
 
+USER ros
+
+RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
+    mkdir -p /home/${USERNAME}/catkin_ws/src &&\
+    #cd ~/catkin_ws/src &&\
+    cd /home/${USERNAME}/catkin_ws &&\
+    catkin_make'
+
+USER root
+
+VOLUME  /home/$USER/Universal_Robot_3/ur3robot/ros_code:/home/${USERNAME}/catkin_ws/src/ur3robot
+
+WORKDIR /home/${USERNAME}
 
 # Set up entrypoint and default command
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

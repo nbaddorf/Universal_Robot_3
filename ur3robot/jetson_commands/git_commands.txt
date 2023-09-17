@@ -1,0 +1,5 @@
+git add --all #adds files to git
+git status #showes what changes are there
+git commit #commits the changes
+git push #pushes the changes
+git pull pulls new changes
