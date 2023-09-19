@@ -4,6 +4,13 @@ FROM osrf/ros:melodic-desktop-full
 RUN apt-get update \
     && apt-get install -y \
     nano \
+    iputils-ping \
+    net-tools \
+    wget \
+    novnc \
+    supervisor \
+    x11vnc \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
     # Create a non-root user
@@ -27,6 +34,8 @@ RUN apt-get update \
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
+COPY supervisord.conf /supervisord.conf
+COPY conf.d /conf.d
 
 USER ros
 
@@ -42,6 +51,11 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
 USER root
 
 WORKDIR /home/${USERNAME}
+
+ENV DISPLAY=:0.0 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768 
+EXPOSE 8080
 
 # Set up entrypoint and default command
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
