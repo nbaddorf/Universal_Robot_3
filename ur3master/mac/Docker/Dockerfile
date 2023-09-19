@@ -53,8 +53,8 @@ USER root
 WORKDIR /home/${USERNAME}
 
 ENV DISPLAY=:0.0 \
-    DISPLAY_WIDTH=1024 \
-    DISPLAY_HEIGHT=768 
+    DISPLAY_WIDTH=1280 \
+    DISPLAY_HEIGHT=850 
 EXPOSE 8080
 
 # Set up entrypoint and default command

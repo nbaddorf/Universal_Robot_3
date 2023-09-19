@@ -1,3 +1,6 @@
 run update / upgrade
 install nano
 set boot to cli
+
+#disable wifi power save
+sudo /sbin/iw dev wlan0 set power_save off 
