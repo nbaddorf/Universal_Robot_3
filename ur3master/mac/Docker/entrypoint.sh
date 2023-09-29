@@ -5,7 +5,7 @@
 set -e
 
 source /opt/ros/melodic/setup.bash
-export ROS_HOSTNAME=Nicks-MacBook-Pro.local
+export ROS_HOSTNAME=ur3remote
 export ROS_MASTER_URI=http://ur3robot.local:11311
 
 #echo 192.168.86.46   ur3robot >> /etc/hosts
