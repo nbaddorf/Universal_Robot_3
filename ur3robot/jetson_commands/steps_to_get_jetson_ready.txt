@@ -3,4 +3,14 @@ install nano
 set boot to cli
 
 #disable wifi power save
-sudo /sbin/iw dev wlan0 set power_save off 
+#Makes ping way better but may not be nessesary if regular data being transfered
+#sudo iw dev wlan0 set power_save off
+
+WIFI STUFF
+sudo apt install backport-iwlwifi-dkms
+Disable pcie aspm:
+sudo nano /boot/extlinux/extlinux.conf
+add "pcie_aspm=off" after APPEND:
+APPEND ${cbootargs} quiet pcie_aspm=off
+
+I also downloaded the intel drivers for my wifi card but I dont know if that helped or not.
