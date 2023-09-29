@@ -6,6 +6,8 @@ RUN apt-get update \
     && apt-get install -y \
     nano \
     iputils-ping \
+    ros-melodic-joint-state-publisher\
+    ros-melodic-robot-state-publisher\
     ros-melodic-rosserial-python\
     && rm -rf /var/lib/apt/lists/*
 
