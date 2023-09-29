@@ -46,6 +46,8 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
 
 USER root
 
+#RUN 'chmod 777 /dev/USB0'
+
 WORKDIR /home/${USERNAME}
 
 # Set up entrypoint and default command
