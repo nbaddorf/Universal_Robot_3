@@ -8,6 +8,7 @@
  <arg name="frame_id" value="webcam" />
  <arg name="fps" value="3" />
  <arg name="visualize" value="false" />
+ <arg name="flip_vertical" value="true" />
  <arg name="camera_info_url" value="file:///$(find ur3robot)/camera_calibration/ost.yaml" />
 </include>
 

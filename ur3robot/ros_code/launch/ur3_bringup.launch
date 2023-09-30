@@ -1,11 +1,16 @@
 <launch>
 
+<!-- params -->
 <param name="robot_description" command="cat $(find ur3robot)/urdf/robot.urdf" />
 
 <!-- URDF Publisher -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 
+<!-- rplidar -->
 <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
+
+<!--  Webcam  -->
+<include file="$(find ur3robot)/launch/stream_webcam.launch" />
 
 </launch>
