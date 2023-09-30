@@ -1,0 +1,5 @@
+So on my system (macbook pro and nvidia jetson nano) my mac docker container can ping ur3robot.local because I think mDNS.
+I dont know why, but my robot docker container is not able to ping Nicks-MacBook-Pro.local
+
+The Verizon router I am using has a dns server and is allowing the robot docker container to contact my laptop with "Nicks-MBP"
+For some reason, my Macs docker container cannot contact "ur3robot"

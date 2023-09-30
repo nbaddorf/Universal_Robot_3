@@ -7,6 +7,7 @@ RUN apt-get update \
     nano \
     iputils-ping \
     net-tools \
+    ros-melodic-video-stream-opencv \
     ros-melodic-joint-state-publisher\
     ros-melodic-robot-state-publisher\
     ros-melodic-rosserial-python\

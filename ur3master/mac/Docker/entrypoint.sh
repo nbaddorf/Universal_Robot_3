@@ -1,14 +1,10 @@
 #!/bin/bash
 
-
-
 set -e
 
 source /opt/ros/melodic/setup.bash
-export ROS_HOSTNAME=ur3remote
+export ROS_HOSTNAME=Nicks-MBP #For some reason the robot can see dns from router, but my docker cant see ur3robot dns.
 export ROS_MASTER_URI=http://ur3robot.local:11311
-
-#echo 192.168.86.46   ur3robot >> /etc/hosts
 
 exec supervisord -c /supervisord.conf &
 
