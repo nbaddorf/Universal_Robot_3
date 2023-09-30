@@ -13,4 +13,9 @@
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
 
+ <!-- start my laser filter -->
+<node name="laser_filter" type="laser_filter.py" pkg="ur3master" output="screen">
+  <param name="laser_inflation" value="0.05" />
+</node>
+
 </launch>

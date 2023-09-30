@@ -14,3 +14,7 @@ add "pcie_aspm=off" after APPEND:
 APPEND ${cbootargs} quiet pcie_aspm=off
 
 I also downloaded the intel drivers for my wifi card but I dont know if that helped or not.
+
+#I installed htop to see computer usage
+sudo apt-get install htop
+
