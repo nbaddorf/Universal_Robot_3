@@ -8,7 +8,7 @@
  <arg name="frame_id" value="webcam" />
  <arg name="fps" value="3" />
  <arg name="visualize" value="false" />
- <arg name="camera_info_url" value="file:///$(find ur3_robot)/camera_calibration/ost.yaml" />
+ <arg name="camera_info_url" value="file:///$(find ur3robot)/camera_calibration/ost.yaml" />
 </include>
 
 </launch>
