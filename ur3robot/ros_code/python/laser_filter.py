@@ -9,7 +9,8 @@ from sensor_msgs.msg import LaserScan
 
 
 corner_angles = []
-footprint = [[-0.20955,-0.20955], [0.20955,-0.20955], [0.20955,0.20955], [-0.20955,0.20955]]
+#footprint = [[-0.20955,-0.20955], [0.20955,-0.20955], [0.20955,0.20955], [-0.20955,0.20955]]
+footprint = [[0.20955,-0.20955], [0.20955,0.20955], [-0.20955,0.20955], [-0.20955,-0.20955]]
 #this program is not designed verry well. I am not sure it is all labeled correctly, but it works for now
 
 calibrate_mode = False 

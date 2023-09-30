@@ -14,6 +14,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 
+
+
 # Create a non-root user
 ARG USERNAME=ros
 ARG USER_UID=1000
