@@ -1,4 +1,4 @@
-//add all libraries to the sketch
+ //add all libraries to the sketch
 #include <PID_v1.h>
 #include <math.h>
 #include <Servo.h>
@@ -76,28 +76,29 @@ ros::Publisher odom_pub("odom", &odom_msg);
 tf::TransformBroadcaster broadcaster;
 
 //set up which pins controll what
-const int motorBRspeedpin = 29;
-const int motorFRspeedpin = 28;
-const int motorBLspeedpin = 23;
 const int motorFLspeedpin = 22;
+const int motorBLspeedpin = 23;
+const int motorFRspeedpin = 28;
+const int motorBRspeedpin = 29;
 
-Servo FR;
 Servo FL;
-Servo BR;
 Servo BL;
+Servo FR;
+Servo BR;
 
 //********************** Setup AS5600 Encoder with multiplexer here *****************
 
-/*
-const int FLencoderA = 4;
-const int FLencoderB = 5;
-const int FRencoderA = 8;
-const int FRencoderB = 9;
-const int BLencoderA = 2;
-const int BLencoderB = 3;
-const int BRencoderA = 6;
-const int BRencoderB = 7;
 
+const int FLencoderA = 9;
+const int FLencoderB = 8;
+const int BLencoderA = 7;
+const int BLencoderB = 6;
+const int FRencoderA = 5;
+const int FRencoderB = 4;
+const int BRencoderA = 3;
+const int BRencoderB = 2;
+
+/*
 const int LeftOdomEncoderA = 11;
 const int LeftOdomEncoderB = 10;
 const int RightOdomEncoderA = 12;
@@ -361,7 +362,7 @@ void loop() {
     }
 
     //Set motors to run at speeds
-    setMotorSpeed(FLout, FRout, BLout, BRout);
+    setMotorSpeed(FLout, BLout, FRout, BRout);
 
     //Calculate chainge in encoder rotations
     //*****Should this be moved up before the pid computes? *****
@@ -502,65 +503,65 @@ void loop() {
 
 void BR0() {
   if (digitalRead(BRencoderB) == LOW) {
-    BRpos--;
-  } else {
     BRpos++;
+  } else {
+    BRpos--;
   }
 }
 
 void BR1() {
   if (digitalRead(BRencoderA) == LOW) {
-    BRpos++;
-  } else {
     BRpos--;
+  } else {
+    BRpos++;
   }
 }
 
 void BL0() {
   if (digitalRead(BLencoderB) == LOW) {
-    BLpos++;
-  } else {
     BLpos--;
+  } else {
+    BLpos++;
   }
 }
 
 void BL1() {
   if (digitalRead(BLencoderA) == LOW) {
-    BLpos--;
-  } else {
     BLpos++;
+  } else {
+    BLpos--;
   }
 }
 
 void FR0() {
   if (digitalRead(FRencoderB) == LOW) {
-    FRpos--;
-  } else {
     FRpos++;
+  } else {
+    FRpos--;
   }
 }
 
 void FR1() {
   if (digitalRead(FRencoderA) == LOW) {
-    FRpos++;
-  } else {
     FRpos--;
+  } else {
+    FRpos++;
   }
 }
 
 void FL0() {
   if (digitalRead(FLencoderB) == LOW) {
-    FLpos++;
-  } else {
     FLpos--;
+  } else {
+    FLpos++;
   }
 }
 
 void FL1() {
   if (digitalRead(FLencoderA) == LOW) {
-    FLpos--;
-  } else {
     FLpos++;
+  } else {
+    FLpos--;
   }
 }
 
@@ -598,7 +599,7 @@ void RO1() {
   }
 */
 
-void setMotorSpeed(float fl, float fr, float bl, float br) {
+void setMotorSpeed(float fl, float bl, float fr, float br) {
   fl = map(fl, -100, 100, 180, 0);
   fr = map(fr, -100, 100, 180, 0);
   bl = map(bl, -100, 100, 180, 0);
