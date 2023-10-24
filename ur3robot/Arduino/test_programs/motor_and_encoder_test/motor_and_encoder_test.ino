@@ -1,4 +1,8 @@
 #include <Servo.h>
+#include "AS5600.h"
+#include "Wire.h"
+
+AS5600 odom_left;  //  use default Wire
 
 //set up which pins controll what
 const int motorFLspeedpin = 22;
@@ -24,6 +28,12 @@ int BLpos = 0;
 int FLpos = 0;
 int BRpos = 0;
 int FRpos = 0;
+
+const int odom_a0 = 30;
+const int odom_a1 = 31;
+const int odom_a2 = 32;
+
+const int LED = 13;
 
 void setup() {
   // put your setup code here, to run once:
@@ -53,37 +63,88 @@ void setup() {
   FL.attach(motorFLspeedpin);
   BL.attach(motorBLspeedpin);
 
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
+
+  pinMode(odom_a0, OUTPUT);
+  pinMode(odom_a1, OUTPUT);
+  pinMode(odom_a2, OUTPUT);
+  
+
+  /* Sets the TCA9548A address to 0x70 */
+  digitalWrite(odom_a0, LOW);
+  digitalWrite(odom_a1, LOW);
+  digitalWrite(odom_a2, LOW);
+
+  delay(5000);
+  Serial.println("test");
+
+  Wire.begin();
+  Serial.println("test1");
+  delay(1000);
+  TCA9548A(2);
+  Serial.println("test3");
+  odom_left.begin();                          //  set direction pin.
+  odom_left.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   if (false) {
     Serial.println("Front Left Motor On");
-    setMotorSpeed(20,0,0,0);
+    setMotorSpeed(20, 0, 0, 0);
     delay(5000);
     Serial.println("Back Left Motor On");
-    setMotorSpeed(0,20,0,0);
+    setMotorSpeed(0, 20, 0, 0);
     delay(5000);
     Serial.println("Front Right Motor On");
-    setMotorSpeed(0,0,20,0);
+    setMotorSpeed(0, 0, 20, 0);
     delay(5000);
     Serial.println("Back Right Motor On");
-    setMotorSpeed(0,0,0,20);
+    setMotorSpeed(0, 0, 0, 20);
     delay(5000);
     Serial.println("Off");
-    setMotorSpeed(0,0,0,0);
+    setMotorSpeed(0, 0, 0, 0);
     delay(6000);
   }
 
-  if (true) {
+  if (false) {
     char buffer[40];
     sprintf(buffer, "FL: %d. BL: %d. FR: %d. BR: %d.", FLpos, BLpos, FRpos, BRpos);
     Serial.println(buffer);
     delay(10);
   }
 
-
+  if (true) {
+    TCA9548A(2);
+    Serial.print(millis());
+    Serial.print("\t");
+    Serial.print(odom_left.readAngle());
+    Serial.print("\t");
+    Serial.println(odom_left.rawAngle() * AS5600_RAW_TO_DEGREES);
+    Serial.println("test");
+    delay(40);
+  }
 }
+
+
+void TCA9548A(uint8_t bus) {
+  if (bus == 0) {  // front
+    bus = 7;
+  } else if (bus == 1) {  // back
+    bus = 6;
+  } else if (bus == 2) {  // left
+    bus = 5;
+  } else {  // right
+    bus = 4;
+  }
+
+  Wire.beginTransmission(0x70);  // TCA9548A address is 0x70
+  Wire.write(1 << bus);          // send byte to select bus
+  Wire.endTransmission();
+  Serial.print(bus);
+}
+
 
 void setMotorSpeed(float fl, float bl, float fr, float br) {
   fl = map(fl, -100, 100, 180, 0);

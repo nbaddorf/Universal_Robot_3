@@ -87,6 +87,10 @@ Servo FR;
 Servo BR;
 
 //********************** Setup AS5600 Encoder with multiplexer here *****************
+const int odom_rst = 27;
+const int odom_a0 = 30;
+const int odom_a1 = 31;
+const int odom_a2 = 32;
 
 
 const int FLencoderA = 9;
