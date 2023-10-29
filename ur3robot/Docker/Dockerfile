@@ -11,6 +11,7 @@ RUN apt-get update \
     ros-melodic-joint-state-publisher\
     ros-melodic-robot-state-publisher\
     ros-melodic-rosserial-python\
+    ros-melodic-teleop-twist-keyboard\
     && rm -rf /var/lib/apt/lists/*
 
 
