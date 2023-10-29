@@ -1,7 +1,8 @@
- //add all libraries to the sketch
+//add all libraries to the sketch
 #include <PID_v1.h>
 #include <math.h>
 #include <Servo.h>
+#include "AS5600.h"
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
 #include <ros/time.h>
@@ -12,6 +13,10 @@
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Bool.h>
 
+//uncomment to enable debugging
+#define DEBUG 0
+
+//Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
 float Wheel_Radious = Wheel_Diameter / 2;                       //in mm
 float Wheel_Circumference = (2 * PI * (Wheel_Radious / 1000));  //Wheel Circumference in meters
@@ -26,7 +31,7 @@ float Encoder_Counts_Per_Meter = Wheel_Rev_Per_Meter * Encoder_Per_Wheel_Rev;
 float Encoder_Counts_Per_MM = Encoder_Counts_Per_Meter / 1000;  //giving encoder counts per mm
 //counts per mm == 4.97612
 
-double Odom_Width_Between_Wheels_X = 175;  //length between the two odom wheels in mm
+double Odom_Width_Between_Wheels_X = 175;    //length between the two odom wheels in mm
 double Odom_Width_Between_Wheels_Y = 251.2;  //length between the two odom wheels in mm
 //double Odom_Width_Doubled = Odom_Width_Between_Wheels * 2;
 double Odom_Wheel_Diameter = 72;                                           //in mm
@@ -36,12 +41,13 @@ double Odom_Wheel_Rev_Per_Meter = 1 / Odom_Wheel_Circumference;
 //if diam = 72 then rev per meter = 4.42321
 
 // ******************************UPDATE THIS **************************
-double Odom_Wheel_Encoder_Per_Wheel_Rev = 720;  //in encoder counts
+double Odom_Wheel_Encoder_Per_Wheel_Rev = 4095;  //in encoder counts
+double Odom_Encoder_Half_Count = Odom_Wheel_Encoder_Per_Wheel_Rev / 2;
 double Odom_Wheel_Encoder_Counts_Per_Meter = Odom_Wheel_Rev_Per_Meter * Odom_Wheel_Encoder_Per_Wheel_Rev;
 double Odom_Wheel_Encoder_Counts_Per_MM = Odom_Wheel_Encoder_Counts_Per_Meter / 1000;  //giving encoder counts per mm
-//couts per mm = 1.59236
+//couts per mm = 18.113
 
-float Distance_Between_Wheels = 378.1;  //in mm                                                                                        //distance between left wheels and right wheels in mm
+float Distance_Between_Wheels = 378.1;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
 float Distance_Between_Wheels_Circumference = PI * 2 * Distance_Between_Wheels;                                                     //circumference in mm
 float Distance_Between_Wheels_Half_Circumference_Rev = (Distance_Between_Wheels_Circumference / 2) / (Wheel_Circumference * 1000);  //Wheel Rev for half circumference
 float Encoder_Counts_Per_Half_Circumference = Distance_Between_Wheels_Half_Circumference_Rev * Encoder_Per_Wheel_Rev;               //Outputs encoder counts per half circumference
@@ -75,24 +81,38 @@ nav_msgs::Odometry odom_msg;
 ros::Publisher odom_pub("odom", &odom_msg);
 tf::TransformBroadcaster broadcaster;
 
-//set up which pins controll what
+//define the motor control pins
 const int motorFLspeedpin = 22;
 const int motorBLspeedpin = 23;
 const int motorFRspeedpin = 28;
 const int motorBRspeedpin = 29;
 
+//init the motor controllers
 Servo FL;
 Servo BL;
 Servo FR;
 Servo BR;
 
 //********************** Setup AS5600 Encoder with multiplexer here *****************
-const int odom_rst = 27;
-const int odom_a0 = 30;
+const int odom_a0 = 30;  //These really shouldnt be here, these 3 pins just set the multiplexers address.
 const int odom_a1 = 31;
 const int odom_a2 = 32;
 
+//init the odom encoders
+AS5600 odom_front;
+AS5600 odom_back;
+AS5600 odom_left;
+AS5600 odom_right;
 
+/*
+//create variables for odom
+uint16_t odom_f = 0;
+uint16_t odom_b = 0;
+uint16_t odom_l = 0;
+uint16_t odom_r = 0;
+*/
+
+//define pins for motor encoders
 const int FLencoderA = 9;
 const int FLencoderB = 8;
 const int BLencoderA = 7;
@@ -101,13 +121,6 @@ const int FRencoderA = 5;
 const int FRencoderB = 4;
 const int BRencoderA = 3;
 const int BRencoderB = 2;
-
-/*
-const int LeftOdomEncoderA = 11;
-const int LeftOdomEncoderB = 10;
-const int RightOdomEncoderA = 12;
-const int RightOdomEncoderB = 0;
-*/
 
 const int LED = 13;
 
@@ -232,18 +245,22 @@ ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", velCallback);
 //ros::Subscriber<std_msgs::Bool> odomResetSub("reset_odom", resetOdom);
 
 void setup() {
-  // set baud rate to 115200
-  nh.getHardware()->setBaud(115200);
-  nh.initNode();  // init ROS
+  #ifdef DEBUG
+    Serial.begin(115200);
+  #else
+    // set baud rate to 115200
+    nh.getHardware()->setBaud(115200);
+    nh.initNode();  // init ROS
 
-  nh.subscribe(pidPub);
-  nh.subscribe(sub);
-  //nh.subscribe(odomResetSub);
+    nh.subscribe(pidPub);
+    nh.subscribe(sub);
+    //nh.subscribe(odomResetSub);
 
-  nh.advertise(odom_pub);
-  broadcaster.init(nh);  // set up broadcaster
+    nh.advertise(odom_pub);
+    broadcaster.init(nh);  // set up broadcaster
+  #endif
 
-
+  //set motor encoders to input pullup
   pinMode(FLencoderA, INPUT_PULLUP);
   pinMode(FLencoderB, INPUT_PULLUP);
   pinMode(FRencoderA, INPUT_PULLUP);
@@ -252,12 +269,8 @@ void setup() {
   pinMode(BLencoderB, INPUT_PULLUP);
   pinMode(BRencoderA, INPUT_PULLUP);
   pinMode(BRencoderB, INPUT_PULLUP);
-  /*
-  pinMode(LeftOdomEncoderA, INPUT_PULLUP); 
-  pinMode(LeftOdomEncoderB, INPUT_PULLUP);
-  pinMode(RightOdomEncoderA, INPUT_PULLUP);
-  pinMode(RightOdomEncoderB, INPUT_PULLUP);
-*/
+
+  //attach interrupts to the motor encoders
   attachInterrupt(FRencoderA, FR0, RISING);
   attachInterrupt(FRencoderB, FR1, RISING);
   attachInterrupt(FLencoderA, FL0, RISING);
@@ -266,12 +279,8 @@ void setup() {
   attachInterrupt(BRencoderB, BR1, RISING);
   attachInterrupt(BLencoderA, BL0, RISING);
   attachInterrupt(BLencoderB, BL1, RISING);
-  /*
-  attachInterrupt(LeftOdomEncoderA, LO0, RISING);
-  attachInterrupt(LeftOdomEncoderB, LO1, RISING);
-  attachInterrupt(RightOdomEncoderA, RO0, RISING);
-  attachInterrupt(RightOdomEncoderB, RO1, RISING);
-*/
+
+  //set motor controllers to the correct pins
   FR.attach(motorFRspeedpin);
   BR.attach(motorBRspeedpin);
   FL.attach(motorFLspeedpin);
@@ -279,6 +288,37 @@ void setup() {
 
   pinMode(LED, OUTPUT);
 
+  //set output for the odom multiplexer
+  pinMode(odom_a0, OUTPUT);
+  pinMode(odom_a1, OUTPUT);
+  pinMode(odom_a2, OUTPUT);
+
+  /* Sets the TCA9548A multiplexer address to 0x70 */
+  digitalWrite(odom_a0, LOW);
+  digitalWrite(odom_a1, LOW);
+  digitalWrite(odom_a2, LOW);
+
+  //start wire
+  Wire.begin();
+  delay(100);
+
+  TCA9548A(0);                                 //front
+  odom_front.begin();                          //  set direction pin.
+  odom_front.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  TCA9548A(1);                                //back
+  odom_back.begin();                          //  set direction pin.
+  odom_back.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  TCA9548A(2);                                //left
+  odom_left.begin();                          //  set direction pin.
+  odom_left.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  TCA9548A(3);                                 //right
+  odom_right.begin();                          //  set direction pin.
+  odom_right.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  //set PID perameters
   PID_FL.SetOutputLimits(-50, 50);
   PID_FR.SetOutputLimits(-50, 50);
   PID_BL.SetOutputLimits(-50, 50);
@@ -294,12 +334,21 @@ void setup() {
   // PID_LM.setPOnM(true);
   // PID_RM.setPOnM(true);
 
-  //Serial.begin(115200);
+  #ifdef DEBUG
+    Serial.print("Wheel_Rev_Per_Meter:   ");
+    Serial.println(Wheel_Rev_Per_Meter);
+    Serial.print("Encoder_Counts_Per_MM:    ");
+    Serial.println(Encoder_Counts_Per_MM);
+    Serial.print("Odom_Wheel_Encoder_Counts_Per_MM:    ");
+    Serial.println(Odom_Wheel_Encoder_Counts_Per_MM);
+    delay(10000);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  #ifndef DEBUG
   nh.spinOnce();  // make sure we listen for ROS messages and activate the callback if there is one
+  #endif
 
   currentMillis = millis();
   if (currentMillis - previousMillis >= loopTime) {  // run a loop every 10ms
@@ -355,15 +404,17 @@ void loop() {
     }
 
     //Check if robot is connected to ROS and if not connected, turn off wheels
-    if (!nh.connected()) {
-      digitalWrite(LED, HIGH);
-      FLout = 0;
-      FRout = 0;
-      BLout = 0;
-      BRout = 0;
-    } else {
-      digitalWrite(LED, LOW);
-    }
+    #ifndef DEBUG
+      if (!nh.connected()) {
+        digitalWrite(LED, HIGH);
+        FLout = 0;
+        FRout = 0;
+        BLout = 0;
+        BRout = 0;
+      } else {
+        digitalWrite(LED, LOW);
+      }
+    #endif
 
     //Set motors to run at speeds
     setMotorSpeed(FLout, BLout, FRout, BRout);
@@ -375,56 +426,97 @@ void loop() {
     BLpos_diff = BLpos - BLpos_old;
     BRpos_diff = BRpos - BRpos_old;
 
-    LOdomPos_diff = LOdomPos - LOdomPos_old;
-    ROdomPos_diff = ROdomPos - ROdomPos_old;
-    //BOdomPos_diff = ...
-    //FOdomPos_diff = ...
-    //Serial.println(ROdomPos);
-
     FLpos_old = FLpos;
     FRpos_old = FRpos;
     BLpos_old = BLpos;
     BRpos_old = BRpos;
 
-    LOdomPos_old = LOdomPos;
-    ROdomPos_old = ROdomPos;
-    //BOdomPos_old = ...
-    //FOdomPos_old = ...
+    //getOdomValues(&odom_f, &odom_b, odom_l, &odom_r);
+    getOdomValues(&FOdomPos, &BOdomPos, &LOdomPos, &ROdomPos);
 
-    float Left_mm_diff = (LOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
-    float Right_mm_diff = (ROdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
-    //float Back_mm_diff = (BOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
-    //float Front_mm_diff = (FOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
+    FOdomPos_diff = check_odom_rollover(&FOdomPos, &FOdomPos_old);
+    BOdomPos_diff = check_odom_rollover(&BOdomPos, &BOdomPos_old);
+    LOdomPos_diff = check_odom_rollover(&LOdomPos, &LOdomPos_old);
+    ROdomPos_diff = check_odom_rollover(&ROdomPos, &ROdomPos_old);
 
-    //Serial.println(Right_mm_diff);
+    #ifdef DEBUG
+      Serial.print("front odom:    ");
+      Serial.println(FOdomPos_diff);
+      Serial.print("back odom:    ");
+      Serial.println(BOdomPos_diff);
+      Serial.print("left odom:    ");
+      Serial.println(LOdomPos_diff);
+      Serial.print("right odom:    ");
+      Serial.println(ROdomPos_diff);
+    #endif
 
-    // calc distance travelled based on average of both wheels
-    pos_x_average_mm_diff = (Left_mm_diff + Right_mm_diff) / 2;  // difference in each cycle
-    pos_x_total_mm += pos_x_average_mm_diff;                       // calc total running total distance
-    // calc distance travelled based on average of both wheels
-    //pos_y_average_mm_diff = (Back_mm_diff + Front_mm_diff) / 2;  // difference in each cycle
-    //pos_y_total_mm += pos_y_average_mm_diff;                       // calc total running total distance
-    
-
-    // calc angle or rotation to broadcast with tf
-    float phi_x = ((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X);
-    //float phi_y = ((Front_mm_diff - Back_mm_diff) / Odom_Width_Between_Wheels_Y);
-
-    theta += (phi_x + phi_y) / 2;
-
-    if (theta >= TWO_PI) {
-      theta -= TWO_PI;
+  /*
+    if (FOdomPos == FOdomPos_old) {
+      LOdomPos_diff = FOdomPos - FOdomPos_old;
+    } else {
+    if (abs(FOdomPos - FOdomPos_old) >= Odom_Encoder_Half_Count) {
+      if (FOdomPos < FOdomPos_old) {
+        LOdomPos_diff = (Odom_Wheel_Encoder_Per_Wheel_Rev - FOdomPos_old) + FOdomPos; // + 1;
+      } else if (FOdomPos > FOdomPos_old) {
+        LOdomPos_diff = -(Odom_Wheel_Encoder_Per_Wheel_Rev - FOdomPos) + FOdomPos_old; // + 1;
+      }
     }
-    if (theta <= (-TWO_PI)) {
-      theta += TWO_PI;
-    }
+  }
+*/
 
-    // calc x and y to broadcast with tf
-    //maybe make 2 vars one for sin and other for cos so that the arduino doesnt have to do the math for sin and cos twice.
-    y += (pos_x_average_mm_diff * sin(theta)) + (pos_y_average_mm_diff * cos(theta));
-    x += (pos_x_average_mm_diff * cos(theta)) + (pos_y_average_mm_diff * sin(theta));
+  //LOdomPos_diff = LOdomPos - LOdomPos_old;
+  //ROdomPos_diff = ROdomPos - ROdomPos_old;
+  //BOdomPos_diff = ...
+  //FOdomPos_diff = ...
+  //Serial.println(ROdomPos);
 
-    /*          
+
+  FOdomPos_old = FOdomPos;
+  BOdomPos_old = BOdomPos;
+  LOdomPos_old = LOdomPos;
+  ROdomPos_old = ROdomPos;
+
+  float Left_mm_diff = (LOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
+  float Right_mm_diff = (ROdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
+  float Back_mm_diff = (BOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
+  float Front_mm_diff = (FOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
+
+  #ifdef DEBUG
+    Serial.print("left mm:    ");
+    Serial.println(Left_mm_diff);
+    Serial.print("right mm:    ");
+    Serial.println(Right_mm_diff);
+  #endif
+
+  //Serial.println(Right_mm_diff);
+
+  // calc distance travelled based on average of both wheels
+  pos_x_average_mm_diff = (Left_mm_diff + Right_mm_diff) / 2;  // difference in each cycle
+  pos_x_total_mm += pos_x_average_mm_diff;                     // calc total running total distance
+  // calc distance travelled based on average of both wheels
+  //pos_y_average_mm_diff = (Back_mm_diff + Front_mm_diff) / 2;  // difference in each cycle
+  //pos_y_total_mm += pos_y_average_mm_diff;                       // calc total running total distance
+
+
+  // calc angle or rotation to broadcast with tf
+  float phi_x = ((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X);
+  float phi_y = ((Front_mm_diff - Back_mm_diff) / Odom_Width_Between_Wheels_Y);
+
+  theta += (phi_x + phi_y) / 2;
+
+  if (theta >= TWO_PI) {
+    theta -= TWO_PI;
+  }
+  if (theta <= (-TWO_PI)) {
+    theta += TWO_PI;
+  }
+
+  // calc x and y to broadcast with tf
+  //maybe make 2 vars one for sin and other for cos so that the arduino doesnt have to do the math for sin and cos twice.
+  y += (pos_x_average_mm_diff * sin(theta)) + (pos_y_average_mm_diff * cos(theta));
+  x += (pos_x_average_mm_diff * cos(theta)) + (pos_y_average_mm_diff * sin(theta));
+
+  /*          
             // *** broadcast odom->base_link transform with tf ***
             geometry_msgs::TransformStamped t;
                       
@@ -452,7 +544,7 @@ void loop() {
             t.header.stamp = nh.now();      
             broadcaster.sendTransform(t);
 */
-    /*
+  /*
             //Send transform for the lidar
             geometry_msgs::TransformStamped li;
             li.header.frame_id = base_link;
@@ -479,7 +571,8 @@ void loop() {
             broadcaster.sendTransform(li);
 */
 
-    // *** broadcast odom message ***
+  // *** broadcast odom message ***
+  #ifndef DEBUG
     nav_msgs::Odometry odom_msg;
     odom_msg.header.stamp = nh.now();
     odom_msg.header.frame_id = odom;
@@ -495,14 +588,56 @@ void loop() {
     odom_msg.twist.twist.angular.z = (((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X) + ((Back_mm_diff - Front_mm_diff) / Odom_Width_Between_Wheels_Y) / 2) * 100;
     odom_msg.twist.covariance[0] = 0.00005;  //x vel
     odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
-                                             // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
+                                            // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
     //nh.spinOnce();
     odom_pub.publish(&odom_msg);
 
 
     nh.spinOnce();
+  #endif
 
-  }  // end of 10ms loop
+}  // end of 10ms loop
+}
+
+void TCA9548A(uint8_t bus) {
+  if (bus == 0) {  // front
+    bus = 7;
+  } else if (bus == 1) {  // back
+    bus = 6;
+  } else if (bus == 2) {  // left
+    bus = 5;
+  } else if (bus == 3) {  // right
+    bus = 4;
+  }
+  Wire.beginTransmission(0x70);  // TCA9548A address is 0x70
+  Wire.write(1 << bus);          // send byte to select bus
+  Wire.endTransmission();
+}
+
+//uint16_t getOdomValues(uint16_t* f, uint16_t* b, uint16_t* l, uint16_t* r) {
+  int getOdomValues(int* f, int* b, int* l, int* r) {
+  TCA9548A(0);
+  *f = odom_front.rawAngle();
+  TCA9548A(1);
+  *b = odom_back.rawAngle();
+  TCA9548A(2);
+  *l = odom_left.rawAngle();
+  TCA9548A(0);
+  *r = odom_right.rawAngle();
+}
+
+int check_odom_rollover(int* valIn, int* val_old) {
+  if (*valIn == *val_old) {
+      return *valIn - *val_old;
+    } else {
+    if (abs(*valIn - *val_old) >= Odom_Encoder_Half_Count) {
+      if (*valIn < *val_old) {
+        return (Odom_Wheel_Encoder_Per_Wheel_Rev - *val_old) + *valIn; // + 1;
+      } else if (FOdomPos > FOdomPos_old) {
+        return -(Odom_Wheel_Encoder_Per_Wheel_Rev - *valIn) + *val_old; // + 1;
+      }
+    }
+  }
 }
 
 void BR0() {

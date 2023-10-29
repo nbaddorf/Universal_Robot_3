@@ -3,6 +3,9 @@
 #include "Wire.h"
 
 AS5600 odom_left;  //  use default Wire
+AS5600 odom_front;
+AS5600 odom_back;
+AS5600 odom_right;
 
 //set up which pins controll what
 const int motorFLspeedpin = 22;
@@ -77,15 +80,25 @@ void setup() {
   digitalWrite(odom_a2, LOW);
 
   delay(5000);
-  Serial.println("test");
 
   Wire.begin();
-  Serial.println("test1");
   delay(1000);
-  TCA9548A(2);
-  Serial.println("test3");
+
+  TCA9548A(2); //left
   odom_left.begin();                          //  set direction pin.
   odom_left.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  TCA9548A(0);//front
+  odom_front.begin();                          //  set direction pin.
+  odom_front.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  TCA9548A(1);//back
+  odom_back.begin();                          //  set direction pin.
+  odom_back.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+
+  TCA9548A(3);//right
+  odom_right.begin();                          //  set direction pin.
+  odom_right.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
 }
 
 void loop() {
@@ -117,12 +130,22 @@ void loop() {
 
   if (true) {
     TCA9548A(2);
-    Serial.print(millis());
-    Serial.print("\t");
-    Serial.print(odom_left.readAngle());
+    Serial.print("left. ");
     Serial.print("\t");
     Serial.println(odom_left.rawAngle() * AS5600_RAW_TO_DEGREES);
-    Serial.println("test");
+    TCA9548A(0);
+    Serial.print("front. ");
+    Serial.print("\t");
+    Serial.println(odom_front.rawAngle() * AS5600_RAW_TO_DEGREES);
+    TCA9548A(1);
+    Serial.print("back. ");
+    Serial.print("\t");
+    Serial.println(odom_back.rawAngle() * AS5600_RAW_TO_DEGREES);
+    TCA9548A(3);
+    Serial.print("right. ");
+    Serial.print("\t");
+    Serial.println(odom_right.rawAngle() * AS5600_RAW_TO_DEGREES);
+    
     delay(40);
   }
 }
@@ -142,7 +165,7 @@ void TCA9548A(uint8_t bus) {
   Wire.beginTransmission(0x70);  // TCA9548A address is 0x70
   Wire.write(1 << bus);          // send byte to select bus
   Wire.endTransmission();
-  Serial.print(bus);
+  //Serial.print(bus);
 }
 
 
