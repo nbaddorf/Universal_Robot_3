@@ -9,7 +9,7 @@ from sensor_msgs.msg import LaserScan
 
 
 corner_angles = []
-footprint = [[-0.20955,-0.20955], [0.20955,-0.20955], [0.20955,0.20955], [-0.20955,0.20955]]
+#footprint = [[-0.20955,-0.20955], [0.20955,-0.20955], [0.20955,0.20955], [-0.20955,0.20955]]
 #footprint = [[-0.20955,0.20955], [-0.20955,-0.20955], [0.20955,-0.20955], [0.20955,0.20955]]
 #this program is not designed verry well. I am not sure it is all labeled correctly, but it works for now
 
@@ -34,7 +34,7 @@ def set_vars():
     global footprint
     global corner_angles
                  #back right,             front right,          front left,         back left
-    #footprint = [[-0.24765,-0.20955], [0.24765,-0.20955], [0.24765,0.20955], [-0.24765,0.20955]]
+    footprint = [[-0.24765,-0.20955], [0.24765,-0.20955], [0.24765,0.20955], [-0.24765,0.20955]]
     int_counter = 0
     #print(footprint)
     for counter in footprint:
