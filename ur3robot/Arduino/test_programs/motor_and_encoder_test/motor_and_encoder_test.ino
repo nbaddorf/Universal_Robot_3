@@ -36,6 +36,8 @@ const int odom_a0 = 30;
 const int odom_a1 = 31;
 const int odom_a2 = 32;
 
+int te = 2;
+
 const int LED = 13;
 
 void setup() {
@@ -132,7 +134,8 @@ void loop() {
     TCA9548A(2);
     Serial.print("left. ");
     Serial.print("\t");
-    Serial.println(odom_left.rawAngle() * AS5600_RAW_TO_DEGREES);
+    int test = odom_left.rawAngle();
+    Serial.println(test);
     TCA9548A(0);
     Serial.print("front. ");
     Serial.print("\t");
@@ -148,6 +151,10 @@ void loop() {
     
     delay(40);
   }
+  //Serial.println(te);
+  //Test(&te);
+  //Serial.println(te);
+  //delay(5000);
 }
 
 
@@ -166,6 +173,10 @@ void TCA9548A(uint8_t bus) {
   Wire.write(1 << bus);          // send byte to select bus
   Wire.endTransmission();
   //Serial.print(bus);
+}
+
+void Test(int* tes) {
+  *tes = 15;
 }
 
 

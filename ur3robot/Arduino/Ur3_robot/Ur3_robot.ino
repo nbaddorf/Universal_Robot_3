@@ -14,7 +14,7 @@
 #include <std_msgs/Bool.h>
 
 //uncomment to enable debugging
-#define DEBUG 0
+//#define DEBUG
 
 //Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
@@ -130,7 +130,7 @@ char odom[] = "odom";            //was /odom
 
 // timers for the sub-main loop
 unsigned long currentMillis;
-long previousMillis = 0;  // set up timers
+unsigned long previousMillis = 0;  // set up timers
 float loopTime = 10;
 
 // tf variables to be broadcast
@@ -297,7 +297,7 @@ void setup() {
   digitalWrite(odom_a0, LOW);
   digitalWrite(odom_a1, LOW);
   digitalWrite(odom_a2, LOW);
-
+  delay(500);
   //start wire
   Wire.begin();
   delay(100);
@@ -334,6 +334,8 @@ void setup() {
   // PID_LM.setPOnM(true);
   // PID_RM.setPOnM(true);
 
+  previousMillis = millis();
+
   #ifdef DEBUG
     Serial.print("Wheel_Rev_Per_Meter:   ");
     Serial.println(Wheel_Rev_Per_Meter);
@@ -341,7 +343,8 @@ void setup() {
     Serial.println(Encoder_Counts_Per_MM);
     Serial.print("Odom_Wheel_Encoder_Counts_Per_MM:    ");
     Serial.println(Odom_Wheel_Encoder_Counts_Per_MM);
-    delay(10000);
+    delay(5000);
+  #endif
 }
 
 void loop() {
@@ -351,26 +354,27 @@ void loop() {
   #endif
 
   currentMillis = millis();
+
   if (currentMillis - previousMillis >= loopTime) {  // run a loop every 10ms
     previousMillis = currentMillis;
 
     float modifier_lin = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     float modifier_ang = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
-
+    
     forward = demandx * (Encoder_Counts_Per_Meter * modifier_lin);
     turn = demandz * (Encoder_Counts_Per_Radian * modifier_ang);
-
+    
     float Left_Motor_Speed = forward - turn;  //in encoder counts per second
     float Right_Motor_Speed = forward + turn;
 
     Left_Motor_Speed = Left_Motor_Speed / (1000 / loopTime);  //loop runs every 10ms so divide final0/(1000/loopTime) to get counts per 10ms
     Right_Motor_Speed = Right_Motor_Speed / (1000 / loopTime);
-
+    
     Front_Left_Encoder_Vel_Setpoint = Left_Motor_Speed;
     Front_Right_Encoder_Vel_Setpoint = Right_Motor_Speed;
     Back_Left_Encoder_Vel_Setpoint = Left_Motor_Speed;
     Back_Right_Encoder_Vel_Setpoint = Right_Motor_Speed;
-
+    
     //Compute PID speeds
     PID_FL.Compute();
     PID_FR.Compute();
@@ -402,6 +406,7 @@ void loop() {
     } else {
       PID_BR.SetMode(AUTOMATIC);
     }
+    
 
     //Check if robot is connected to ROS and if not connected, turn off wheels
     #ifndef DEBUG
@@ -415,7 +420,7 @@ void loop() {
         digitalWrite(LED, LOW);
       }
     #endif
-
+   
     //Set motors to run at speeds
     setMotorSpeed(FLout, BLout, FRout, BRout);
 
@@ -425,7 +430,7 @@ void loop() {
     FRpos_diff = FRpos - FRpos_old;
     BLpos_diff = BLpos - BLpos_old;
     BRpos_diff = BRpos - BRpos_old;
-
+    
     FLpos_old = FLpos;
     FRpos_old = FRpos;
     BLpos_old = BLpos;
@@ -433,12 +438,16 @@ void loop() {
 
     //getOdomValues(&odom_f, &odom_b, odom_l, &odom_r);
     getOdomValues(&FOdomPos, &BOdomPos, &LOdomPos, &ROdomPos);
+    
+    LOdomPos = map(LOdomPos, 0, Odom_Wheel_Encoder_Per_Wheel_Rev, Odom_Wheel_Encoder_Per_Wheel_Rev, 0);
+    BOdomPos = map(BOdomPos, 0, Odom_Wheel_Encoder_Per_Wheel_Rev, Odom_Wheel_Encoder_Per_Wheel_Rev, 0);
 
     FOdomPos_diff = check_odom_rollover(&FOdomPos, &FOdomPos_old);
     BOdomPos_diff = check_odom_rollover(&BOdomPos, &BOdomPos_old);
     LOdomPos_diff = check_odom_rollover(&LOdomPos, &LOdomPos_old);
     ROdomPos_diff = check_odom_rollover(&ROdomPos, &ROdomPos_old);
-
+    
+    /*
     #ifdef DEBUG
       Serial.print("front odom:    ");
       Serial.println(FOdomPos_diff);
@@ -449,27 +458,7 @@ void loop() {
       Serial.print("right odom:    ");
       Serial.println(ROdomPos_diff);
     #endif
-
-  /*
-    if (FOdomPos == FOdomPos_old) {
-      LOdomPos_diff = FOdomPos - FOdomPos_old;
-    } else {
-    if (abs(FOdomPos - FOdomPos_old) >= Odom_Encoder_Half_Count) {
-      if (FOdomPos < FOdomPos_old) {
-        LOdomPos_diff = (Odom_Wheel_Encoder_Per_Wheel_Rev - FOdomPos_old) + FOdomPos; // + 1;
-      } else if (FOdomPos > FOdomPos_old) {
-        LOdomPos_diff = -(Odom_Wheel_Encoder_Per_Wheel_Rev - FOdomPos) + FOdomPos_old; // + 1;
-      }
-    }
-  }
 */
-
-  //LOdomPos_diff = LOdomPos - LOdomPos_old;
-  //ROdomPos_diff = ROdomPos - ROdomPos_old;
-  //BOdomPos_diff = ...
-  //FOdomPos_diff = ...
-  //Serial.println(ROdomPos);
-
 
   FOdomPos_old = FOdomPos;
   BOdomPos_old = BOdomPos;
@@ -481,28 +470,37 @@ void loop() {
   float Back_mm_diff = (BOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
   float Front_mm_diff = (FOdomPos_diff) / Odom_Wheel_Encoder_Counts_Per_MM;
 
+  /*
   #ifdef DEBUG
+    Serial.print("front mm:    ");
+    Serial.println(Front_mm_diff);
+    Serial.print("back mm:    ");
+    Serial.println(Back_mm_diff);
     Serial.print("left mm:    ");
     Serial.println(Left_mm_diff);
     Serial.print("right mm:    ");
     Serial.println(Right_mm_diff);
   #endif
-
-  //Serial.println(Right_mm_diff);
+  */
 
   // calc distance travelled based on average of both wheels
   pos_x_average_mm_diff = (Left_mm_diff + Right_mm_diff) / 2;  // difference in each cycle
   pos_x_total_mm += pos_x_average_mm_diff;                     // calc total running total distance
   // calc distance travelled based on average of both wheels
-  //pos_y_average_mm_diff = (Back_mm_diff + Front_mm_diff) / 2;  // difference in each cycle
-  //pos_y_total_mm += pos_y_average_mm_diff;                       // calc total running total distance
+  pos_y_average_mm_diff = (Back_mm_diff + Front_mm_diff) / 2;  // difference in each cycle
+  pos_y_total_mm += pos_y_average_mm_diff;                       // calc total running total distance
 
+  #ifdef DEBUG
+   // Serial.print("x distance:    ");
+    //Serial.println(pos_x_total_mm);
+  #endif
 
   // calc angle or rotation to broadcast with tf
   float phi_x = ((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X);
   float phi_y = ((Front_mm_diff - Back_mm_diff) / Odom_Width_Between_Wheels_Y);
 
   theta += (phi_x + phi_y) / 2;
+  //theta += (phi_x);
 
   if (theta >= TWO_PI) {
     theta -= TWO_PI;
@@ -511,12 +509,23 @@ void loop() {
     theta += TWO_PI;
   }
 
+  #ifdef DEBUG
+    Serial.print("rotation:    ");
+    Serial.println(theta);
+  #endif
+
   // calc x and y to broadcast with tf
   //maybe make 2 vars one for sin and other for cos so that the arduino doesnt have to do the math for sin and cos twice.
   y += (pos_x_average_mm_diff * sin(theta)) + (pos_y_average_mm_diff * cos(theta));
   x += (pos_x_average_mm_diff * cos(theta)) + (pos_y_average_mm_diff * sin(theta));
 
-  /*          
+  #ifdef DEBUG
+    Serial.print("x:    ");
+    Serial.println(x);
+    Serial.print("y:    ");
+    Serial.println(y);
+  #endif
+           
             // *** broadcast odom->base_link transform with tf ***
             geometry_msgs::TransformStamped t;
                       
@@ -543,33 +552,7 @@ void loop() {
             //t.transform.rotation = tf::createQuaternionFromYaw(theta);
             t.header.stamp = nh.now();      
             broadcaster.sendTransform(t);
-*/
-  /*
-            //Send transform for the lidar
-            geometry_msgs::TransformStamped li;
-            li.header.frame_id = base_link;
-            li.child_frame_id = laser;
-            li.transform.translation.x = 0; 
-            li.transform.translation.y = 0;
-            li.transform.translation.z = 0.2159;
-            
-            float LaserPitch = 0;
-            float LaserRoll = 0;
-            float LaserYaw = PI/2;
-            //converts euler angle to quaternion
-            float qx = sin(LaserRoll/2) * cos(LaserPitch/2) * cos(LaserYaw/2) - cos(LaserRoll/2) * sin(LaserPitch/2) * sin(LaserYaw/2);
-            float qy = cos(LaserRoll/2) * sin(LaserPitch/2) * cos(LaserYaw/2) + sin(LaserRoll/2) * cos(LaserPitch/2) * sin(LaserYaw/2);
-            float qz = cos(LaserRoll/2) * cos(LaserPitch/2) * sin(LaserYaw/2) - sin(LaserRoll/2) * sin(LaserPitch/2) * cos(LaserYaw/2);
-            float qw = cos(LaserRoll/2) * cos(LaserPitch/2) * cos(LaserYaw/2) + sin(LaserRoll/2) * sin(LaserPitch/2) * sin(LaserYaw/2);
-            //adds the quaternion to the ros message
-            li.transform.rotation.x = qx;
-            li.transform.rotation.y = qy;
-            li.transform.rotation.z = qz;
-            li.transform.rotation.w = qw;
-            //ros publishes the tf for the lidar
-            li.header.stamp = nh.now();
-            broadcaster.sendTransform(li);
-*/
+
 
   // *** broadcast odom message ***
   #ifndef DEBUG
@@ -614,29 +597,30 @@ void TCA9548A(uint8_t bus) {
   Wire.endTransmission();
 }
 
-//uint16_t getOdomValues(uint16_t* f, uint16_t* b, uint16_t* l, uint16_t* r) {
-  int getOdomValues(int* f, int* b, int* l, int* r) {
+//void getOdomValues(uint16_t* f, uint16_t* b, uint16_t* l, uint16_t* r) {
+void getOdomValues(int* _f, int* _b, int* _l, int* _r) {
   TCA9548A(0);
-  *f = odom_front.rawAngle();
+  //Serial.println()
+  *_f = odom_front.rawAngle();
   TCA9548A(1);
-  *b = odom_back.rawAngle();
+  *_b = odom_back.rawAngle();
   TCA9548A(2);
-  *l = odom_left.rawAngle();
-  TCA9548A(0);
-  *r = odom_right.rawAngle();
+  *_l = odom_left.rawAngle();
+  TCA9548A(3);
+  *_r = odom_right.rawAngle();
 }
 
 int check_odom_rollover(int* valIn, int* val_old) {
   if (*valIn == *val_old) {
-      return *valIn - *val_old;
-    } else {
-    if (abs(*valIn - *val_old) >= Odom_Encoder_Half_Count) {
-      if (*valIn < *val_old) {
-        return (Odom_Wheel_Encoder_Per_Wheel_Rev - *val_old) + *valIn; // + 1;
-      } else if (FOdomPos > FOdomPos_old) {
-        return -(Odom_Wheel_Encoder_Per_Wheel_Rev - *valIn) + *val_old; // + 1;
-      }
+      return 0;
+  } else if (abs(*valIn - *val_old) >= Odom_Encoder_Half_Count) {
+    if (*valIn < *val_old) {
+      return (Odom_Wheel_Encoder_Per_Wheel_Rev - *val_old) + *valIn; // + 1;
+    } else if (*valIn > *val_old) {
+      return -(Odom_Wheel_Encoder_Per_Wheel_Rev - *valIn) + *val_old; // + 1;
     }
+  } else {
+    return *valIn - *val_old;
   }
 }
 
