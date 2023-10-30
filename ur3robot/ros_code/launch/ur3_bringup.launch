@@ -26,8 +26,8 @@
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
 
  <!-- start my laser filter -->
-<node name="laser_filter" type="laser_filter.py" pkg="ur3robot" output="screen">
-  <param name="laser_inflation" value="0.05" />
+<node name="laser_filter" type="square_laser_filterV2.py" pkg="ur3robot" output="screen">
+  <!-- <param name="laser_inflation" value="0.05" /> -->
 </node>
 
  <!-- start teensy serial -->
