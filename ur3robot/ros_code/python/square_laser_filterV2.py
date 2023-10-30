@@ -19,10 +19,13 @@ def create_lookup_table():
     deg_conversion = 360.0/760
 
     for deg in range(760): #
-        if ((deg <= (right_angle/2) or deg > ((right_angle/2)+ (right_angle*3)))) or (deg > ((right_angle/2) + right_angle) and deg <= ((right_angle/2) + (right_angle*2))):
-            distance = (robot_width/2)/np.cos(np.radians(deg * deg_conversion))
+        #if ((deg <= (right_angle/2) or deg > ((right_angle/2)+ (right_angle*3)))) or (deg > ((right_angle/2) + right_angle) and deg <= ((right_angle/2) + (right_angle*2))):
+        #    distance = (robot_width/2)/np.cos(np.radians(deg * deg_conversion))
+        #    laser_lookup_table.append(abs(distance))
+        if (((deg * deg_conversion) <= 45 or (deg * deg_conversion) > 315) or ((deg * deg_conversion) > 135 and (deg * deg_conversion) <= 225)):
+            distance = (robot_width/2)/np.cos(np.radians((deg * deg_conversion)))
             laser_lookup_table.append(abs(distance))
-        elif ((deg > 45 and deg <= 135) or (deg > 225 and deg <= 315)):
+        elif (((deg * deg_conversion) > 45 and (deg * deg_conversion) <= 135) or ((deg * deg_conversion) > 225 and (deg * deg_conversion) <= 315)):
             distance = (robot_width/2)/np.sin(np.radians(deg * deg_conversion))
             laser_lookup_table.append(abs(distance))
     print("DONE")
@@ -33,7 +36,9 @@ def run_filter(msg):
     distances_array = []
     intensities_array = []
 
-    for deg in range(360):
+    deg_conversion = 360.0/760
+
+    for deg in range(760):
 
         if msg.ranges[deg] <= laser_lookup_table[deg]:
             distances_array.append(0)
