@@ -14,6 +14,7 @@ RUN apt-get update \
     ros-melodic-teleop-twist-keyboard\
     ros-melodic-amcl\
     ros-melodic-move-base\
+    ros-melodic-freenect-launch\
     && rm -rf /var/lib/apt/lists/*
 
 

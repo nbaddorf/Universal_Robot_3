@@ -15,12 +15,15 @@ def create_lookup_table():
     global robot_width
     global laser_lookup_table
 
-    for deg in range(360):
-        if ((deg <= 45 or deg > 315) or (deg > 135 and deg <= 225)):
-            distance = (robot_width/2)/np.cos(np.radians(deg))
+    right_angle = 760 / 4
+    deg_conversion = 360.0/760
+
+    for deg in range(760): #
+        if ((deg <= (right_angle/2) or deg > ((right_angle/2)+ (right_angle*3)))) or (deg > ((right_angle/2) + right_angle) and deg <= ((right_angle/2) + (right_angle*2))):
+            distance = (robot_width/2)/np.cos(np.radians(deg * deg_conversion))
             laser_lookup_table.append(abs(distance))
         elif ((deg > 45 and deg <= 135) or (deg > 225 and deg <= 315)):
-            distance = (robot_width/2)/np.sin(np.radians(deg))
+            distance = (robot_width/2)/np.sin(np.radians(deg * deg_conversion))
             laser_lookup_table.append(abs(distance))
     print("DONE")
 
