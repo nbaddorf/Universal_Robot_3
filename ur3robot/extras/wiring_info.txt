@@ -1,0 +1,4 @@
+On the ur3 robot, USB-C connectors are used for I2C.
+- 3.3v
+- SDA = D+ = green wire.
+- SCL = D- = white wire.
