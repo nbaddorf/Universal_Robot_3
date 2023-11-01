@@ -1,0 +1,7 @@
+ INFO] [1698837581.534722651]: MPU6050 Calibration Node has started
+[ INFO] [1698837688.994950823]: Final offset of Accel X axis = -2938
+[ INFO] [1698837688.996715431]: Final offset of Accel Y axis = 2311
+[ INFO] [1698837688.998055866]: Final offset of Accel Z axis = 1316
+[ INFO] [1698837688.998872908]: Final offset of Gyro  X axis = 44
+[ INFO] [1698837689.000219229]: Final offset of Gyro  Y axis = -42
+[ INFO] [1698837689.001094606]: Final offset of Gyro  Z axis = 13
