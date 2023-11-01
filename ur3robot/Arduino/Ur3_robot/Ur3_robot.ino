@@ -31,8 +31,8 @@ float Encoder_Counts_Per_Meter = Wheel_Rev_Per_Meter * Encoder_Per_Wheel_Rev;
 float Encoder_Counts_Per_MM = Encoder_Counts_Per_Meter / 1000;  //giving encoder counts per mm
 //counts per mm == 4.97612
 
-double Odom_Width_Between_Wheels_X = 175;    //length between the two odom wheels in mm
-double Odom_Width_Between_Wheels_Y = 251.2;  //length between the two odom wheels in mm
+double Odom_Width_Between_Wheels_X = 177;    //length between the two odom wheels in mm
+double Odom_Width_Between_Wheels_Y = 254;  //length between the two odom wheels in mm
 //double Odom_Width_Doubled = Odom_Width_Between_Wheels * 2;
 double Odom_Wheel_Diameter = 72;                                           //in mm
 double Odom_Wheel_Radious = Odom_Wheel_Diameter / 2;                       //in mm
@@ -40,7 +40,6 @@ double Odom_Wheel_Circumference = (2 * PI * (Odom_Wheel_Radious / 1000));  //Whe
 double Odom_Wheel_Rev_Per_Meter = 1 / Odom_Wheel_Circumference;
 //if diam = 72 then rev per meter = 4.42321
 
-// ******************************UPDATE THIS **************************
 double Odom_Wheel_Encoder_Per_Wheel_Rev = 4095;  //in encoder counts
 double Odom_Encoder_Half_Count = Odom_Wheel_Encoder_Per_Wheel_Rev / 2;
 double Odom_Wheel_Encoder_Counts_Per_Meter = Odom_Wheel_Rev_Per_Meter * Odom_Wheel_Encoder_Per_Wheel_Rev;
@@ -103,14 +102,6 @@ AS5600 odom_front;
 AS5600 odom_back;
 AS5600 odom_left;
 AS5600 odom_right;
-
-/*
-//create variables for odom
-uint16_t odom_f = 0;
-uint16_t odom_b = 0;
-uint16_t odom_l = 0;
-uint16_t odom_r = 0;
-*/
 
 //define pins for motor encoders
 const int FLencoderA = 9;
