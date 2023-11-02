@@ -8,6 +8,9 @@ from sensor_msgs.msg import LaserScan
 #******* This program is only for square robots. ********
 
 robot_width = 0.4191 #my ur3 robot is 0.4191 meters width
+inflation = 0.05
+
+robot_width = robot_width + inflation
 
 laser_lookup_table = [] #this will be where the initial startup math will calculate the minimum values for each position of laser values
 
