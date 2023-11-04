@@ -119,6 +119,7 @@ const int BRencoderB = 2;
 const int LED = 13;
 
 char base_link[] = "base_link";  //was /base_link
+char raw_odom[] = "raw_odom";
 char odom[] = "odom";            //was /odom
 //char laser[] = "laser"; //was /laser
 
@@ -131,6 +132,7 @@ float loopTime = 10;
 double x = 0;
 double y = 0;
 double theta = 0;
+double theta_old = 0;
 
 double forward = 0;
 double turn = 0;
@@ -525,7 +527,8 @@ void loop() {
             geometry_msgs::TransformStamped t;
                       
             t.header.frame_id = odom;
-            t.child_frame_id = base_link;
+           // t.child_frame_id = base_link;
+           t.child_frame_id = raw_odom;
             
             t.transform.translation.x = x/1000;   // convert to metres
             t.transform.translation.y = y/1000;
@@ -564,13 +567,15 @@ void loop() {
     odom_msg.child_frame_id = base_link;
     odom_msg.twist.twist.linear.x = ((Left_mm_diff + Right_mm_diff) / 2) / 10;  // forward linear velocity
     odom_msg.twist.twist.linear.y = ((Front_mm_diff + Back_mm_diff) / 2) / 10;  // sideways linear velocity                                        // robot does not move sideways
-    odom_msg.twist.twist.angular.z = (((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X) + ((Back_mm_diff - Front_mm_diff) / Odom_Width_Between_Wheels_Y) / 2) * 100;
+    //odom_msg.twist.twist.angular.z = (((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X) + ((Back_mm_diff - Front_mm_diff) / Odom_Width_Between_Wheels_Y) / 2); * 100;
+    odom_msg.twist.twist.angular.z = (theta - theta_old) * 100;
     //odom_msg.twist.covariance[0] = 0.00005;  //x vel
     //odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
                                             // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
     //nh.spinOnce();
     odom_pub.publish(&odom_msg);
 
+    theta_old = theta;
 
     nh.spinOnce();
   #endif
