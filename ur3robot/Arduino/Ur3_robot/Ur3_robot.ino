@@ -16,6 +16,9 @@
 //uncomment to enable debugging
 //#define DEBUG
 
+//uncomment to enable tf
+#define PUBLISH_TF
+
 //Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
 float Wheel_Radious = Wheel_Diameter / 2;                       //in mm
@@ -516,7 +519,8 @@ void loop() {
     Serial.print("y:    ");
     Serial.println(y);
   #endif
-           
+
+  #ifdef PUBLISH_TF         
             // *** broadcast odom->base_link transform with tf ***
             geometry_msgs::TransformStamped t;
                       
@@ -543,6 +547,7 @@ void loop() {
             //t.transform.rotation = tf::createQuaternionFromYaw(theta);
             t.header.stamp = nh.now();      
             broadcaster.sendTransform(t);
+  #endif
 
 
   // *** broadcast odom message ***
@@ -560,8 +565,8 @@ void loop() {
     odom_msg.twist.twist.linear.x = ((Left_mm_diff + Right_mm_diff) / 2) / 10;  // forward linear velocity
     odom_msg.twist.twist.linear.y = ((Front_mm_diff + Back_mm_diff) / 2) / 10;  // sideways linear velocity                                        // robot does not move sideways
     odom_msg.twist.twist.angular.z = (((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X) + ((Back_mm_diff - Front_mm_diff) / Odom_Width_Between_Wheels_Y) / 2) * 100;
-    odom_msg.twist.covariance[0] = 0.00005;  //x vel
-    odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
+    //odom_msg.twist.covariance[0] = 0.00005;  //x vel
+    //odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
                                             // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
     //nh.spinOnce();
     odom_pub.publish(&odom_msg);
