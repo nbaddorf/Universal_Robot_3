@@ -37,7 +37,6 @@
 <!-- slam gmapping stuff -->
 <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen" >
     <param name="scan" value="scan/filtered" />
-    <param name="odom_frame" value="odometry/filtered" />
     <param name="maxUrange" value="10" />
 
 </node>
