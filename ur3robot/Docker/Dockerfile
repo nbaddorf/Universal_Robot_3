@@ -15,6 +15,7 @@ RUN apt-get update \
     ros-melodic-amcl\
     ros-melodic-move-base\
     ros-melodic-freenect-launch\
+    ros-melodic-robot-localization\
     && rm -rf /var/lib/apt/lists/*
 
 

@@ -121,7 +121,7 @@ odom0_relative: false
 #odom0_twist_rejection_threshold: 1
 
 #"""
-imu0: imu
+imu0: imu/data_raw
 imu0_config: [false, false, false,
               false,  false,  false,
               false, false, false,
@@ -136,9 +136,9 @@ imu0_twist_rejection_threshold: 1 #was 0.8                #
 imu0_linear_acceleration_rejection_threshold: 0.8  #
 
 
-pose0: laser_scan_macher/pose
+#pose0: laser_scan_macher/pose
 # values is x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. 
-pose0_config: [true, true,  false,
+#pose0_config: [true, true,  false,
                false, false, true,
                false, false, false,
                false, false, false,
@@ -146,13 +146,13 @@ pose0_config: [true, true,  false,
 
 # If you have high-frequency data or are running with a low frequency parameter value, then you may want to increase
 # the size of the subscription queue so that more measurements are fused.
-pose0_queue_size: 1
+#pose0_queue_size: 1
 
-pose0_nodelay: false
+#pose0_nodelay: false
 
-pose0_differential: true
+#pose0_differential: true
 
-pose0_relative: false
+#pose0_relative: false
 
 
 
@@ -168,7 +168,7 @@ pose0_relative: false
 # predicition. Note that if an acceleration measurement for the variable in question is available from one of the
 # inputs, the control term will be ignored.
 # Whether or not we use the control input during predicition. Defaults to false.
-use_control: true
+use_control: false #true
 # Whether the input (assumed to be cmd_vel) is a geometry_msgs/Twist or geometry_msgs/TwistStamped message. Defaults to
 # false.
 stamped_control: false
