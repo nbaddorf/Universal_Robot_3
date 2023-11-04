@@ -8,19 +8,8 @@
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 
-<!-- Map server -->
-<!--   <node pkg="map_server" name="map_server" type="map_server" args="$(find ur3robot)/robot_map/map.yaml"/> -->
-
 <!-- rplidar -->
 <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
-
-<!-- AMCL -->
-<include file="$(find ur3robot)/launch/amcl.launch"/>
-
-<!-- move_base -->
-<include file="$(find ur3robot)/launch/move_base.launch">
-<arg name="move_forward_only" value="$(arg move_forward_only)"/>
-</include>
 
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
@@ -44,5 +33,12 @@
 <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
     <rosparam command="load" file="$(find ur3robot)/param/ekf/ekf_params.yaml" />
 </node>
+
+<!-- slam gmapping stuff -->
+<node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen" >
+    <param name="scan" value="scan/filtered" />
+</node>
+
+<!-- To save map run: rosrun map_server map_saver -f $(find ur3robot)/robot_map/map -->
 
 </launch>

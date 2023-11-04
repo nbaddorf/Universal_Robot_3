@@ -16,6 +16,7 @@ RUN apt-get update \
     ros-melodic-move-base\
     ros-melodic-freenect-launch\
     ros-melodic-robot-localization\
+    ros-melodic-slam-gmapping\
     && rm -rf /var/lib/apt/lists/*
 
 
