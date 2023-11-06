@@ -24,7 +24,7 @@
 </node>
 
 <!-- Map server -->
-<!--   <node pkg="map_server" name="map_server" type="map_server" args="$(find ur3robot)/robot_map/map.yaml"/> -->
+<node pkg="map_server" name="map_server" type="map_server" args="$(find ur3robot)/robot_map/map.yaml"/>
 
 <!-- rplidar -->
 <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
