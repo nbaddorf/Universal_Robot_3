@@ -38,6 +38,8 @@
 <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen" >
     <param name="scan" value="scan/filtered" />
     <param name="maxUrange" value="10" />
+    <param name="minimumScore " value="50" />
+    <param name="particles" value="50" />
 
 </node>
 

@@ -18,6 +18,7 @@ RUN apt-get update \
     ros-melodic-robot-localization\
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
+    #ros-melodic-
     && rm -rf /var/lib/apt/lists/*
 
 
