@@ -13,7 +13,7 @@
          "B00367707227042B": Use device with given serial number
          "#1"              : Use first device found
     -->
-  <arg name="device_id" default="#1" />
+  <arg name="device_id" default="A00367902512046A" />
 
   <!-- By default, calibrations are stored to file://${ROS_HOME}/camera_info/${NAME}.yaml,
        where ${NAME} is of the form "[rgb|depth]_[serial#]", e.g. "depth_B00367707227042B".
