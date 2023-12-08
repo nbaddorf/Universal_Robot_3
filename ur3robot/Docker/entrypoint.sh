@@ -11,6 +11,7 @@ sudo chmod 777 /dev/ttyACM0
 sudo chmod 777 /dev/video0
 sudo chmod 777 /dev/video1
 sudo chmod 777 /dev/i2c-1
+sudo chmod 777 -R /dev/bus/usb
 
 echo "Provided arguments: $@"
 
