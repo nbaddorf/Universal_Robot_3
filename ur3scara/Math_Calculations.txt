@@ -1,0 +1,17 @@
+Goals for this project:
+    - Z system can lift 12 lb
+    - Main arm can lift 8 lb
+    - Nema 17 stepper motor has 42 N*cm
+    - Timing Belt pully has 20 teeth 16mm diameter, 1 rev = 40mm ##I think this is correct
+
+
+Z system lifting:
+    - Torque = Force X Length
+    Length = 8mm or 0.8cm
+    Force = 53 Newtons
+    Torque = 42.4 N*cm # I think this is correct, but I dont want to run the stepper at its full current at all time, but this is pretty cool
+
+    Speed:
+    lets say 100rpm max for motor;
+    Worm gear is 17:1
+    output belt pully spins at 5.8 rpm * 40mm = 235 mm per min
