@@ -14,7 +14,8 @@ RUN apt-get update \
     ros-melodic-teleop-twist-keyboard\
     ros-melodic-amcl\
     ros-melodic-move-base\
-    ros-melodic-freenect-launch\
+    #ros-melodic-freenect-launch\
+    ros-melodic-freenect-stack \
     ros-melodic-robot-localization\
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
