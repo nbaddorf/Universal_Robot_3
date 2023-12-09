@@ -15,9 +15,9 @@ RUN apt-get update \
     ros-melodic-teleop-twist-keyboard\
     ros-melodic-amcl\
     ros-melodic-move-base\
-    #ros-melodic-freenect-launch\
-    #ros-melodic-freenect-stack \
     libfreenect-dev \
+    ros-melodic-freenect-launch\
+    #ros-melodic-freenect-stack \
     ros-melodic-robot-localization\
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
@@ -60,12 +60,12 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
     git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\
     #below is for xbox kinect, freenect requirements
-    git clone https://github.com/ros-drivers/freenect_stack.git &&\
-    git clone https://github.com/ros-drivers/rgbd_launch.git &&\
-    git clone https://github.com/ros-perception/image_common.git &&\
+    #git clone https://github.com/ros-drivers/freenect_stack.git &&\
+    #git clone https://github.com/ros-drivers/rgbd_launch.git &&\
+    #git clone https://github.com/ros-perception/image_common.git &&\
     #git clone https://github.com/ros-perception/vision_opencv.git &&\
     #git clone https://github.com/ros-perception/image_pipeline.git &&\
-    git clone https://github.com/ros/geometry2.git &&\
+    #git clone https://github.com/ros/geometry2.git &&\
     cd /home/${USERNAME}/catkin_ws &&\
     catkin_make'
 
