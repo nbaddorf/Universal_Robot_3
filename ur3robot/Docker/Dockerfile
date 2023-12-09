@@ -17,7 +17,7 @@ RUN apt-get update \
     ros-melodic-move-base\
     #ros-melodic-freenect-launch\
     #ros-melodic-freenect-stack \
-    libfreenect \
+    libfreenect-dev \
     ros-melodic-robot-localization\
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
