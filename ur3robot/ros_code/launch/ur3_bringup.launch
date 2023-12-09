@@ -45,5 +45,8 @@
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
 
+<!--  kinect  -->
+<include file="$(find ur3robot)/launch/freenect.launch" />
+
 
 </launch>
