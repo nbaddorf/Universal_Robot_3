@@ -20,6 +20,7 @@ RUN apt-get update \
     ros-melodic-move-base\
     #libfreenect-dev \
     ros-melodic-freenect-launch\
+    ros-melodic-kinect-aux \
     #ros-melodic-freenect-stack \
     ros-melodic-robot-localization\
     ros-melodic-slam-gmapping\
@@ -56,13 +57,13 @@ USER ros
 
 #link to imu github: https://github.com/Brazilian-Institute-of-Robotics/mpu6050_driver This has the two repositories, i2c devices and mpu6050
 
-RUN /bin/bash -c 'cd /home/${USERNAME} \
-    && git clone https://github.com/OpenKinect/libfreenect \
-    && cd libfreenect \
-    && mkdir build \
-    &&  cd build \
-    && cmake -L .. \
-    && make'
+#RUN /bin/bash -c 'cd /home/${USERNAME} \
+#    && git clone https://github.com/OpenKinect/libfreenect \
+#    && cd libfreenect \
+#    && mkdir build \
+#    &&  cd build \
+#    && cmake -L .. \
+#    && make'
 
 #RUN apt-get install -y 
 
