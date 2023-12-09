@@ -61,7 +61,7 @@ RUN /bin/bash -c 'cd /home/${USERNAME} \
     && cd libfreenect \
     && mkdir build \
     &&  cd build \
-    && cmake -L \
+    && cmake -L .. \
     && make'
 
 #RUN apt-get install -y 
