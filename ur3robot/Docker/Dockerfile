@@ -20,15 +20,12 @@ RUN apt-get update \
     ros-melodic-move-base\
     #libfreenect-dev \
     ros-melodic-freenect-launch\
-    ros-melodic-kinect-aux \
     #ros-melodic-freenect-stack \
     ros-melodic-robot-localization\
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
     #ros-melodic-
     && rm -rf /var/lib/apt/lists/*
-
-
 
 
 # Create a non-root user
@@ -57,6 +54,7 @@ USER ros
 
 #link to imu github: https://github.com/Brazilian-Institute-of-Robotics/mpu6050_driver This has the two repositories, i2c devices and mpu6050
 
+#I think that the kinect doesnt work if the usb ports arnt being used sort of. It seems to work fine when running the rest of the robot, or even streeming the kinect camera, andthen the pointcloud.
 #RUN /bin/bash -c 'cd /home/${USERNAME} \
 #    && git clone https://github.com/OpenKinect/libfreenect \
 #    && cd libfreenect \
@@ -64,6 +62,7 @@ USER ros
 #    &&  cd build \
 #    && cmake -L .. \
 #    && make'
+
 
 #RUN apt-get install -y 
 
@@ -74,6 +73,7 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     git clone https://github.com/Slamtec/rplidar_ros.git &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
     git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\
+    git clone https://github.com/muhrix/kinect_aux.git &&/
     #below is for xbox kinect, freenect requirements
     #git clone https://github.com/ros-drivers/freenect_stack.git &&\
     #git clone https://github.com/ros-drivers/rgbd_launch.git &&\
