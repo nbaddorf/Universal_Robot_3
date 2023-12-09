@@ -1,7 +1,8 @@
 FROM ros:melodic
 
 
-# Example of installing programs
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
+
 RUN apt-get update \
     && apt-get install -y \
     nano \
