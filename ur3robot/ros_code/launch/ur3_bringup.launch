@@ -48,8 +48,8 @@
 <!--  kinect  -->
 <include file="$(find ur3robot)/launch/freenect.launch" />
 
+<!-- kinect aux-->
 <node name="kinect_aux" type="kinect_aux_node" pkg="kinect_aux" output="screen">
-  <!-- <param name="laser_inflation" value="0.05" /> -->
 </node>
 
 
