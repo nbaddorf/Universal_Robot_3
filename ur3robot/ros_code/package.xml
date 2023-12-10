@@ -66,8 +66,8 @@
   <!-- kinect aux -->
   <build_depend>libusb-1.0-dev</build_depend>
   <build_depend>sensor_msgs</build_depend>
-  <run_depend>libusb-1.0-dev</run_depend>
-  <run_depend>sensor_msgs</run_depend>
+  <exec_depend>libusb-1.0-dev</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
