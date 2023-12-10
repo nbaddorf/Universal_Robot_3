@@ -15,6 +15,7 @@ sudo chmod 777 -R /dev/bus/usb
 
 cd ~/catkin_ws
 catkin_make --only-pkg-with-deps ur3robot
+cd ~
 
 echo "Provided arguments: $@"
 

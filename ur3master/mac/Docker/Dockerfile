@@ -1,5 +1,7 @@
 FROM osrf/ros:melodic-desktop-full
 
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
+#RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 # Example of installing programs
 RUN apt-get update \
     && apt-get install -y \
@@ -9,6 +11,7 @@ RUN apt-get update \
     wget \
     novnc \
     supervisor \
+    netcat \
     x11vnc \
     xvfb \
     && rm -rf /var/lib/apt/lists/*

@@ -11,6 +11,7 @@ RUN apt-get update \
     iputils-ping \
     net-tools \
     cmake \
+    netcat \
     build-essential \
     libusb-1.0-0-dev \
     ros-melodic-video-stream-opencv \
