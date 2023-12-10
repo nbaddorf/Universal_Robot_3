@@ -53,7 +53,7 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
-COPY /home/$USER/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
+COPY /home/${USERNAME}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
 
 USER ros
 
