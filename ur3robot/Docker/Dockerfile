@@ -56,7 +56,7 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
 #COPY ${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
-COPY /home/nbaddorf/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
+COPY ../ros_code/ /home/ros/catkin_ws/src/ur3robot
 
 USER ros
 
