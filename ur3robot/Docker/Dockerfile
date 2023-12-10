@@ -48,15 +48,12 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 
-RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
-    mkdir -p /home/${USERNAME}/catkin_ws/src'
-
 # Copy the entrypoint and bashrc scripts so we have 
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
 #COPY ${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
-COPY ../ros_code /home/ros/catkin_ws/src/ur3robot
+#COPY ../ros_code /home/ros/catkin_ws/src/ur3robot
 
 USER ros
 
@@ -75,12 +72,14 @@ USER ros
 #RUN apt-get install -y 
 
 
-RUN /bin/bash -c 'cd /home/${USERNAME}/catkin_ws/src &&\
+RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
+    mkdir -p /home/${USERNAME}/catkin_ws/src &&\
+    cd /home/${USERNAME}/catkin_ws/src &&\
     git clone https://github.com/Slamtec/rplidar_ros.git &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
     git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\
     #git clone https://github.com/muhrix/kinect_aux.git &&\
-    echo "test" &&\
+    #echo "test" &&\
     #below is for xbox kinect, freenect requirements
     #git clone https://github.com/ros-drivers/freenect_stack.git &&\
     #git clone https://github.com/ros-drivers/rgbd_launch.git &&\
