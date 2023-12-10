@@ -39,17 +39,18 @@
 
 <!-- move_base -->
 <include file="$(find ur3robot)/launch/move_base.launch">
-<arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
 </include>
 
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
 
 <!--  kinect  -->
-<include file="$(find ur3robot)/launch/freenect.launch" />
+<include file="$(find ur3robot)/launch/kinect.launch" />
 
 <!-- kinect aux-->
 <node name="kinect_aux" type="kinect_aux_node" pkg="kinect_aux" output="screen">
+    <remap from="imu" to="kinect/imu"/>
 </node>
 
 
