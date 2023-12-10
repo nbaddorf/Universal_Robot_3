@@ -53,8 +53,8 @@
     <remap from="imu" to="kinect/imu"/>
     <remap from="tilt_angle" to="kinect/tilt_angle"/>
     <remap from="led_option" to="kinect/led_option"/>
-    <remap from="cur_tilt_angle " to="kinect/cur_tilt_angle "/>
-    <remap from="cur_tilt_status " to="kinect/cur_tilt_status "/>
+    <remap from="cur_tilt_angle" to="kinect/cur_tilt_angle"/>
+    <remap from="cur_tilt_status" to="kinect/cur_tilt_status"/>
 </node>
 
 
