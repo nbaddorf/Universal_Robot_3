@@ -13,7 +13,8 @@ sudo chmod 777 /dev/video1
 sudo chmod 777 /dev/i2c-1
 sudo chmod 777 -R /dev/bus/usb
 
-catkin_make --only-pkg-with-deps ur3robot
+
+catkin_ws/catkin_make --only-pkg-with-deps ur3robot
 
 echo "Provided arguments: $@"
 
