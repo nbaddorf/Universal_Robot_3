@@ -49,8 +49,12 @@
 <include file="$(find ur3robot)/launch/kinect.launch" />
 
 <!-- kinect aux-->
-<node name="kinect_aux" type="kinect_aux_node" pkg="kinect_aux" output="screen">
+<node name="kinect_aux" type="kinect_aux_node" pkg="ur3robot" output="screen">
     <remap from="imu" to="kinect/imu"/>
+    <remap from="tilt_angle" to="kinect/tilt_angle"/>
+    <remap from="led_option" to="kinect/led_option"/>
+    <remap from="cur_tilt_angle " to="kinect/cur_tilt_angle "/>
+    <remap from="cur_tilt_status " to="kinect/cur_tilt_status "/>
 </node>
 
 

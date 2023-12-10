@@ -11,8 +11,21 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  sensor_msgs
   ##rplidar
 )
+
+#Below is kinect_aux stuff
+find_path(LIBUSB_INCLUDEDIR 
+          NAMES libusb.h
+          HINTS /usr/include/libusb-1.0)
+find_library(LIBUSB_LIBRARIES
+             NAMES usb-1.0
+             HINTS /usr/lib/ /usr/x86_64-linux-gnu/
+             PATH_SUFFIXES lib)
+
+message(STATUS ${LIBUSB_INCLUDEDIR})
+message(STATUS ${LIBUSB_LIBRARIES})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -108,6 +121,8 @@ catkin_package(
 #  LIBRARIES ur3robot
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp sensor_msgs std_msgs
+  DEPENDS LIBUSB_LIBRARIES
 )
 
 ###########
@@ -119,6 +134,23 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${LIBUSB_INCLUDE_DIRS}
+)
+
+## Declare a cpp executable
+add_executable(kinect_aux_node cpp/kinect_aux_node.cpp)
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(kinect_aux_node
+   ${catkin_LIBRARIES}
+   ${LIBUSB_LIBRARIES}
+)
+
+# Mark executables and/or libraries for installation
+install(TARGETS kinect_aux_node
+   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 ## Declare a C++ library
