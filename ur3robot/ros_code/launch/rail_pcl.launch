@@ -9,7 +9,7 @@
     <!-- Template Matching Params -->
     <arg name="match_frame"             default="odom"/>
     <arg name="cloud_topic"             default="/camera/depth/points"/>
-    <arg name="template_file_path"      default="$(find ur3_robot)/icp_models/cup.pcd"/>
+    <arg name="template_file_path"      default="$(find ur3robot)/icp_models/cup.pcd"/>
     <arg name="initial_estimate"        default="0.9 0 0 1.57 0 0"/>
     <arg name="template_offset"         default="0 0 0 0 0 0"/>
     <arg name="output_frame"            default="template_pose"/>
