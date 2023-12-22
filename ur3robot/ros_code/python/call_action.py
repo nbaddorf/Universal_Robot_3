@@ -12,7 +12,7 @@ import rail_mesh_icp.msg
 def call_actionlib():
     # Creates the SimpleActionClient, passing the type of the action
     # (FibonacciAction) to the constructor.
-    client = actionlib.SimpleActionClient('call_template', rail_mesh_icp.msg.MatchTemplateAction)
+    client = actionlib.SimpleActionClient('match_template', rail_mesh_icp.msg.MatchTemplateAction)
     print("waiting for client")
     # Waits until the action server has started up and started
     # listening for goals.
