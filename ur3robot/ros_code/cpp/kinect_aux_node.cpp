@@ -154,15 +154,16 @@ void publishState(void)
     
 	if (true) 
 	{
+		double current_tilt = tilt_angle;
         if (tilt_status == 4) {
-			tilt_angle = old_tilt_angle;
+			current_tilt = old_tilt_angle;
 		} else {
             old_tilt_angle = tilt_angle;
 		}
 	    //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
 	    static tf::TransformBroadcaster br;
         tf::Transform transform;
-	    double cam_angle = double(tilt_angle) / 2.;
+	    double cam_angle = double(current_tilt) / 2.;
 	    double cam_x = cosd(cam_angle + 68.37) * 0.01818;
 	    double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
         transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
