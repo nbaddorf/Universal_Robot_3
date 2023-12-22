@@ -21,10 +21,17 @@
 #define FREENECT_COUNTS_PER_G 819.
 // The kinect can tilt from +31 to -31 degrees in what looks like 1 degree increments
 // The control input looks like 2*desired_degrees
-#define MAX_TILT_ANGLE 18. //31
-#define MIN_TILT_ANGLE (-44.) //31
+//#define MAX_TILT_ANGLE 18. //31
+//#define MIN_TILT_ANGLE (-44.) //31
 
 double old_tilt_angle = 0;
+bool has_homed = false;
+
+int MAX_TILT_ANGLE = 31; //18
+int MIN_TILT_ANGLE = (-31.); //-44
+
+bool pub_tf = false;
+bool use_imu_for_tf = false;
 
 ros::Publisher pub_imu;
 ros::Publisher pub_tilt_angle;
@@ -112,6 +119,12 @@ void publishState(void)
 		ROS_ERROR_STREAM("Error in accelerometer reading, libusb_control_transfer returned " << ret);
 		ros::shutdown();
 	}
+
+	if (!has_homed) {
+		std_msgs::Float64 home_tilt_msg;
+		home_tilt_msg.data = (-20.);
+		setTiltAngle(home_tilt_msg);
+	}
 	
 	const uint16_t ux = ((uint16_t)buf[2] << 8) | buf[3];
 	const uint16_t uy = ((uint16_t)buf[4] << 8) | buf[5];
@@ -152,7 +165,7 @@ void publishState(void)
 		pub_tilt_status.publish(tilt_status_msg);
 	}
     
-	if (true) 
+	if (pub_tf) 
 	{
 		// tilt_status of 4 seems to mean that it is moving
 		double current_tilt = tilt_angle;
@@ -176,7 +189,7 @@ void publishState(void)
 	  
         q.setRPY(0, angleRad, 0);
         transform.setRotation(q);
-       br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
+        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
     }
 
 	
@@ -225,7 +238,13 @@ int main(int argc, char* argv[])
 	ros::NodeHandle n;
 	
 	int deviceIndex;
+
 	n.param<int>("device_index", deviceIndex, 0);
+    n.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
+	n.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
+	n.param<bool>("pub_tf", pub_tf, false);
+	n.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
+
 	openAuxDevice(deviceIndex);
 	if (!dev)
 	{
