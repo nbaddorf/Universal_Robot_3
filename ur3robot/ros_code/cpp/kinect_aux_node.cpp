@@ -109,6 +109,33 @@ void openAuxDevice(int index = 0)
 	libusb_free_device_list (devs, 1);  // free the list, unref the devices in it
 }
 
+void setTiltAngle(const std_msgs::Float64 angleMsg)
+{
+	uint8_t empty[0x1];
+	double angle(angleMsg.data);
+
+	angle = (angle<MIN_TILT_ANGLE) ? MIN_TILT_ANGLE : ((angle>MAX_TILT_ANGLE) ? MAX_TILT_ANGLE : angle);
+	angle = angle * 2;
+	const int ret = libusb_control_transfer(dev, 0x40, 0x31, (int16_t)angle, 0x0, empty, 0x0, 0);
+	if (ret != 0)
+	{
+		ROS_ERROR_STREAM("Error in setting tilt angle, libusb_control_transfer returned " << ret);
+		ros::shutdown();
+	}
+}
+
+void setLedOption(const std_msgs::UInt16 optionMsg)
+{
+	uint8_t empty[0x1];
+	const uint16_t option(optionMsg.data);
+	
+	const int ret = libusb_control_transfer(dev, 0x40, 0x06, (uint16_t)option, 0x0, empty, 0x0, 0);
+	if (ret != 0)
+	{
+		ROS_ERROR_STREAM("Error in setting LED options, libusb_control_transfer returned " << ret);
+		ros::shutdown();
+	}
+}
 
 void publishState(void)
 {
@@ -200,33 +227,7 @@ void publishState(void)
 }
 
 
-void setTiltAngle(const std_msgs::Float64 angleMsg)
-{
-	uint8_t empty[0x1];
-	double angle(angleMsg.data);
 
-	angle = (angle<MIN_TILT_ANGLE) ? MIN_TILT_ANGLE : ((angle>MAX_TILT_ANGLE) ? MAX_TILT_ANGLE : angle);
-	angle = angle * 2;
-	const int ret = libusb_control_transfer(dev, 0x40, 0x31, (int16_t)angle, 0x0, empty, 0x0, 0);
-	if (ret != 0)
-	{
-		ROS_ERROR_STREAM("Error in setting tilt angle, libusb_control_transfer returned " << ret);
-		ros::shutdown();
-	}
-}
-
-void setLedOption(const std_msgs::UInt16 optionMsg)
-{
-	uint8_t empty[0x1];
-	const uint16_t option(optionMsg.data);
-	
-	const int ret = libusb_control_transfer(dev, 0x40, 0x06, (uint16_t)option, 0x0, empty, 0x0, 0);
-	if (ret != 0)
-	{
-		ROS_ERROR_STREAM("Error in setting LED options, libusb_control_transfer returned " << ret);
-		ros::shutdown();
-	}
-}
 
 
 int main(int argc, char* argv[])
