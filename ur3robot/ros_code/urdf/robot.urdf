@@ -13,11 +13,14 @@
 		<link name="imu">
 		</link>
 
+        <!--
 		<link name="camera_link">
 		</link>
 
 		<link name="kinect_pivot">
 		</link>
+
+		-->
 
 		<link name="kinect_base">
 		</link>
