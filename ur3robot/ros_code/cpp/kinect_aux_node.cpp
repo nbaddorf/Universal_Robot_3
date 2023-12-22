@@ -6,6 +6,8 @@
 #include <sensor_msgs/Imu.h>
 #include <tf/transform_broadcaster.h>
 
+#include <cmath>
+
 //########################
 //The reson I am using the kinect aux code in my program is cause I fixed a bug switching a uint16 to int16 allowing the kinect to tilt downward
 
@@ -30,6 +32,32 @@ ros::Subscriber sub_tilt_angle;
 ros::Subscriber sub_led_option;
  
 libusb_device_handle *dev(0);
+
+static double d2r(double d) {
+  static const auto PI = std::acos(-1);
+  return (d / 180.0) * PI;
+}
+
+double cosd(double x /* degrees */) {
+  if (!isfinite(x)) {
+    return std::cos(x);
+  }
+  int quo;
+  double x90 = std::remquo(std::fabs(x), 90.0, &quo);
+  double xr = d2r(x90);
+  switch (quo % 4) {
+    case 0:
+      return std::cos(xr);
+    case 1:
+      // Use + 0.0 to avoid -0.0
+      return std::sin(-xr + 0.0);
+    case 2:
+      return -std::cos(xr);
+    case 3:
+      return std::sin(xr + 0.0);
+  }
+  return 0.0;
+}
 
 void openAuxDevice(int index = 0)
 {
@@ -124,11 +152,16 @@ void publishState(void)
     
 	if (true) 
 	{
+
+	  //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
 	  static tf::TransformBroadcaster br;
       tf::Transform transform;
-      transform.setOrigin( tf::Vector3(0, 0, 0) );
+	  double cam_angle = double(tilt_angle) / 2.;
+	  double cam_x = cosd(cam_angle + 68.37) * 0.01818;
+	  double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
+      transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
       tf::Quaternion q;
-	  double angleRad = (double(tilt_angle) / 2.) * 0.01745329;
+	  double angleRad = d2r(90 - cam_angle); // * 0.01745329;
 	  
       q.setRPY(0, angleRad, 0);
       transform.setRotation(q);
