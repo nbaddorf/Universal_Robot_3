@@ -115,6 +115,9 @@ void setTiltAngle(const std_msgs::Float64 angleMsg)
 	double angle(angleMsg.data);
 
 	angle = (angle<MIN_TILT_ANGLE) ? MIN_TILT_ANGLE : ((angle>MAX_TILT_ANGLE) ? MAX_TILT_ANGLE : angle);
+	if (!use_imu_for_tf) {
+		old_tilt_angle = angle;
+	}
 	angle = angle * 2;
 	const int ret = libusb_control_transfer(dev, 0x40, 0x31, (int16_t)angle, 0x0, empty, 0x0, 0);
 	if (ret != 0)
@@ -197,12 +200,15 @@ void publishState(void)
 	{
 		if (use_imu_for_tf)
 		{
-		// tilt_status of 4 seems to mean that it is moving
-		double current_tilt = tilt_angle;
-        if (tilt_status == 4) {
-			current_tilt = old_tilt_angle;
+			// tilt_status of 4 seems to mean that it is moving
+			double current_tilt = tilt_angle;
+			if (tilt_status == 4) {
+				current_tilt = old_tilt_angle;
+			} else {
+				old_tilt_angle = tilt_angle;
+			}
 		} else {
-            old_tilt_angle = tilt_angle;
+			current_tilt = old_tilt_angle;
 		}
 	    //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
 	    static tf::TransformBroadcaster br;
@@ -220,7 +226,7 @@ void publishState(void)
         q.setRPY(0, angleRad, 0);
         transform.setRotation(q);
         br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
-		}
+		
     }
 
 	
@@ -243,32 +249,12 @@ int main(int argc, char* argv[])
 	ros::NodeHandle n, pnh("~");
 	
 	int deviceIndex;
-	int pub_tf_temp;
 
 	n.param<int>("device_index", deviceIndex, 0);
     pnh.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
 	pnh.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
 	pnh.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
 	pnh.param<bool>("pub_tf", pub_tf, false);
-	//n.getParam("max_tilt_angle", MAX_TILT_ANGLE);
-	//n.getParam("min_tilt_angle", MIN_TILT_ANGLE);
-	//n.getParam("pub_tf", pub_tf_temp);
-	//n.getParam("use_imu_for_tf", use_imu_for_tf);
-
-    //if (pub_tf_temp == 1) {
-	//ROS_INFO("pub_tf worked");
-	//} else {
-	//	ROS_INFO("pub_tf didnt work");
-	//}
-	std::string s;
-    if (pnh.getParam("my_param", s))
-    {
-      ROS_INFO("Got param: %s", s.c_str());
-    }
-    else
-    {
-      ROS_ERROR("Failed to get param 'my_param'");
-    }
 
 	openAuxDevice(deviceIndex);
 	if (!dev)
