@@ -21,8 +21,10 @@
 #define FREENECT_COUNTS_PER_G 819.
 // The kinect can tilt from +31 to -31 degrees in what looks like 1 degree increments
 // The control input looks like 2*desired_degrees
-#define MAX_TILT_ANGLE 31.
-#define MIN_TILT_ANGLE (-31.)
+#define MAX_TILT_ANGLE 18. //31
+#define MIN_TILT_ANGLE (-44.) //31
+
+double old_tilt_angle = 0;
 
 ros::Publisher pub_imu;
 ros::Publisher pub_tilt_angle;
@@ -152,21 +154,27 @@ void publishState(void)
     
 	if (true) 
 	{
-
-	  //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
-	  static tf::TransformBroadcaster br;
-      tf::Transform transform;
-	  double cam_angle = double(tilt_angle) / 2.;
-	  double cam_x = cosd(cam_angle + 68.37) * 0.01818;
-	  double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
-      transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
-      tf::Quaternion q;
-	  double angleRad = d2r(cam_angle * -1); // * 0.01745329;
+        if (tilt_status == 4) {
+			tilt_angle = old_tilt_angle;
+		} else {
+            old_tilt_angle = tilt_angle;
+		}
+	    //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
+	    static tf::TransformBroadcaster br;
+        tf::Transform transform;
+	    double cam_angle = double(tilt_angle) / 2.;
+	    double cam_x = cosd(cam_angle + 68.37) * 0.01818;
+	    double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
+        transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
+        tf::Quaternion q;
+	    double angleRad = d2r(cam_angle * -1); // * 0.01745329;
 	  
-      q.setRPY(0, angleRad, 0);
-      transform.setRotation(q);
-      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
+        q.setRPY(0, angleRad, 0);
+        transform.setRotation(q);
+       br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
     }
+
+	
 }
 
 
