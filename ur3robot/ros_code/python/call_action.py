@@ -1,13 +1,13 @@
 import rospy
 import actionlib
-
-from rail_mesh_icp.msg import MatchTemplateAction
-from rail_mesh_icp.msg import MatchTemplateActionFeedback
-from rail_mesh_icp.msg import MatchTemplateActionGoal
-from rail_mesh_icp.msg import MatchTemplateActionResult
-from rail_mesh_icp.msg import MatchTemplateFeedback
-from rail_mesh_icp.msg import MatchTemplateGoal
-from rail_mesh_icp.msg import MatchTemplateResult
+import rail_mesh_icp.msg
+#from rail_mesh_icp.msg import MatchTemplateAction
+#from rail_mesh_icp.msg import MatchTemplateActionFeedback
+#from rail_mesh_icp.msg import MatchTemplateActionGoal
+#from rail_mesh_icp.msg import MatchTemplateActionResult
+#from rail_mesh_icp.msg import MatchTemplateFeedback
+#from rail_mesh_icp.msg import MatchTemplateGoal
+#from rail_mesh_icp.msg import MatchTemplateResult
 
 def call_actionlib():
     # Creates the SimpleActionClient, passing the type of the action
@@ -19,7 +19,7 @@ def call_actionlib():
     client.wait_for_server()
 
     # Creates a goal to send to the action server.
-    goal = rail_mesh_icp.msg.MatchTemplateGoal()
+    goal = rail_mesh_icp.msg.MatchTemplateActionGoal()
 
     # Sends the goal to the action server.
     client.send_goal(goal)
@@ -38,4 +38,4 @@ if __name__ == '__main__':
         result = call_actionlib()
         print("Result:", ', '.join([str(n) for n in result.sequence]))
     except rospy.ROSInterruptException:
-        print("program interrupted before completion", file=sys.stderr)
+        print("program interrupted before completion")
