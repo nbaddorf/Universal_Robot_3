@@ -13,20 +13,21 @@ def call_actionlib():
     # Creates the SimpleActionClient, passing the type of the action
     # (FibonacciAction) to the constructor.
     client = actionlib.SimpleActionClient('call_template', rail_mesh_icp.msg.MatchTemplateAction)
-
+    print("waiting for client")
     # Waits until the action server has started up and started
     # listening for goals.
     client.wait_for_server()
+    print("found client")
 
     # Creates a goal to send to the action server.
     goal = rail_mesh_icp.msg.MatchTemplateGoal()
-
+    print ("created goal")
     # Sends the goal to the action server.
     client.send_goal(goal)
-
+    print ("sent goal")
     # Waits for the server to finish performing the action.
     client.wait_for_result()
-
+    print("waiting for goal")
     # Prints out the result of executing the action
     return client.get_result()  # A FibonacciResult
 
