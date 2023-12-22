@@ -28,7 +28,7 @@ RUN apt-get update \
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
     ros-melodic-pcl-ros \
-    ros-melodic-pointcloud-to-laserscan
+    ros-melodic-pointcloud-to-laserscan \
     #ros-melodic-
     && rm -rf /var/lib/apt/lists/*
 
