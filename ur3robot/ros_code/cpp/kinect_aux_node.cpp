@@ -161,7 +161,7 @@ void publishState(void)
 	  double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
       transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
       tf::Quaternion q;
-	  double angleRad = d2r(cam_angle); // * 0.01745329;
+	  double angleRad = d2r(cam_angle * -1); // * 0.01745329;
 	  
       q.setRPY(0, angleRad, 0);
       transform.setRotation(q);
