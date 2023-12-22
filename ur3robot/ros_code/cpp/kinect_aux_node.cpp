@@ -252,14 +252,23 @@ int main(int argc, char* argv[])
 	//n.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
 	n.getParam("max_tilt_angle", MAX_TILT_ANGLE);
 	n.getParam("min_tilt_angle", MIN_TILT_ANGLE);
-	n.getParam("pub_tf", pub_tf_temp);
+	//n.getParam("pub_tf", pub_tf_temp);
 	n.getParam("use_imu_for_tf", use_imu_for_tf);
 
-    if (pub_tf_temp == 1) {
-	ROS_INFO("pub_tf worked");
-	} else {
-		ROS_INFO("pub_tf didnt work");
-	}
+    //if (pub_tf_temp == 1) {
+	//ROS_INFO("pub_tf worked");
+	//} else {
+	//	ROS_INFO("pub_tf didnt work");
+	//}
+	std::string s;
+    if (n.getParam("my_param", s))
+    {
+      ROS_INFO("Got param: %s", s.c_str());
+    }
+    else
+    {
+      ROS_ERROR("Failed to get param 'my_param'");
+    }
 
 	openAuxDevice(deviceIndex);
 	if (!dev)

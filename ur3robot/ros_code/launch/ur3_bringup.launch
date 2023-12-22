@@ -60,6 +60,8 @@
 	<param name="max_tilt_angle" value="-44"/>
     <param name="pub_tf" value="true"/>
 	<param name="use_imu_for_tf" value="true"/>
+    <param name="temp" value="1"/>
+    <param name="my_param" value="doesthiswork"/>
 </node>
 
 <!-- pointcloud to laserscan -->
