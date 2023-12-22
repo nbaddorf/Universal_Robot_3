@@ -208,7 +208,7 @@ void publishState(void)
 				old_tilt_angle = tilt_angle;
 			}
 		} else {
-			current_tilt = old_tilt_angle;
+			double current_tilt = old_tilt_angle;
 		}
 	    //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
 	    static tf::TransformBroadcaster br;
