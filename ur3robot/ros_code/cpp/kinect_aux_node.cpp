@@ -198,17 +198,18 @@ void publishState(void)
     
 	if (pub_tf) 
 	{
+		double current_tilt;
 		if (use_imu_for_tf)
 		{
 			// tilt_status of 4 seems to mean that it is moving
-			double current_tilt = tilt_angle;
+			current_tilt = tilt_angle;
 			if (tilt_status == 4) {
 				current_tilt = old_tilt_angle;
 			} else {
 				old_tilt_angle = tilt_angle;
 			}
 		} else {
-			double current_tilt = old_tilt_angle;
+			current_tilt = old_tilt_angle;
 		}
 	    //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
 	    static tf::TransformBroadcaster br;
