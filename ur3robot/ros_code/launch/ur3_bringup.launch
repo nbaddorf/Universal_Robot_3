@@ -46,7 +46,7 @@
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
 
 <!--  kinect  -->
-<include file="$(find ur3robot)/launch/freenect.launch" />
+<include file="$(find ur3robot)/launch/kinect.launch" />
 
 <!-- kinect aux-->
 <node name="kinect_aux" type="kinect_aux_node" pkg="ur3robot" output="screen">
@@ -56,6 +56,9 @@
     <remap from="cur_tilt_angle" to="kinect/cur_tilt_angle"/>
     <remap from="cur_tilt_status" to="kinect/cur_tilt_status"/>
 </node>
+
+<!-- pointcloud to laserscan -->
+<include file="$(find ur3robot)/launch/pointcloud_to_laserscan.launch"/>
 
 
 </launch>
