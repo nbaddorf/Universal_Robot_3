@@ -132,7 +132,7 @@ void publishState(void)
 	  
       q.setRPY(0, angleRad, 0);
       transform.setRotation(q);
-      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "kinect_pivot"));
+      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
     }
 }
 
