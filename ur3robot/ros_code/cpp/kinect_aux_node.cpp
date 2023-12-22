@@ -240,20 +240,20 @@ int main(int argc, char* argv[])
 	}
 	
 	ros::init(argc, argv, "kinect_aux");
-	ros::NodeHandle n;
+	ros::NodeHandle n, pnh("~");
 	
 	int deviceIndex;
 	int pub_tf_temp;
 
 	n.param<int>("device_index", deviceIndex, 0);
-    //n.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
-	//n.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
-	n.param<int>("temp", pub_tf_temp, 0);
-	//n.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
-	n.getParam("max_tilt_angle", MAX_TILT_ANGLE);
-	n.getParam("min_tilt_angle", MIN_TILT_ANGLE);
+    pnh.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
+	pnh.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
+	pnh.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
+	pnh.param<bool>("pub_tf", pub_tf, false);
+	//n.getParam("max_tilt_angle", MAX_TILT_ANGLE);
+	//n.getParam("min_tilt_angle", MIN_TILT_ANGLE);
 	//n.getParam("pub_tf", pub_tf_temp);
-	n.getParam("use_imu_for_tf", use_imu_for_tf);
+	//n.getParam("use_imu_for_tf", use_imu_for_tf);
 
     //if (pub_tf_temp == 1) {
 	//ROS_INFO("pub_tf worked");
@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
 	//	ROS_INFO("pub_tf didnt work");
 	//}
 	std::string s;
-    if (n.getParam("my_param", s))
+    if (pnh.getParam("my_param", s))
     {
       ROS_INFO("Got param: %s", s.c_str());
     }
