@@ -250,6 +250,12 @@ int main(int argc, char* argv[])
 	n.param<bool>("pub_tf", pub_tf, false);
 	n.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
 
+    if (pub_tf) {
+	ROS_INFO("pub_tf worked");
+	} else {
+		ROS_INFO("pub_tf didnt work");
+	}
+
 	openAuxDevice(deviceIndex);
 	if (!dev)
 	{
