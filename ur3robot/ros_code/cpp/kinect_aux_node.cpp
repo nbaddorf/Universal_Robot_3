@@ -4,6 +4,7 @@
 #include <std_msgs/UInt16.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/Imu.h>
+#include <tf/transform_broadcaster.h>
 
 //########################
 //The reson I am using the kinect aux code in my program is cause I fixed a bug switching a uint16 to int16 allowing the kinect to tilt downward
@@ -120,6 +121,19 @@ void publishState(void)
 		tilt_status_msg.data = tilt_status;
 		pub_tilt_status.publish(tilt_status_msg);
 	}
+    
+	if (true) 
+	{
+	  static tf::TransformBroadcaster br;
+      tf::Transform transform;
+      transform.setOrigin( tf::Vector3(0, 0, 0) );
+      tf::Quaternion q;
+	  double angleRad = (double(tilt_angle) / 2.) * 0.01745329;
+	  
+      q.setRPY(0, angleRad, 0);
+      transform.setRotation(q);
+      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "kinect_pivot"));
+    }
 }
 
 
