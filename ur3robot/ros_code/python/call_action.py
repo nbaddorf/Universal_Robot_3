@@ -36,6 +36,7 @@ if __name__ == '__main__':
         # publish and subscribe over ROS.
         rospy.init_node('fibonacci_client_py')
         result = call_actionlib()
-        print("Result:", ', '.join([str(n) for n in result.sequence]))
+        #print("Result:", ', '.join([str(n) for n in result.sequence]))
+        print(result)
     except rospy.ROSInterruptException:
         print("program interrupted before completion")
