@@ -124,6 +124,7 @@ void publishState(void)
 		std_msgs::Float64 home_tilt_msg;
 		home_tilt_msg.data = (-20.);
 		setTiltAngle(home_tilt_msg);
+		has_homed = true;
 	}
 	
 	const uint16_t ux = ((uint16_t)buf[2] << 8) | buf[3];
@@ -167,6 +168,8 @@ void publishState(void)
     
 	if (pub_tf) 
 	{
+		if (use_imu_for_tf)
+		{
 		// tilt_status of 4 seems to mean that it is moving
 		double current_tilt = tilt_angle;
         if (tilt_status == 4) {
@@ -190,6 +193,7 @@ void publishState(void)
         q.setRPY(0, angleRad, 0);
         transform.setRotation(q);
         br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
+		}
     }
 
 	
