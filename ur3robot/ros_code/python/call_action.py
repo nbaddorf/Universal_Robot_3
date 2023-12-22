@@ -19,7 +19,7 @@ def call_actionlib():
     client.wait_for_server()
 
     # Creates a goal to send to the action server.
-    goal = rail_mesh_icp.msg.MatchTemplateActionGoal()
+    goal = rail_mesh_icp.msg.MatchTemplateGoal()
 
     # Sends the goal to the action server.
     client.send_goal(goal)
