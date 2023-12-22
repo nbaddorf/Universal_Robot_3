@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-	<robot name="ur3`">
+	<robot name="ur3">
 
 		<link name="base_link">
 		</link>
@@ -54,12 +54,15 @@
 			<axis xyz="0 0 0"/>
 		</joint>
 
+        <!--
 		<joint name="kinect_pivot_to_camera_link" type="fixed">
 			<parent link="kinect_pivot"/>
 			<child link="camera_link"/>
 			<origin xyz="0.0272 0.0117 0.034" rpy="0.0 0.0 0.0"/>
 			<axis xyz="0 0 0"/>
 		</joint>	
+
+		-->
 
 		<joint name="kinect_rotator_to_kinect_base" type="fixed">
 			<parent link="kinect_rotator"/>
