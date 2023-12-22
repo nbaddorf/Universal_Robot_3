@@ -154,6 +154,7 @@ void publishState(void)
     
 	if (true) 
 	{
+		// tilt_status of 4 seems to mean that it is moving
 		double current_tilt = tilt_angle;
         if (tilt_status == 4) {
 			current_tilt = old_tilt_angle;
@@ -164,6 +165,9 @@ void publishState(void)
 	    static tf::TransformBroadcaster br;
         tf::Transform transform;
 	    double cam_angle = double(current_tilt) / 2.;
+		if (cam_angle <= -44) {
+			cam_angle = -44;
+		}
 	    double cam_x = cosd(cam_angle + 68.37) * 0.01818;
 	    double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
         transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
