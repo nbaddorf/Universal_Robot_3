@@ -243,14 +243,15 @@ int main(int argc, char* argv[])
 	ros::NodeHandle n;
 	
 	int deviceIndex;
+	bool pub_tf_temp;
 
 	n.param<int>("device_index", deviceIndex, 0);
     n.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
 	n.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
-	n.param<bool>("pub_tf", pub_tf, false);
+	n.param<bool>("pub_tf", pub_tf_temp, false);
 	n.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
 
-    if (pub_tf) {
+    if (pub_tf_temp) {
 	ROS_INFO("pub_tf worked");
 	} else {
 		ROS_INFO("pub_tf didnt work");
