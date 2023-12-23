@@ -30,6 +30,8 @@ bool has_homed = false;
 int MAX_TILT_ANGLE = 31; //18
 int MIN_TILT_ANGLE = (-31.); //-44
 
+int init_tilt_angle = 0;
+
 bool pub_tf = false;
 bool use_imu_for_tf = false;
 
@@ -152,7 +154,7 @@ void publishState(void)
 
 	if (!has_homed) {
 		std_msgs::Float64 home_tilt_msg;
-		home_tilt_msg.data = (-20.);
+		home_tilt_msg.data = init_tilt_angle;
 		setTiltAngle(home_tilt_msg);
 		has_homed = true;
 	}
