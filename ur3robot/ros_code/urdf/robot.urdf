@@ -33,11 +33,11 @@
 
 		<link name="kinect_rotator">
 		</link>
-		<!--
+		
 
         <link name="camera_link">
 		</link>
-
+<!-- 
 		<link name="camera_depth_frame">
 		</link>
 
