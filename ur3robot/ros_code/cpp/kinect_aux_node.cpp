@@ -238,9 +238,9 @@ void publishState(void)
 		} else {
 			sensor_msgs::JointState joint_state;
 			joint_state.header.stamp = ros::Time::now();
-			joint_state.name ="kinect_base_to_camera_link";
+			joint_state.name[0] ="kinect_base_to_camera_link";
 			double angleRad = d2r(cam_angle * -1); // * 0.01745329;
-			joint_state.position = angleRad;
+			joint_state.position[0] = angleRad;
 			joint_pub.publish(joint_state);
 		}
     }
