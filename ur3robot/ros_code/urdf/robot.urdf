@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 	<robot name="ur3">
 
+        <arg name="pi/2" value="1.5707963267948966" />
+	    <arg name="optical_rotate" value="-$(arg pi/2) 0 -$(arg pi/2)" />
+
 		<link name="base_link">
 		</link>
 		
@@ -11,6 +14,9 @@
 		</link>
 
 		<link name="imu">
+		</link>
+
+		<link name="tower">
 		</link>
 
         <!--
@@ -27,7 +33,22 @@
 
 		<link name="kinect_rotator">
 		</link>
-                
+
+        <link name="camera_link">
+		</link>
+
+		<link name="camera_depth_frame">
+		</link>
+
+		<link name="camera_rgb_frame">
+		</link>
+
+		<link name="camera_depth_optical_frame">
+		</link>
+
+		<link name="camera_rgb_optical_frame">
+		</link>
+		
 
 		<joint name="base_link_to_laser" type="fixed">
 			<parent link="base_link"/>
@@ -35,7 +56,7 @@
 			<origin xyz="0 0 0.3429" rpy="0.0 0.0 1.570796"/>
 			<axis xyz="0 0 0"/>
 		</joint>
-
+      <!-- I think the tf for the webcam is INCORRECT-->
         <joint name="base_link_to_webcam" type="fixed">
 			<parent link="base_link"/>
 			<child link="webcam"/>
@@ -57,6 +78,20 @@
 			<axis xyz="0 0 0"/>
 		</joint>
 
+		<joint name="base_link_to_tower" type="revolute">
+			<parent link="base_link"/>
+			<child link="tower"/>
+			<origin xyz="0.1 0.060 0.513" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 1"/>
+		</joint>
+
+		<joint name="tower_to_kinect_rotator" type="fixed">
+			<parent link="tower"/>
+			<child link="kinect_rotator"/>
+			<origin xyz="0 0.0 0.677" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
         <!--
 		<joint name="kinect_pivot_to_camera_link" type="fixed">
 			<parent link="kinect_pivot"/>
@@ -67,13 +102,53 @@
 
 		-->
 
-		<joint name="kinect_rotator_to_kinect_base" type="fixed">
+		<joint name="kinect_rotator_to_kinect_base" type="revolute"> <!-- really this is kinect_rotator to kinect_pivot-->
 			<parent link="kinect_rotator"/>
 			<child link="kinect_base"/>
 			<!-- <origin xyz="0.0067 0 0.0169" rpy="0.0 0.0 0.0"/> -->
 			<origin xyz="0.0102 0 0.0306" rpy="0.0 0.0 0.0"/>
-			<axis xyz="0 0 0"/>
+			<axis xyz="0 0 1"/>
 		</joint>	
+
+		<joint name="kinect_base_to_camera_link" type="revolute">
+			<parent link="kinect_base"/>
+			<child link="camera_link"/>
+			<origin xyz="0.0067 0.0117 0.0169" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 1 0"/>
+		</joint>
+
+		<joint name="camera_link_to_camera_depth_frame" type="fixed">
+			<parent link="camera_link"/>
+			<child link="camera_depth_frame"/>
+			<origin xyz="0 -0.02 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<joint name="camera_link_to_camera_rgb_frame" type="fixed">
+			<parent link="camera_link"/>
+			<child link="camera_rgb_frame"/>
+			<origin xyz="0 -0.045 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<joint name="camera_depth_frame_to_camera_depth_optical_frame" type="fixed">
+			<parent link="camera_depth_frame"/>
+			<child link="camera_depth_optical_frame"/>
+			<origin xyz="0 0 0" rpy="$(arg optical_rotate)"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<joint name="camera_rgb_frame_to_camera_rgb_optical_frame" type="fixed">
+			<parent link="camera_rgb_frame"/>
+			<child link="camera_rgb_optical_frame"/>
+			<origin xyz="0 0 0" rpy="$(arg optical_rotate)"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+
+
+
+
 
 		<!-- So kinect rotator: to before angler: 6mm forward.-->
 		<!-- forward base to kinect base (with angler) 9.4mm high, 13 degree angle-->
