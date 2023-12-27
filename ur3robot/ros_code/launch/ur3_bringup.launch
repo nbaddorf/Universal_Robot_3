@@ -6,7 +6,9 @@
 
 <!-- URDF Publisher -->
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+    <param name="source_list" value="[/kinect/tilt/joint_states]" />
+</node>
 
 <node name="mpu_node" pkg="mpu6050_driver" type="mpu6050_node" output="screen">
     <rosparam file="$(find ur3robot)/param/imu/mpu_settings.yaml" command="load"/>
