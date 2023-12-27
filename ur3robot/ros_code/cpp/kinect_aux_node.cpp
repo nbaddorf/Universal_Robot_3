@@ -221,7 +221,7 @@ void publishState(void)
 			cam_angle = -44;
 		}
 	    double cam_x = cosd(cam_angle + 68.37) * 0.01818;
-	    double cam_y = std::sin(d2r(cam_angle + 69.37)) * 0.01818;
+	    double cam_y = std::sin(d2r(cam_angle + 68.37)) * 0.01818;
         transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
         tf::Quaternion q;
 	    double angleRad = d2r(cam_angle * -1); // * 0.01745329;
@@ -258,6 +258,7 @@ int main(int argc, char* argv[])
 	pnh.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
 	pnh.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
 	pnh.param<bool>("pub_tf", pub_tf, false);
+	pnh.param<int>("init_tilt_angle", init_tilt_angle, 0);
 
 	openAuxDevice(deviceIndex);
 	if (!dev)
