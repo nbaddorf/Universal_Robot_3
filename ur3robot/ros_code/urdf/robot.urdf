@@ -19,15 +19,6 @@
 		<link name="tower">
 		</link>
 
-        <!--
-		<link name="camera_link">
-		</link>
-
-		<link name="kinect_pivot">
-		</link>
-
-		-->
-
 		<link name="kinect_base">
 		</link>
 
@@ -37,7 +28,7 @@
 
         <link name="camera_link">
 		</link>
-<!-- 
+
 		<link name="camera_depth_frame">
 		</link>
 
@@ -49,7 +40,6 @@
 
 		<link name="camera_rgb_optical_frame">
 		</link>
-		-->
 
 		<joint name="base_link_to_laser" type="fixed">
 			<parent link="base_link"/>
@@ -71,17 +61,8 @@
 			<origin xyz="-0.198 -0.153 0.458" rpy="0.0 0.0 3.14159"/>
 			<axis xyz="0 0 0"/>
 		</joint>	
-
-        <!--
-		<joint name="base_link_to_kinect_rotator" type="fixed">
-			<parent link="base_link"/>
-			<child link="kinect_rotator"/>
-			<origin xyz="0.1 0.060 1.19" rpy="0.0 0.0 0.0"/>
-			<axis xyz="0 0 0"/>
-		</joint>
-		-->
         
-		<joint name="base_link_to_tower" type="fixed"> <!--revolute-->
+		<joint name="base_link_to_tower" type="revolute"> 
 			<parent link="base_link"/>
 			<child link="tower"/>
 			<origin xyz="0.1 0.060 0.513" rpy="0.0 0.0 0.0"/>
@@ -106,7 +87,7 @@
 
 		-->
 
-		<joint name="kinect_rotator_to_kinect_base" type="fixed"> <!-- revolute really this is kinect_rotator to kinect_pivot-->
+		<joint name="kinect_rotator_to_kinect_base" type="revolute"> <!-- revolute really this is kinect_rotator to kinect_pivot-->
 			<parent link="kinect_rotator"/>
 			<child link="kinect_base"/>
 			<!-- <origin xyz="0.0067 0 0.0169" rpy="0.0 0.0 0.0"/> -->
@@ -123,7 +104,6 @@
 			<axis xyz="0 1 0"/>
 			<limit effort="5" velocity="0.5" lower="-0.7679449" upper="0.3141593" />
 		</joint>
-		<!--
 
 		<joint name="camera_link_to_camera_depth_frame" type="fixed">
 			<parent link="camera_link"/>
@@ -152,13 +132,6 @@
 			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
 			<axis xyz="0 0 0"/>
 		</joint>
-
-		-->
-
-
-
-
-
 
 		<!-- So kinect rotator: to before angler: 6mm forward.-->
 		<!-- forward base to kinect base (with angler) 9.4mm high, 13 degree angle-->
