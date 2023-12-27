@@ -76,7 +76,8 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
     git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\
     #git clone https://github.com/muhrix/kinect_aux.git &&\
-    git clone https://github.com/corot/rail_mesh_icp.git &&\
+    #git clone https://github.com/corot/rail_mesh_icp.git &&\
+    git clone https://github.com/GT-RAIL/rail_mesh_icp.git &&\
     #below is for xbox kinect, freenect requirements
     #git clone https://github.com/ros-drivers/freenect_stack.git &&\
     #git clone https://github.com/ros-drivers/rgbd_launch.git &&\
