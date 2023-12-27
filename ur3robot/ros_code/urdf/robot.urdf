@@ -81,7 +81,7 @@
 		</joint>
 		-->
         
-		<joint name="base_link_to_tower" type="continuous"> <!--revolute-->
+		<joint name="base_link_to_tower" type="fixed"> <!--revolute-->
 			<parent link="base_link"/>
 			<child link="tower"/>
 			<origin xyz="0.1 0.060 0.513" rpy="0.0 0.0 0.0"/>
@@ -114,7 +114,7 @@
 			<axis xyz="0 0 1"/>
 			<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
 		</joint>	
-		<!--
+		
 
 		<joint name="kinect_base_to_camera_link" type="revolute">
 			<parent link="kinect_base"/>
@@ -123,6 +123,7 @@
 			<axis xyz="0 1 0"/>
 			<limit effort="5" velocity="0.5" lower="-0.7679449" upper="0.3141593" />
 		</joint>
+		<!--
 
 		<joint name="camera_link_to_camera_depth_frame" type="fixed">
 			<parent link="camera_link"/>
