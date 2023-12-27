@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 	<robot name="ur3">
 
-        <arg name="pi/2" value="1.5707963267948966" />
-	    <arg name="optical_rotate" value="-$(arg pi/2) 0 -$(arg pi/2)" />
+      <!--  <arg name="pi/2" value="1.5707963267948966" />
+	    <arg name="optical_rotate" value="-$(arg pi/2) 0 -$(arg pi/2)" /> -->
 
 		<link name="base_link">
 		</link>
@@ -137,14 +137,14 @@
 		<joint name="camera_depth_frame_to_camera_depth_optical_frame" type="fixed">
 			<parent link="camera_depth_frame"/>
 			<child link="camera_depth_optical_frame"/>
-			<origin xyz="0 0 0" rpy="$(arg optical_rotate)"/>
+			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
 			<axis xyz="0 0 0"/>
 		</joint>
 
 		<joint name="camera_rgb_frame_to_camera_rgb_optical_frame" type="fixed">
 			<parent link="camera_rgb_frame"/>
 			<child link="camera_rgb_optical_frame"/>
-			<origin xyz="0 0 0" rpy="$(arg optical_rotate)"/>
+			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
 			<axis xyz="0 0 0"/>
 		</joint>
 
