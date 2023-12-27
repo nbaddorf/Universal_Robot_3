@@ -40,7 +40,7 @@ bool use_imu_for_angle = false;
 ros::Publisher pub_imu;
 ros::Publisher pub_tilt_angle;
 ros::Publisher pub_tilt_status;
-ros::Publisher joint_pub
+ros::Publisher joint_pub;
 
 ros::Subscriber sub_tilt_angle;
 ros::Subscriber sub_led_option;
