@@ -26,7 +26,7 @@
     <node pkg="rail_mesh_icp" type="template_matcher_node" name="template_matcher_demo_node" output="screen">
         <param name="matching_frame"          value="$(arg match_frame)"/>
         <param name="pcl_topic"               value="$(arg cloud_topic)"/>
-        <param name="template_files_path"      value="$(arg template_file_path)"/>
+        <param name="template_file_path"     value="$(arg template_file_path)"/>
         <param name="initial_estimate_string" value="$(arg initial_estimate)"/>
         <param name="template_offset_string"  value="$(arg template_offset)"/>
         <param name="template_frame"          value="$(arg output_frame)"/>
