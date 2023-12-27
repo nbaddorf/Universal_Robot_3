@@ -121,7 +121,7 @@ void setTiltAngle(const std_msgs::Float64 angleMsg)
 
 	angle = (angle<MIN_TILT_ANGLE) ? MIN_TILT_ANGLE : ((angle>MAX_TILT_ANGLE) ? MAX_TILT_ANGLE : angle);
 	angle = angle * 2;
-	if (!use_imu_for_tf) {
+	if (!use_imu_for_angle) {
 		old_tilt_angle = angle;
 	}
 	const int ret = libusb_control_transfer(dev, 0x40, 0x31, (int16_t)angle, 0x0, empty, 0x0, 0);
