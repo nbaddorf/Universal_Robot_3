@@ -59,7 +59,8 @@
     <param name="max_tilt_angle" value="18"/>
 	<param name="min_tilt_angle" value="-44"/>
     <param name="pub_tf" value="false"/>
-	<param name="use_imu_for_tf" value="false"/>
+    <param name="pub_joint_state" value="true"/>
+	<param name="use_imu_for_angle" value="false"/>
     <param name="init_tilt_angle" value="-20"/>
 </node>
 

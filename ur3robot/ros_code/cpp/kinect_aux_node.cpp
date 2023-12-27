@@ -5,6 +5,7 @@
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/Imu.h>
 #include <tf/transform_broadcaster.h>
+#include <sensor_msgs/JointState.h>
 
 #include <cmath>
 
@@ -33,7 +34,8 @@ int MIN_TILT_ANGLE = (-31.); //-44
 int init_tilt_angle = 0;
 
 bool pub_tf = false;
-bool use_imu_for_tf = false;
+bool pub_joint_state = false;
+bool use_imu_for_angle = false;
 
 ros::Publisher pub_imu;
 ros::Publisher pub_tilt_angle;
@@ -198,10 +200,10 @@ void publishState(void)
 		pub_tilt_status.publish(tilt_status_msg);
 	}
     
-	if (pub_tf) 
+	if (pub_tf || pub_joint_state) 
 	{
 		double current_tilt;
-		if (use_imu_for_tf)
+		if (use_imu_for_angle)
 		{
 			// tilt_status of 4 seems to mean that it is moving
 			current_tilt = tilt_angle;
@@ -214,22 +216,32 @@ void publishState(void)
 			current_tilt = old_tilt_angle;
 		}
 	    //Polar coordinates for kinect_base to camera_link is 0.01818<68.37deg
-	    static tf::TransformBroadcaster br;
-        tf::Transform transform;
+	    
 	    double cam_angle = double(current_tilt) / 2.;
 		if (cam_angle <= -44) {
 			cam_angle = -44;
 		}
-	    double cam_x = cosd(cam_angle + 68.37) * 0.01818;
-	    double cam_y = std::sin(d2r(cam_angle + 68.37)) * 0.01818;
-        transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
-        tf::Quaternion q;
-	    double angleRad = d2r(cam_angle * -1); // * 0.01745329;
-	  
-        q.setRPY(0, angleRad, 0);
-        transform.setRotation(q);
-        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
+
+        if (pub_tf) {
+			static tf::TransformBroadcaster br;
+			tf::Transform transform;
+			double cam_x = cosd(cam_angle + 68.37) * 0.01818;
+			double cam_y = std::sin(d2r(cam_angle + 68.37)) * 0.01818;
+			transform.setOrigin( tf::Vector3(cam_x, 0.0117, cam_y) );
+			tf::Quaternion q;
+			double angleRad = d2r(cam_angle * -1); // * 0.01745329;
 		
+			q.setRPY(0, angleRad, 0);
+			transform.setRotation(q);
+			br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
+		} else {
+			sensor_msgs::JointState joint_state;
+			joint_state.header.stamp = ros::Time::now();
+			joint_state.name ="kinect_base_to_camera_link";
+			double angleRad = d2r(cam_angle * -1); // * 0.01745329;
+			joint_state.position = angleRad;
+			joint_pub.publish(joint_state);
+		}
     }
 
 	
@@ -256,9 +268,10 @@ int main(int argc, char* argv[])
 	n.param<int>("device_index", deviceIndex, 0);
     pnh.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
 	pnh.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
-	pnh.param<bool>("use_imu_for_tf", use_imu_for_tf, false);
+	pnh.param<bool>("use_imu_for_angle", use_imu_for_angle, false);
 	pnh.param<bool>("pub_tf", pub_tf, false);
 	pnh.param<int>("init_tilt_angle", init_tilt_angle, 0);
+	pnh.param<bool>("pub_joint_state", pub_joint_state, false);
 
 	openAuxDevice(deviceIndex);
 	if (!dev)
@@ -266,6 +279,10 @@ int main(int argc, char* argv[])
 		ROS_ERROR_STREAM("No valid aux device found");
 		libusb_exit(0);
 		return 2;
+	}
+
+	if (pub_joint_state){
+		ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("kinect/tilt/joint_states", 1);
 	}
 	
 	pub_imu = n.advertise<sensor_msgs::Imu>("imu", 15);
