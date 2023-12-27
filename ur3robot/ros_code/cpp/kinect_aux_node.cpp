@@ -40,6 +40,7 @@ bool use_imu_for_angle = false;
 ros::Publisher pub_imu;
 ros::Publisher pub_tilt_angle;
 ros::Publisher pub_tilt_status;
+ros::Publisher joint_pub
 
 ros::Subscriber sub_tilt_angle;
 ros::Subscriber sub_led_option;
@@ -282,7 +283,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (pub_joint_state){
-		ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("kinect/tilt/joint_states", 1);
+		joint_pub = n.advertise<sensor_msgs::JointState>("kinect/tilt/joint_states", 1);
 	}
 	
 	pub_imu = n.advertise<sensor_msgs::Imu>("imu", 15);
