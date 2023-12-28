@@ -34,7 +34,7 @@ RUN apt-get update \
 
   RUN apt-get update \
     && apt-get install -y \
-    ros-melodic-teb-local-planner \
+    ros-melodic-dwa-local-planner \
     && rm -rf /var/lib/apt/lists/*
 
 
