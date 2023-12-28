@@ -59,6 +59,7 @@
     <remap from="led_option" to="kinect/led_option"/>
     <remap from="cur_tilt_angle" to="kinect/cur_tilt_angle"/>
     <remap from="cur_tilt_status" to="kinect/cur_tilt_status"/>
+    <remap from="joint_states" to="kinect/tilt/joint_states"/>
 
     <param name="max_tilt_angle" value="18"/>
 	<param name="min_tilt_angle" value="-44"/>
@@ -66,6 +67,7 @@
     <param name="pub_joint_state" value="true"/>
 	<param name="use_imu_for_angle" value="false"/>
     <param name="init_tilt_angle" value="-20"/>
+    <param name="pivot_joint_name" value="kinect_base_to_camera_link" />
 </node>
 
 <!-- pointcloud to laserscan -->

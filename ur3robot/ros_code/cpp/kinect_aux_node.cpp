@@ -37,6 +37,10 @@ bool pub_tf = false;
 bool pub_joint_state = false;
 bool use_imu_for_angle = false;
 
+std::string kinect_pivot_tf_name;
+std::string kinect_camera_tf_name;
+std::string kinect_pivot_joint_name; //name of joint that controlls the kinect tilt in urdf
+
 ros::Publisher pub_imu;
 ros::Publisher pub_tilt_angle;
 ros::Publisher pub_tilt_status;
@@ -234,13 +238,15 @@ void publishState(void)
 		
 			q.setRPY(0, angleRad, 0);
 			transform.setRotation(q);
-			br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "kinect_base", "camera_link"));
-		} else {
+			br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), kinect_pivot_tf_name, kinect_camera_tf_name));
+		} 
+		
+		if (pub_joint_state && joint_pub.getNumSubscribers() > 0) {
 			sensor_msgs::JointState joint_state;
 			joint_state.header.stamp = ros::Time::now();
 			joint_state.name.resize(1);
             joint_state.position.resize(1);
-			joint_state.name[0] ="kinect_base_to_camera_link";
+			joint_state.name[0] =kinect_pivot_joint_name;
 			double angleRad = d2r(cam_angle * -1); // * 0.01745329;
 			joint_state.position[0] = angleRad;
 			joint_pub.publish(joint_state);
@@ -268,13 +274,19 @@ int main(int argc, char* argv[])
 	
 	int deviceIndex;
 
+	
+
 	n.param<int>("device_index", deviceIndex, 0);
     pnh.param<int>("max_tilt_angle", MAX_TILT_ANGLE, 31);
 	pnh.param<int>("min_tilt_angle", MIN_TILT_ANGLE, (-31));
-	pnh.param<bool>("use_imu_for_angle", use_imu_for_angle, false);
 	pnh.param<bool>("pub_tf", pub_tf, false);
-	pnh.param<int>("init_tilt_angle", init_tilt_angle, 0);
 	pnh.param<bool>("pub_joint_state", pub_joint_state, false);
+	pnh.param<std::string>("pivot_tf_frame", kinect_pivot_tf_name, "kinect_pivot");
+	pnh.param<std::string>("camera_tf_frame", kinect_camera_tf_name, "camera_link");
+	pnh.param<std::string>("pivot_joint_name", kinect_pivot_joint_name, "kinect_pivot_to_camera_link");
+	pnh.param<bool>("use_imu_for_angle", use_imu_for_angle, false);
+	pnh.param<int>("init_tilt_angle", init_tilt_angle, 0);
+	
 
 	openAuxDevice(deviceIndex);
 	if (!dev)
@@ -285,7 +297,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (pub_joint_state){
-		joint_pub = n.advertise<sensor_msgs::JointState>("kinect/tilt/joint_states", 1);
+		joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 1);
 	}
 	
 	pub_imu = n.advertise<sensor_msgs::Imu>("imu", 15);
