@@ -75,7 +75,7 @@
 </node>
 
 <!-- pointcloud to laserscan -->
-<include file="$(find ur3robot)/launch/pointcloud_to_laserscan.launch"/>
+<!-- <include file="$(find ur3robot)/launch/pointcloud_to_laserscan.launch"/> -->
 
 
 </launch>
