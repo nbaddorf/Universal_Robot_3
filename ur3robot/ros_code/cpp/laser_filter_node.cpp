@@ -30,17 +30,19 @@ void create_lookup_table(std::vector<float> (&lookup_table), int num_of_elements
         } else {
             distance = half_robot_width/std::sin(d2r(deg));
         }
-        std::cout << "deg : " << deg << "\n";
-        std::cout << "distance : " << distance << "\n";
         //std::cout << "deg : " << deg << "\n";
-        lookup_table.push_back(distance);
+        //std::cout << "distance : " << abs(distance) << "\n";
+        //std::cout << "deg : " << deg << "\n";
+        lookup_table.push_back(abs(distance));
         //std::cout << lookup_table.at(i) << "\n";
     }
 }
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     //There are 760 messages from the laser
-    ROS_INFO("I heard: [%lu]", msg->ranges.size()); //%l = long, %u = unsigned int
+    //ROS_INFO("I heard: [%lu]", msg->ranges.size()); //%l = long, %u = unsigned int
+    if (laser_pub.getNumSubscribers() > 0) {
+
     sensor_msgs::LaserScan filtered_msg;
 
     filtered_msg.header = msg->header;
@@ -48,6 +50,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     filtered_msg.angle_max = msg->angle_max;
 
     filtered_msg.time_increment = msg->time_increment;
+    filtered_msg.angle_increment = msg->angle_increment;
 
     filtered_msg.scan_time = msg->scan_time;
 
@@ -70,6 +73,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg) {
     }
     filtered_msg.ranges = filtered_ranges;
     laser_pub.publish(filtered_msg);
+    }
     //ranges.size() = long unsigned int
     // std::vector<float> laser_array
 }
@@ -81,8 +85,6 @@ int main(int argc, char **argv) {
     robot_width = robot_width + inflation;
 
     create_lookup_table(laser_lookup_table, laser_ranges_num, robot_width);
-    
-    //std::cout << laser_lookup_table.at(1) << "\n";
 
     ros::init(argc, argv, "laser_filter");
 
@@ -91,7 +93,14 @@ int main(int argc, char **argv) {
     laser_pub = n.advertise<sensor_msgs::LaserScan>("scan/filtered", 10);
     ros::Subscriber laser_sub = n.subscribe("scan", 10, laserCallback);
 
-    ros::spin();
+    while (ros::ok()) {
+		ros::spinOnce();
+	//maybe add code to stop the laser if nothing is subscribed	//if (laser_pub.getNumSubscribers() > 0) {
+   
+	    //}
+    }
+
+    //ros::spin();
 
     return 0;
 }
