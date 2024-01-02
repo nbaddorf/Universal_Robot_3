@@ -6,8 +6,8 @@
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr &msg)
 {
-    ROS_INFO("I heard: [%s]", msg->ranges.c_str());
-    // std::vector<double> laser_array
+    ROS_INFO("I heard: [%s]", msg->ranges.size());
+    // std::vector<float> laser_array
 }
 
 int main(int argc, char **argv)
