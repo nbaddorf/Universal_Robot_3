@@ -141,12 +141,15 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(kinect_aux_node cpp/kinect_aux_node.cpp)
+add_executable(laser_filter_node cpp/laser_filter_node.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(kinect_aux_node
    ${catkin_LIBRARIES}
    ${LIBUSB_LIBRARIES}
 )
+
+target_link_libraries(laser_filter_node ${catkin_LIBRARIES})
 
 # Mark executables and/or libraries for installation
 install(TARGETS kinect_aux_node
