@@ -83,8 +83,11 @@ int main(int argc, char **argv) {
   laser_pub = n.advertise<sensor_msgs::LaserScan>("scan/filtered", 10);
   ros::Subscriber laser_sub = n.subscribe("scan", 10, laserCallback);
 
+  ros::Rate loop_rate(10);
+
   while (ros::ok()) {
     ros::spinOnce();
+    loop_rate.sleep();
     // maybe add code to stop the laser if nothing is subscribed	//if
     // (laser_pub.getNumSubscribers() > 0) {
 
