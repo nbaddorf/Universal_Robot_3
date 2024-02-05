@@ -12,6 +12,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Bool.h>
+#include <sensor_msgs/BatteryState.h>
 
 //uncomment to enable debugging
 //#define DEBUG
@@ -81,10 +82,16 @@ float demandz;
 
 //create ros msgs
 ros::NodeHandle nh;
+
 geometry_msgs::TransformStamped t;
+
 nav_msgs::Odometry odom_msg;
 ros::Publisher odom_pub("odom", &odom_msg);
+
 tf::TransformBroadcaster broadcaster;
+
+sensor_msgs::BatteryState batt_state;
+ros::Publisher batteryState("battery_state", &batt_state);
 
 //define the motor control pins
 const int motorFLspeedpin = 22;
@@ -121,6 +128,9 @@ const int BRencoderB = 2;
 
 const int LED = 13;
 
+const int voltageSensorPin = 21;
+const int buzzerPin = 15;
+
 char base_link[] = "base_link";  //was /base_link
 char raw_odom[] = "raw_odom";
 char odom[] = "odom";            //was /odom
@@ -130,6 +140,10 @@ char odom[] = "odom";            //was /odom
 unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
 const float loopTime = 10;
+
+// timers for the sub-battery and buzzer loop
+unsigned long previousVoltageMillis = 0;  // set up timers
+const float voltageLoopTime = 2000;
 
 // tf variables to be broadcast
 double x = 0;
@@ -259,7 +273,19 @@ void setup() {
     //nh.subscribe(odomResetSub);
 
     nh.advertise(odom_pub);
+    nh.advertise(batteryState);
     broadcaster.init(nh);  // set up broadcaster
+
+     // Populate battery parameters.
+    batt_state.design_capacity = 20000;      // mAh
+    batt_state.power_supply_status = 2;     // discharging
+    batt_state.power_supply_health = 0;     // unknown
+    batt_state.power_supply_technology = 4; // LiPo
+    batt_state.present = 1;                 // battery present
+
+    batt_state.location = "Main_Battery";        // unit location
+    //batt_state.serial_number = "ABC_0001";  // unit serial number
+    //batt_state.cell_voltage = new float[CELLS];
   #endif
 
   //set motor encoders to input pullup
@@ -357,8 +383,24 @@ void loop() {
 
   currentMillis = millis();
 
+  if (currentMillis - previousVoltageMillis >= voltageLoopTime) {  // run a loop every 2 seconds
+    previousVoltageMillis = currentMillis;
+
+  }
+
   if (currentMillis - previousMillis >= loopTime) {  // run a loop every 10ms
     previousMillis = currentMillis;
+
+    //Check Battery Level
+    //1024 bit resolution, 3.3 = 16.5v
+    const float R1 = 30000; // 30kohm
+    const float R2 = 7500; //7.5 kohm
+    int voltageValue = analogRead(voltageSensorPin);
+    double voltage = ((voltageValue * 3.3) / 1024) / (R2/(R1+R2));
+    //float vin = vout / (R2/(R1+R2));
+
+    batt_state.voltage = voltage;
+    batteryState.publish( &batt_state );
 
     float modifier_lin = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     float modifier_ang = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
