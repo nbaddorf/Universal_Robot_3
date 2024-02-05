@@ -65,9 +65,6 @@ double Back_Right_Encoder_Vel_Setpoint = 0;
 //float tau = 0.1;
 //float a = tau / (tau + ST);
 
-const double velXAcceleration = 0.5; //mps^2 CHANGE THIS TO PROPER ACCELLERATION
-const double velZAcceleration = 0.5; //mps^2
-
 
 
 //drive base pid values
@@ -129,7 +126,7 @@ char odom[] = "odom";            //was /odom
 // timers for the sub-main loop
 unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
-const float loopTime = 10;
+float loopTime = 10;
 
 // tf variables to be broadcast
 double x = 0;
@@ -139,9 +136,6 @@ double theta_old = 0;
 
 double forward = 0;
 double turn = 0;
-
-double demandxAccel = 0;
-double demandzAccel = 0;
 
 char info[50];
 
@@ -363,35 +357,8 @@ void loop() {
     float modifier_lin = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     float modifier_ang = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     
-
-    //ACCELERATION code here
-    const double velXAccelerationPerLoop = velXAcceleration / (1000/loopTime);
-    const double velZAccelerationPerLoop = velZAcceleration / (1000/loopTime);
-
-    //x acceleration code
-    if (demandxAccel != demandx) {
-      if (demandx > demandxAccel) {
-        demandxAccel += velXAccelerationPerLoop;
-        demandxAccel = constrain(demandxAccel, -1.0, demandx);
-      } else if (demandx < demandxAccel) {
-        demandxAccel -= velXAccelerationPerLoop;
-        demandxAccel = constrain(demandxAccel, demandx, 1.0);
-      } 
-    }
-
-    //z acceleration code
-    if (demandzAccel != demandz) {
-      if (demandz > demandzAccel) {
-        demandzAccel += velZAccelerationPerLoop;
-        demandzAccel = constrain(demandzAccel, -1.0, demandz);
-      } else if (demandz < demandzAccel) {
-        demandzAccel -= velZAccelerationPerLoop;
-        demandzAccel = constrain(demandzAccel, demandz, 1.0);
-      } 
-    }
-
-    forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
-    turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang);
+    forward = demandx * (Encoder_Counts_Per_Meter * modifier_lin);
+    turn = demandz * (Encoder_Counts_Per_Radian * modifier_ang);
     
     float Left_Motor_Speed = forward - turn;  //in encoder counts per second
     float Right_Motor_Speed = forward + turn;
