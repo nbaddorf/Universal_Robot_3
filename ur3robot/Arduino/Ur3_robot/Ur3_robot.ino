@@ -61,6 +61,8 @@ double Front_Right_Encoder_Vel_Setpoint = 0;
 double Back_Left_Encoder_Vel_Setpoint = 0;
 double Back_Right_Encoder_Vel_Setpoint = 0;
 
+bool low_battery_mode = false;
+
 //create imu comlementery filter values
 //float ST = 3.0/305.37254901960785;
 //float tau = 0.1;
@@ -142,8 +144,9 @@ unsigned long previousMillis = 0;  // set up timers
 const float loopTime = 10;
 
 // timers for the sub-battery and buzzer loop
-unsigned long previousVoltageMillis = 0;  // set up timers
-const float voltageLoopTime = 2000;
+unsigned long previousBuzzerMillis = 0;  // set up timers
+const float buzzerLoopTime = 2000;
+bool buzzer_on = false;
 
 // tf variables to be broadcast
 double x = 0;
@@ -280,7 +283,7 @@ void setup() {
     batt_state.design_capacity = 20000;      // mAh
     batt_state.power_supply_status = 2;     // discharging
     batt_state.power_supply_health = 0;     // unknown
-    batt_state.power_supply_technology = 4; // LiPo
+    batt_state.power_supply_technology = 4; // LifePo4
     batt_state.present = 1;                 // battery present
 
     batt_state.location = "Main_Battery";        // unit location
@@ -320,6 +323,8 @@ void setup() {
   pinMode(odom_a0, OUTPUT);
   pinMode(odom_a1, OUTPUT);
   pinMode(odom_a2, OUTPUT);
+
+  pinMode(buzzerPin, OUTPUT);
 
   /* Sets the TCA9548A multiplexer address to 0x70 */
   digitalWrite(odom_a0, LOW);
@@ -383,9 +388,16 @@ void loop() {
 
   currentMillis = millis();
 
-  if (currentMillis - previousVoltageMillis >= voltageLoopTime) {  // run a loop every 2 seconds
-    previousVoltageMillis = currentMillis;
-
+  if (currentMillis - previousBuzzerMillis >= buzzerLoopTime && low_battery_mode) {  // run a loop every 2 seconds
+    previousBuzzerMillis = currentMillis;
+   
+   if (buzzer_on) {
+     noTone(buzzerPin);
+     buzzer_on = false;
+   } else {
+     tone(buzzerPin, 1000);
+     buzzer_on = true;
+   }
   }
 
   if (currentMillis - previousMillis >= loopTime) {  // run a loop every 10ms
@@ -396,8 +408,21 @@ void loop() {
     const float R1 = 30000; // 30kohm
     const float R2 = 7500; //7.5 kohm
     int voltageValue = analogRead(voltageSensorPin);
-    double voltage = ((voltageValue * 3.3) / 1024) / (R2/(R1+R2));
+    double voltage = ((voltageValue * 3.25) / 1024) / (R2/(R1+R2));
     //float vin = vout / (R2/(R1+R2));
+
+    if (voltage <= 12.8) {
+      batt_state.power_supply_health = 3; // Dead
+      if (!low_battery_mode) {
+        previousBuzzerMillis = currentMillis;
+      }
+      low_battery_mode = true;
+    } else if (voltage >= 14.0) {
+      batt_state.power_supply_health = 3; //overvoltage
+    } else {
+       batt_state.power_supply_health = 1; // good
+       low_battery_mode = false;
+    }
 
     batt_state.voltage = voltage;
     batteryState.publish( &batt_state );
