@@ -1,5 +1,0 @@
-#!/bin/bash
-
-#docker run -it --user ros --network=host --ipc=host -v /home/$USER/Universal_Robot_3/ur3master/ros_code:/home/ros/catkin_ws/src/ur3robot ur3master_docker_image
-#docker run -it -p 8080:8080 --add-host ur3robot:ur3robot.local --user ros -v /Users/$USER/Documents/GitHub/Universal_Robot_3/ur3master/ros_code:/home/ros/catkin_ws/src/ur3master ur3master_docker_image
-docker run -it -p 8080:8080 --user ros -v /home/$USER/Universal_Robot_3/ur3robot/master_code:/home/ros/catkin_ws/src/ur3master ur3robot_network_docker_image
