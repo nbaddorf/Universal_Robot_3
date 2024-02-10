@@ -6,18 +6,20 @@
 
 <!-- URDF Publisher -->
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
+   <!--  <param name="source_list" value="[/kinect/tilt/joint_states]" /> -->
+    <rosparam param="source_list">["/kinect/tilt/joint_states"]</rosparam>
+    <param name="rate" value="50" />
+</node>
 
 <!-- rplidar -->
 <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
 
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
-
- <!-- start my laser filter -->
-<node name="laser_filter" type="square_laser_filterV2.py" pkg="ur3robot" output="screen">
-  <!-- <param name="laser_inflation" value="0.05" /> -->
-</node>
+<!-- start cpp python laser filter -->
+<node name="laser_filter_node" type="laser_filter_node" pkg="ur3robot" output="screen">
+</node> 
 
 <node name="mpu_node" pkg="mpu6050_driver" type="mpu6050_node" output="screen">
     <rosparam file="$(find ur3robot)/param/imu/mpu_settings.yaml" command="load"/>
