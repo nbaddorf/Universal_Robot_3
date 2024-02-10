@@ -29,9 +29,9 @@ DWAPlannerROS:
 
 # Forward Simulation Parameters
   sim_time: 1.7 #1.5
-  vx_samples: 20 #20 #3
-  vy_samples: 5 #0
-  vth_samples: 40 #40
+  vx_samples: 4 #20 #3
+  vy_samples: 4 #0
+  vth_samples: 20 #40
   #controller_frequency: 10.0 #had a # before controller
 
 # Trajectory Scoring Parameters
@@ -48,8 +48,8 @@ DWAPlannerROS:
   #oscillation_reset_dist: 0.05 #was 0.05
 
 # Debugging
-  publish_traj_pc : true
-  publish_cost_grid_pc: true
+  publish_traj_pc : false #true
+  publish_cost_grid_pc: false #true
 # recovery rotate perams
   TrajectoryPlannerROS/max_rotational_vel: 0.0 # was 0.1
 
