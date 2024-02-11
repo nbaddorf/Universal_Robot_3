@@ -2,7 +2,7 @@
 
 <!-- params -->
 <param name="robot_description" command="cat $(find ur3robot)/urdf/robot.urdf" />
-<arg name="move_forward_only" default="true"/>
+<arg name="move_forward_only" default="false"/>
 
 <!-- URDF Publisher -->
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
