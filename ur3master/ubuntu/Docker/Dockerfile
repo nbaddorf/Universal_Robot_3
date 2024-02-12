@@ -55,10 +55,11 @@ USER root
 
 WORKDIR /home/${USERNAME}
 
-ENV DISPLAY=:0.0 \
+ENV DISPLAY=:1 \
     DISPLAY_WIDTH=1280 \
     DISPLAY_HEIGHT=850 
-EXPOSE 8080
+#EXPOSE 8080
+USER root RUN mkdir -p /tmp/.X11-unix
 
 # Set up entrypoint and default command
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
