@@ -1,1 +1,15 @@
 https://github.com/ecJon/M1-MacOS-RVIZ/blob/master/README.md
+
+
+Networking info:
+(MAIN COMPUTER, NOT IN DOCKER)
+  - When you use .local your computer sends out info asking for other computers with hostname to respond. (Avahi.) This works on Linux., and mac sort of.
+  I cant ping my mac with .local, but my mac can ping other devices with .local.
+  (ur3robot -> nick-ros-master.local works, ur3robot -> nicks-mbp.local doesnt work. nicks-mbp -> ur3robot.local works.)
+
+  - If you dont use .local, then your dns server tries to resolve the host name. In this case it is our ros router which resolves these names. 
+  (ur3robot -> nick-ros-master works, ur3robot -> nicks-mbp works.)
+
+  (IN DOCKER)
+  - Docker doesnt seem to pass on the .local avahi stuff, so that doesnt seem to work.
+  Because of this, we are relying on the router to resolve hosts for us.

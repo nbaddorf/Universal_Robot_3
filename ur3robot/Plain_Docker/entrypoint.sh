@@ -2,8 +2,8 @@
 
 set -e
 
-export ROS_HOSTNAME=ur3robot.local
-export ROS_MASTER_URI=http://ur3robot.local:11311
+export ROS_HOSTNAME=ur3robot #.local
+export ROS_MASTER_URI=http://ur3robot:11311 #was .local
 source /opt/ros/melodic/setup.bash
 
 echo "Provided arguments: $@"
