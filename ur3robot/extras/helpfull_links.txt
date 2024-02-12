@@ -8,7 +8,7 @@ Networking info:
   (ur3robot -> nick-ros-master.local works, ur3robot -> nicks-mbp.local doesnt work. nicks-mbp -> ur3robot.local works.)
 
   - If you dont use .local, then your dns server tries to resolve the host name. In this case it is our ros router which resolves these names. 
-  (ur3robot -> nick-ros-master works, ur3robot -> nicks-mbp works.)
+  (ur3robot -> nick-ros-master works, ur3robot -> nicks-mbp (works, but mac has to be set to not use my custom dns addblocker, because otherwise it wont resolve from our ros router).)
 
   (IN DOCKER)
   - Docker doesnt seem to pass on the .local avahi stuff, so that doesnt seem to work.
