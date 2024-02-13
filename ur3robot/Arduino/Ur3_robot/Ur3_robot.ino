@@ -60,7 +60,7 @@ float Encoder_Counts_Per_Half_Circumference = Distance_Between_Wheels_Half_Circu
 float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Half_Circumference / PI; // 1.12
 */
 
-float Distance_Between_Wheels = 378.1;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
+float Distance_Between_Wheels = 383;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
 float Distance_Between_Wheels_Half_Circumference = (PI * Distance_Between_Wheels) / 2;     //593.918 mm for 180 deg. = pi radians        
 float Encoder_Counts_Per_Pi_Radian = Distance_Between_Wheels_Half_Circumference * Encoder_Counts_Per_MM; //2208.1871 encoder counts
 float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Pi_Radian / PI; // 702.88779 encoder counts per radian
@@ -448,9 +448,12 @@ void loop() {
       } 
     }
 
-    forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
-    turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn
+    //forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
+    //turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn
     
+    forward = demandx * (Encoder_Counts_Per_Meter * modifier_lin);
+    turn = demandz * (Encoder_Counts_Per_Radian * modifier_ang);
+
     float Left_Motor_Speed = forward - turn;  //in encoder counts per second
     float Right_Motor_Speed = forward + turn;
 
