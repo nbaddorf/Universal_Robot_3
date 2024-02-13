@@ -58,6 +58,13 @@ WORKDIR /home/${USERNAME}
 ENV DISPLAY=:1 \
     DISPLAY_WIDTH=1280 \
     DISPLAY_HEIGHT=850 
+
+
+RUN apt-get update \
+    && apt-get install -y \
+    ros-melodic-plotjuggler-ros \
+    && rm -rf /var/lib/apt/lists/*
+        
 #EXPOSE 8080
 USER root RUN mkdir -p /tmp/.X11-unix
 

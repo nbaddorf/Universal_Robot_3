@@ -60,6 +60,12 @@ ENV DISPLAY=:0.0 \
     DISPLAY_HEIGHT=850 
 EXPOSE 8080
 
+RUN apt-get update \
+    && apt-get install -y \
+    ros-melodic-plotjuggler-ros \
+    && rm -rf /var/lib/apt/lists/*
+
+
 # Set up entrypoint and default command
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
 CMD ["bash"]
