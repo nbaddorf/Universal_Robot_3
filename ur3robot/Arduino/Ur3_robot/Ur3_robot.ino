@@ -52,11 +52,18 @@ double Odom_Wheel_Encoder_Counts_Per_MM = Odom_Wheel_Encoder_Counts_Per_Meter / 
 //couts per mm = 18.113
 
 //drive motors
+/*
 float Distance_Between_Wheels = 378.1;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
-float Distance_Between_Wheels_Circumference = PI * 2 * Distance_Between_Wheels;                                                     //circumference in mm
-float Distance_Between_Wheels_Half_Circumference_Rev = (Distance_Between_Wheels_Circumference / 2) / (Wheel_Circumference * 1000);  //Wheel Rev for half circumference
-float Encoder_Counts_Per_Half_Circumference = Distance_Between_Wheels_Half_Circumference_Rev * Encoder_Per_Wheel_Rev;               //Outputs encoder counts per half circumference
-float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Half_Circumference / PI;
+float Distance_Between_Wheels_Circumference = PI * 2 * Distance_Between_Wheels;     //2375.6724                                     //circumference in mm
+float Distance_Between_Wheels_Half_Circumference_Rev = (Distance_Between_Wheels_Circumference / 2) / (Wheel_Circumference * 1000); //0.00314159  //Wheel Rev for half circumference
+float Encoder_Counts_Per_Half_Circumference = Distance_Between_Wheels_Half_Circumference_Rev * Encoder_Per_Wheel_Rev;    //3.51858           //Outputs encoder counts per half circumference
+float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Half_Circumference / PI; // 1.12
+*/
+
+float Distance_Between_Wheels = 378.1;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
+float Distance_Between_Wheels_Half_Circumference = (PI * Distance_Between_Wheels) / 2;     //593.918 mm for 180 deg. = pi radians        
+float Encoder_Counts_Per_Pi_Radian = Distance_Between_Wheels_Half_Circumference * Encoder_Counts_Per_MM; //2208.1871 encoder counts
+float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Pi_Radian / PI; // 702.88779 encoder counts per radian
 
 double Front_Left_Encoder_Vel_Setpoint = 0;  //in count/10ms
 double Front_Right_Encoder_Vel_Setpoint = 0;
@@ -228,28 +235,7 @@ void velCallback(const geometry_msgs::Twist& vel) {
   demandx = constrain(vel.linear.x, -0.25, 0.25);
   demandz = constrain(vel.angular.z, -0.6, 0.6);
 }
-/*
-void resetOdom(const std_msgs::Bool& state) {
-  //if (state && (odomResetState == false)) {
-  LOdomPos = 0;
-  ROdomPos = 0;
-  LOdomPos_diff = 0;
-  ROdomPos_diff = 0;
-  LOdomPos_mm_diff = 0;
-  ROdomPos_mm_diff = 0;
-  LOdomPos_old = 0;
-  ROdomPos_old = 0;
-  pos_average_mm_diff = 0;
-  pos_total_mm = 0;
-  x = 0;
-  y = 0;
-  theta = 0;
-  // odomResetState = true;
-  //} else if (state == false) {
-  // odomResetState = false;
-  //}
-}
-*/
+
 void pidSet(const geometry_msgs::Vector3& vel) {
   int p = vel.x;
   int i = vel.y;
@@ -463,7 +449,7 @@ void loop() {
     }
 
     forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
-    turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang);
+    turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn
     
     float Left_Motor_Speed = forward - turn;  //in encoder counts per second
     float Right_Motor_Speed = forward + turn;
