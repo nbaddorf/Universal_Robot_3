@@ -46,7 +46,7 @@
     <param name="xmax" value="20" />
     <param name="ymin" value="-20" />
     <param name="ymax" value="20" />
-    <param name="delta" value="0.1" />
+    <param name="delta" value="0.025" />
 
 
 </node>
