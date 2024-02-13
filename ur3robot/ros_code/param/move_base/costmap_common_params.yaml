@@ -3,8 +3,6 @@
 footprint: [[-0.20955,-0.20955], [0.20955,-0.20955], [0.20955,0.20955], [-0.20955,0.20955]]
 
 
-#length = 0.24765
-#width = 0.20955
 transform_tolerance: 0.3 #was 0.4
 map_type: costmap
 
@@ -12,7 +10,7 @@ obstacle_layer:
  enabled: true
  obstacle_range: 2.5 #was 2.5
  raytrace_range: 3.5 #was 3.5
- inflation_radius: 0.2 #was 0.4
+ inflation_radius: 0.4 #0.2 #was 0.4
  track_unknown_space: false
  combination_method: 1 #was 1
 

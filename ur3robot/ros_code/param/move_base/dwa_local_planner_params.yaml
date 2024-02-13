@@ -49,8 +49,8 @@ DWAPlannerROS:
   theta_stopped_vel: 0.01
 
 # Debugging
-  publish_traj_pc : false #true
-  publish_cost_grid_pc: false #true
+  publish_traj_pc : true #true
+  publish_cost_grid_pc: true #true
 # recovery rotate perams
   TrajectoryPlannerROS/max_rotational_vel: 0.0 # was 0.1
 
