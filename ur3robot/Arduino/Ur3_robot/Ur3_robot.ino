@@ -23,17 +23,18 @@
 //Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
 float Wheel_Radious = Wheel_Diameter / 2;                       //in mm
-float Wheel_Circumference = (2 * PI * (Wheel_Radious / 1000));  //Wheel Circumference in meters
+float Wheel_Circumference = (2 * PI * (Wheel_Radious / 1000));  //Wheel Circumference in meters (0.30159289 m per rev)
 float Wheel_Rev_Per_Meter = 1 / Wheel_Circumference;
 // if wheel diam = 96 then wheel rev per meter = 3.31741 in calc agithnd arduino = 3.32
 
-// 625 encoder per motor rev
-//gear reduction of 1:3
+//560 encoder per motor rev
+//gear reduction of 1:2
+//30 tooth big gear, 15 tooth small gear.
 
-float Encoder_Per_Wheel_Rev = 1875;  //in encoder counts
-float Encoder_Counts_Per_Meter = Wheel_Rev_Per_Meter * Encoder_Per_Wheel_Rev;
+float Encoder_Per_Wheel_Rev = 1120;  //in encoder counts I counted 1100 count per rev.
+float Encoder_Counts_Per_Meter = Wheel_Rev_Per_Meter * Encoder_Per_Wheel_Rev; //3718 encoder per m
 float Encoder_Counts_Per_MM = Encoder_Counts_Per_Meter / 1000;  //giving encoder counts per mm
-//counts per mm == 4.97612
+//counts per mm == 3.718
 
 double Odom_Width_Between_Wheels_X = 177;    //length between the two odom wheels in mm
 double Odom_Width_Between_Wheels_Y = 254;  //length between the two odom wheels in mm
@@ -50,6 +51,7 @@ double Odom_Wheel_Encoder_Counts_Per_Meter = Odom_Wheel_Rev_Per_Meter * Odom_Whe
 double Odom_Wheel_Encoder_Counts_Per_MM = Odom_Wheel_Encoder_Counts_Per_Meter / 1000;  //giving encoder counts per mm
 //couts per mm = 18.113
 
+//drive motors
 float Distance_Between_Wheels = 378.1;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
 float Distance_Between_Wheels_Circumference = PI * 2 * Distance_Between_Wheels;                                                     //circumference in mm
 float Distance_Between_Wheels_Half_Circumference_Rev = (Distance_Between_Wheels_Circumference / 2) / (Wheel_Circumference * 1000);  //Wheel Rev for half circumference
@@ -223,8 +225,8 @@ PID PID_BR(&BRpos_diff, &BRout, &Back_Right_Encoder_Vel_Setpoint, kp, ki, kd, P_
 // ** ROS callback & subscriber **
 
 void velCallback(const geometry_msgs::Twist& vel) {
-  demandx = constrain(vel.linear.x, -0.2, 0.2);
-  demandz = constrain(vel.angular.z, -0.4, 0.4);
+  demandx = constrain(vel.linear.x, -0.25, 0.25);
+  demandz = constrain(vel.angular.z, -0.6, 0.6);
 }
 /*
 void resetOdom(const std_msgs::Bool& state) {
@@ -372,7 +374,9 @@ void setup() {
   #ifdef DEBUG
     Serial.print("Wheel_Rev_Per_Meter:   ");
     Serial.println(Wheel_Rev_Per_Meter);
+    //3.3157
     Serial.print("Encoder_Counts_Per_MM:    ");
+    //6.219375
     Serial.println(Encoder_Counts_Per_MM);
     Serial.print("Odom_Wheel_Encoder_Counts_Per_MM:    ");
     Serial.println(Odom_Wheel_Encoder_Counts_Per_MM);
@@ -410,22 +414,23 @@ void loop() {
     int voltageValue = analogRead(voltageSensorPin);
     double voltage = ((voltageValue * 3.25) / 1024) / (R2/(R1+R2));
     //float vin = vout / (R2/(R1+R2));
-
-    if (voltage <= 12.8) {
-      batt_state.power_supply_health = 3; // Dead
-      if (!low_battery_mode) {
-        previousBuzzerMillis = currentMillis;
+    #ifndef DEBUG
+      if (voltage <= 12.8) {
+        batt_state.power_supply_health = 3; // Dead
+        if (!low_battery_mode) {
+          previousBuzzerMillis = currentMillis;
+        }
+        low_battery_mode = true;
+      } else if (voltage >= 14.0) {
+        batt_state.power_supply_health = 3; //overvoltage
+      } else {
+        batt_state.power_supply_health = 1; // good
+        low_battery_mode = false;
       }
-      low_battery_mode = true;
-    } else if (voltage >= 14.0) {
-      batt_state.power_supply_health = 3; //overvoltage
-    } else {
-       batt_state.power_supply_health = 1; // good
-       low_battery_mode = false;
-    }
 
-    batt_state.voltage = voltage;
-    batteryState.publish( &batt_state );
+      batt_state.voltage = voltage;
+      batteryState.publish( &batt_state );
+    #endif
 
     float modifier_lin = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     float modifier_ang = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
@@ -526,6 +531,10 @@ void loop() {
     FRpos_diff = FRpos - FRpos_old;
     BLpos_diff = BLpos - BLpos_old;
     BRpos_diff = BRpos - BRpos_old;
+
+    #ifdef DEBUG
+      Serial.println(FLpos);
+    #endif
     
     FLpos_old = FLpos;
     FRpos_old = FRpos;
@@ -587,7 +596,7 @@ void loop() {
   pos_y_total_mm += pos_y_average_mm_diff;                       // calc total running total distance
 
   #ifdef DEBUG
-   // Serial.print("x distance:    ");
+    //Serial.print("x distance:    ");
     //Serial.println(pos_x_total_mm);
   #endif
 
@@ -606,8 +615,8 @@ void loop() {
   }
 
   #ifdef DEBUG
-    Serial.print("rotation:    ");
-    Serial.println(theta);
+   // Serial.print("rotation:    ");
+    //Serial.println(theta);
   #endif
 
   // calc x and y to broadcast with tf
@@ -616,10 +625,11 @@ void loop() {
   x += (pos_x_average_mm_diff * cos(theta)) + (pos_y_average_mm_diff * sin(theta));
 
   #ifdef DEBUG
-    Serial.print("x:    ");
-    Serial.println(x);
-    Serial.print("y:    ");
-    Serial.println(y);
+  //Serial.println(((Left_mm_diff + Right_mm_diff) / 2) / 10);
+    //Serial.print("x:    ");
+    //Serial.println(x);
+    //Serial.print("y:    ");
+    //Serial.println(y);
   #endif
 
   #ifdef PUBLISH_TF         
