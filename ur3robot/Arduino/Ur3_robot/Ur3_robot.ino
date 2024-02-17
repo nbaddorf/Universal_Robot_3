@@ -85,10 +85,10 @@ const double velZAcceleration = 0.5; //mps^2
 
 
 //drive base pid values
-//float sampleTime = 0.5;
+float sampleTime = 0.5;
 double kp = 0;   //0
 double ki = 15;  //15
-double kd = 0.001;   //0
+double kd = 0;   //0
 
 float demandx;
 float demandz;
@@ -159,7 +159,7 @@ char odom[] = "odom";            //was /odom
 // timers for the sub-main loop
 unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
-const float loopTime = 40; // 10
+const float loopTime = 10; // 10
 
 // timers for the sub-battery and buzzer loop
 unsigned long previousBuzzerMillis = 0;  // set up timers
@@ -233,16 +233,18 @@ float pos_y_total_mm;
 //bool odomResetState = false;
 
 //create pid for drivebase
-/*
+
 PID PID_FL(&FLpos_diff, &FLout, &Front_Left_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
 PID PID_FR(&FRpos_diff, &FRout, &Front_Right_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
 PID PID_BL(&BLpos_diff, &BLout, &Back_Left_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
 PID PID_BR(&BRpos_diff, &BRout, &Back_Right_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
-*/
+
+/*
 PID PID_FL(&FLpos_diff, &FLout, &Front_Left_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
 PID PID_FR(&FRpos_diff, &FRout, &Front_Right_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
 PID PID_BL(&BLpos_diff, &BLout, &Back_Left_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
 PID PID_BR(&BRpos_diff, &BRout, &Back_Right_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
+*/
 // ** ROS callback & subscriber **
 
 void velCallback(const geometry_msgs::Twist& vel) {
@@ -362,12 +364,11 @@ void setup() {
   PID_FR.SetMode(AUTOMATIC);
   PID_BL.SetMode(AUTOMATIC);
   PID_BR.SetMode(AUTOMATIC);
-  /*
   PID_FL.SetSampleTime(sampleTime);
   PID_FR.SetSampleTime(sampleTime);
   PID_BL.SetSampleTime(sampleTime);
   PID_BR.SetSampleTime(sampleTime);
-  */
+  
   /*
   double p = 1;
   double i = 0;
@@ -476,8 +477,8 @@ void loop() {
     //forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
     //turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn
     
-    forward = 0 * (Encoder_Counts_Per_Meter * modifier_lin);
-    turn = 0.2 * (Encoder_Counts_Per_Radian * modifier_ang); //142.39
+    forward = demandx * (Encoder_Counts_Per_Meter * modifier_lin);
+    turn = demandz * (Encoder_Counts_Per_Radian * modifier_ang); //142.39
 
     float Left_Motor_Speed = forward - turn;  //in encoder counts per second
     float Right_Motor_Speed = forward + turn;
