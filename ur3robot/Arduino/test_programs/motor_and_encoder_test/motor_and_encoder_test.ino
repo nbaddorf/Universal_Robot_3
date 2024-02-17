@@ -123,14 +123,23 @@ void loop() {
     delay(6000);
   }
 
-  if (false) {
+if (true) {
+    Serial.println("Front Left Motor On");
+    setMotorSpeed(-20, -20, -20, -20);
+    //delay(1500);
+    //setMotorSpeed(-20, -20, -20, -20);
+    //Serial.println("Off");
+    //delay(1500);
+  }
+
+  if (true) {
     char buffer[40];
     sprintf(buffer, "FL: %d. BL: %d. FR: %d. BR: %d.", FLpos, BLpos, FRpos, BRpos);
     Serial.println(buffer);
     delay(10);
   }
 
-  if (true) {
+  if (false) {
     TCA9548A(2);
     Serial.print("left. ");
     Serial.print("\t");

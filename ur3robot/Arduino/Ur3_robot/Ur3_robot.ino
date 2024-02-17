@@ -1,7 +1,9 @@
 //add all libraries to the sketch
 #include <PID_v1.h>
 #include <math.h>
-#include <Servo.h>
+//#include <Servo.h>
+#include <PWMServo.h>
+
 #include "AS5600.h"
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
@@ -61,9 +63,9 @@ float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Half_Circumference / PI; //
 */
 
 float Distance_Between_Wheels = 383;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
-float Distance_Between_Wheels_Half_Circumference = (PI * Distance_Between_Wheels) / 2;     //593.918 mm for 180 deg. = pi radians        
-float Encoder_Counts_Per_Pi_Radian = Distance_Between_Wheels_Half_Circumference * Encoder_Counts_Per_MM; //2208.1871 encoder counts
-float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Pi_Radian / PI; // 702.88779 encoder counts per radian
+float Distance_Between_Wheels_Half_Circumference = (PI * Distance_Between_Wheels) / 2;     //601.6 mm for 180 deg. = pi radians        
+float Encoder_Counts_Per_Pi_Radian = Distance_Between_Wheels_Half_Circumference * Encoder_Counts_Per_MM; //2236.8 encoder counts
+float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Pi_Radian / PI; // 711.997 encoder counts per radian
 
 double Front_Left_Encoder_Vel_Setpoint = 0;  //in count/10ms
 double Front_Right_Encoder_Vel_Setpoint = 0;
@@ -83,10 +85,10 @@ const double velZAcceleration = 0.5; //mps^2
 
 
 //drive base pid values
-float sampleTime = 0.5;
-double kp = 0;   //0.4
-double ki = 15;  //4.2
-double kd = 0;   //0
+//float sampleTime = 0.5;
+double kp = 0;   //0
+double ki = 15;  //15
+double kd = 0.001;   //0
 
 float demandx;
 float demandz;
@@ -111,10 +113,17 @@ const int motorFRspeedpin = 28;
 const int motorBRspeedpin = 29;
 
 //init the motor controllers
+/*
 Servo FL;
 Servo BL;
 Servo FR;
 Servo BR;
+*/
+
+PWMServo FL;
+PWMServo BL;
+PWMServo FR;
+PWMServo BR;
 
 //********************** Setup AS5600 Encoder with multiplexer here *****************
 const int odom_a0 = 30;  //These really shouldnt be here, these 3 pins just set the multiplexers address.
@@ -150,7 +159,7 @@ char odom[] = "odom";            //was /odom
 // timers for the sub-main loop
 unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
-const float loopTime = 10;
+const float loopTime = 40; // 10
 
 // timers for the sub-battery and buzzer loop
 unsigned long previousBuzzerMillis = 0;  // set up timers
@@ -224,11 +233,16 @@ float pos_y_total_mm;
 //bool odomResetState = false;
 
 //create pid for drivebase
+/*
 PID PID_FL(&FLpos_diff, &FLout, &Front_Left_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
 PID PID_FR(&FRpos_diff, &FRout, &Front_Right_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
 PID PID_BL(&BLpos_diff, &BLout, &Back_Left_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
 PID PID_BR(&BRpos_diff, &BRout, &Back_Right_Encoder_Vel_Setpoint, kp, ki, kd, P_ON_M, DIRECT);
-
+*/
+PID PID_FL(&FLpos_diff, &FLout, &Front_Left_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
+PID PID_FR(&FRpos_diff, &FRout, &Front_Right_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
+PID PID_BL(&BLpos_diff, &BLout, &Back_Left_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
+PID PID_BR(&BRpos_diff, &BRout, &Back_Right_Encoder_Vel_Setpoint, kp, ki, kd, DIRECT);
 // ** ROS callback & subscriber **
 
 void velCallback(const geometry_msgs::Twist& vel) {
@@ -348,10 +362,21 @@ void setup() {
   PID_FR.SetMode(AUTOMATIC);
   PID_BL.SetMode(AUTOMATIC);
   PID_BR.SetMode(AUTOMATIC);
+  /*
   PID_FL.SetSampleTime(sampleTime);
   PID_FR.SetSampleTime(sampleTime);
   PID_BL.SetSampleTime(sampleTime);
   PID_BR.SetSampleTime(sampleTime);
+  */
+  /*
+  double p = 1;
+  double i = 0;
+  double d = 0.001;
+  PID_FL.SetTunings(p, i, d);
+  PID_FR.SetTunings(p, i, d);
+  PID_BL.SetTunings(p, i, d);
+  PID_BR.SetTunings(p, i, d);
+  */
   // PID_LM.setPOnM(true);
   // PID_RM.setPOnM(true);
 
@@ -363,8 +388,8 @@ void setup() {
     //3.3157
     Serial.print("Encoder_Counts_Per_MM:    ");
     //6.219375
-    Serial.println(Encoder_Counts_Per_MM);
-    Serial.print("Odom_Wheel_Encoder_Counts_Per_MM:    ");
+    Serial.println(Encoder_Counts_Per_Radian);
+    Serial.print("Odom_Wheel_Encoder_Counts_Per_radian:    ");
     Serial.println(Odom_Wheel_Encoder_Counts_Per_MM);
     delay(5000);
   #endif
@@ -451,8 +476,8 @@ void loop() {
     //forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
     //turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn
     
-    forward = demandx * (Encoder_Counts_Per_Meter * modifier_lin);
-    turn = demandz * (Encoder_Counts_Per_Radian * modifier_ang);
+    forward = 0 * (Encoder_Counts_Per_Meter * modifier_lin);
+    turn = 0.2 * (Encoder_Counts_Per_Radian * modifier_ang); //142.39
 
     float Left_Motor_Speed = forward - turn;  //in encoder counts per second
     float Right_Motor_Speed = forward + turn;
@@ -522,7 +547,14 @@ void loop() {
     BRpos_diff = BRpos - BRpos_old;
 
     #ifdef DEBUG
-      Serial.println(FLpos);
+      Serial.print("encoder: ");
+      Serial.println(FRpos); // 2.84
+      Serial.print("speed: ");
+      Serial.println(FRout);
+      Serial.print("speed In: ");
+      Serial.println(Front_Right_Encoder_Vel_Setpoint);
+      Serial.print("diff: ");
+      Serial.println(FRpos_diff);
     #endif
     
     FLpos_old = FLpos;
@@ -664,10 +696,10 @@ void loop() {
     //odom_msg.pose.pose.orientation.x = angleXtotal;
 
     odom_msg.child_frame_id = base_link;
-    odom_msg.twist.twist.linear.x = ((Left_mm_diff + Right_mm_diff) / 2) / 10;  // forward linear velocity
-    odom_msg.twist.twist.linear.y = ((Front_mm_diff + Back_mm_diff) / 2) / 10;  // sideways linear velocity                                        // robot does not move sideways
+    odom_msg.twist.twist.linear.x = ((Left_mm_diff + Right_mm_diff) / 2) / loopTime;// / 10 instead of loopTime  // forward linear velocity
+    odom_msg.twist.twist.linear.y = ((Front_mm_diff + Back_mm_diff) / 2) / loopTime;  // sideways linear velocity                                        // robot does not move sideways
     //odom_msg.twist.twist.angular.z = (((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X) + ((Back_mm_diff - Front_mm_diff) / Odom_Width_Between_Wheels_Y) / 2); * 100;
-    odom_msg.twist.twist.angular.z = (theta - theta_old) * 100;
+    odom_msg.twist.twist.angular.z = (theta - theta_old) * (1000/loopTime);
     //odom_msg.twist.covariance[0] = 0.00005;  //x vel
     //odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
                                             // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
@@ -788,39 +820,6 @@ void FL1() {
   }
 }
 
-/*
-void LO0() {
-  if (digitalRead(LeftOdomEncoderB)==LOW) {
-  LOdomPos++;
-  } else {
-  LOdomPos--;
-  }
-  }
-
-void LO1() {
-  if (digitalRead(LeftOdomEncoderA)==LOW) {
-  LOdomPos--;
-  } else {
-  LOdomPos++;
-  }
-  }
-
-void RO0() {
-  if (digitalRead(RightOdomEncoderB)==LOW) {
-  ROdomPos++;
-  } else {
-  ROdomPos--;
-  }
-  }
-
-void RO1() {
-  if (digitalRead(RightOdomEncoderA)==LOW) {
-  ROdomPos--;
-  } else {
-  ROdomPos++;
-  }
-  }
-*/
 
 void setMotorSpeed(float fl, float bl, float fr, float br) {
   fl = map(fl, -100, 100, 180, 0);
