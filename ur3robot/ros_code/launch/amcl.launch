@@ -39,7 +39,7 @@
     <param name="odom_alpha2"               value="0.1"/>
     <param name="odom_alpha3"               value="0.1"/>
     <param name="odom_alpha4"               value="0.1"/>
-    <param name="odom_frame_id"             value="odometry/filtered"/>
+    <param name="odom_frame_id"             value="odom"/>
     <param name="base_frame_id"             value="base_link"/>
 
   </node>
