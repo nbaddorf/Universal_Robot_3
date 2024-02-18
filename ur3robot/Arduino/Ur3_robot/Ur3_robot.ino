@@ -62,7 +62,7 @@ float Encoder_Counts_Per_Half_Circumference = Distance_Between_Wheels_Half_Circu
 float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Half_Circumference / PI; // 1.12
 */
 
-float Distance_Between_Wheels = 383;                                                                                              //in mm                                                                                        //distance between left wheels and right wheels in mm
+float Distance_Between_Wheels = 415;   //383                                                                                           //in mm                                                                                        //distance between left wheels and right wheels in mm
 float Distance_Between_Wheels_Half_Circumference = (PI * Distance_Between_Wheels) / 2;     //601.6 mm for 180 deg. = pi radians        
 float Encoder_Counts_Per_Pi_Radian = Distance_Between_Wheels_Half_Circumference * Encoder_Counts_Per_MM; //2236.8 encoder counts
 float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Pi_Radian / PI; // 711.997 encoder counts per radian
@@ -436,8 +436,10 @@ void loop() {
       } else if (voltage >= 14.0) {
         batt_state.power_supply_health = 3; //overvoltage
       } else {
-        batt_state.power_supply_health = 1; // good
-        low_battery_mode = false;
+        if (voltage >= 13.0) {
+          batt_state.power_supply_health = 1; // good
+          low_battery_mode = false;
+        }
       }
 
       batt_state.voltage = voltage;
