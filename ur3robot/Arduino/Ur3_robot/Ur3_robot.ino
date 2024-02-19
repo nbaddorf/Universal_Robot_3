@@ -427,7 +427,7 @@ void loop() {
     double voltage = ((voltageValue * 3.25) / 1024) / (R2/(R1+R2));
     //float vin = vout / (R2/(R1+R2));
     #ifndef DEBUG
-      if (voltage <= 12.8) {
+      if (voltage <= 11.2) {
         batt_state.power_supply_health = 3; // Dead
         if (!low_battery_mode) {
           previousBuzzerMillis = currentMillis;
@@ -436,7 +436,7 @@ void loop() {
       } else if (voltage >= 14.0) {
         batt_state.power_supply_health = 3; //overvoltage
       } else {
-        if (voltage >= 13.0) {
+        if (voltage >= 12.0) {
           batt_state.power_supply_health = 1; // good
           low_battery_mode = false;
         }
