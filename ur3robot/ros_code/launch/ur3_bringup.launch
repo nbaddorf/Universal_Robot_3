@@ -39,6 +39,8 @@
 <node name="laser_filter_node" type="laser_filter_node" pkg="ur3robot" output="screen">
 </node> 
 
+<include file="$(find ur3robot)/launch/testing/laser_matcher.launch" />
+
 <!-- AMCL -->
 <include file="$(find ur3robot)/launch/amcl.launch"/>
 
