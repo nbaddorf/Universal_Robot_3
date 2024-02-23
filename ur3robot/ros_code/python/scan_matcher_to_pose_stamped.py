@@ -27,12 +27,12 @@ def pose_pub(x,y,theta):
     pos.pose.pose.orientation.z = quat[2]
     pos.pose.pose.orientation.w = quat[3]
 
-    pos.pose.covariance[0] = 0.1 #1.0533996225e-07 #was 0.2
-    pos.pose.covariance[7] = 0.1 #7.5730596059e-08 #was 0.2
+    pos.pose.covariance[0] = 0 #1.0533996225e-07 #was 0.2
+    pos.pose.covariance[7] = 0 #7.5730596059e-08 #was 0.2
     pos.pose.covariance[1:7] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
     pos.pose.covariance[8:34] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
-    pos.pose.covariance[35] = 0.05 #1.61800759713e-06 #was 0.2
+    pos.pose.covariance[35] = 0 #0.05 #1.61800759713e-06 #was 0.2
     pub.publish(pos)
 
 
