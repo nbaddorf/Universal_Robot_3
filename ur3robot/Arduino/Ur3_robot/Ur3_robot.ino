@@ -1,8 +1,8 @@
 //add all libraries to the sketch
 #include <PID_v1.h>
 #include <math.h>
-//#include <Servo.h>
-#include <PWMServo.h>
+#include <Servo.h>
+//#include <PWMServo.h>
 
 #include "AS5600.h"
 #include <ros.h>
@@ -113,18 +113,18 @@ const int motorFRspeedpin = 28;
 const int motorBRspeedpin = 29;
 
 //init the motor controllers
-/*
+
 Servo FL;
 Servo BL;
 Servo FR;
 Servo BR;
-*/
 
+/*
 PWMServo FL;
 PWMServo BL;
 PWMServo FR;
 PWMServo BR;
-
+*/
 //********************** Setup AS5600 Encoder with multiplexer here *****************
 const int odom_a0 = 30;  //These really shouldnt be here, these 3 pins just set the multiplexers address.
 const int odom_a1 = 31;
@@ -220,10 +220,10 @@ long FLpos_old = 0;
 long BRpos_old = 0;
 long FRpos_old = 0;
 
-long LOdomPos_old = 0;
-long ROdomPos_old = 0;
-long BOdomPos_old = 0;
-long FOdomPos_old = 0;
+int LOdomPos_old = 0;
+int ROdomPos_old = 0;
+int BOdomPos_old = 0;
+int FOdomPos_old = 0;
 
 float pos_x_average_mm_diff;
 float pos_x_total_mm;
@@ -316,10 +316,10 @@ void setup() {
   attachInterrupt(BLencoderB, BL1, RISING);
 
   //set motor controllers to the correct pins
-  FR.attach(motorFRspeedpin);
-  BR.attach(motorBRspeedpin);
-  FL.attach(motorFLspeedpin);
-  BL.attach(motorBLspeedpin);
+  //FR.attach(motorFRspeedpin);
+  //BR.attach(motorBRspeedpin);
+  //FL.attach(motorFLspeedpin);
+  //BL.attach(motorBLspeedpin);
 
   pinMode(LED, OUTPUT);
 
@@ -503,25 +503,41 @@ void loop() {
     if ((Front_Left_Encoder_Vel_Setpoint * 1000 == 0) && (abs(FLout) <= 5)) {
       FLout = 0;
       PID_FL.SetMode(MANUAL);
+      FL.detach();
     } else {
+      if (!FL.attached()) { 
+        FL.attach(motorFLspeedpin); 
+      }
       PID_FL.SetMode(AUTOMATIC);
     }
     if ((Front_Right_Encoder_Vel_Setpoint * 1000 == 0) && (abs(FRout) <= 5)) {
       FRout = 0;
       PID_FR.SetMode(MANUAL);
+      FR.detach();
     } else {
+      if (!FR.attached()) { 
+        FR.attach(motorFRspeedpin);
+      }
       PID_FR.SetMode(AUTOMATIC);
     }
     if ((Back_Left_Encoder_Vel_Setpoint * 1000 == 0) && (abs(BLout) <= 5)) {
       BLout = 0;
       PID_BL.SetMode(MANUAL);
+      BL.detach();
     } else {
+      if (!BL.attached()) { 
+        BL.attach(motorBLspeedpin); 
+      }
       PID_BL.SetMode(AUTOMATIC);
     }
     if ((Back_Right_Encoder_Vel_Setpoint * 1000 == 0) && (abs(BRout) <= 5)) {
       BRout = 0;
       PID_BR.SetMode(MANUAL);
+      BR.detach();
     } else {
+      if (!BR.attached()) { 
+        BR.attach(motorBRspeedpin); 
+      }
       PID_BR.SetMode(AUTOMATIC);
     }
     
@@ -753,6 +769,9 @@ int check_odom_rollover(int* valIn, int* val_old) {
       return (Odom_Wheel_Encoder_Per_Wheel_Rev - *val_old) + *valIn; // + 1;
     } else if (*valIn > *val_old) {
       return -(Odom_Wheel_Encoder_Per_Wheel_Rev - *valIn) + *val_old; // + 1;
+    } else {
+      //error 
+      return 0;
     }
   } else {
     return *valIn - *val_old;

@@ -13,3 +13,7 @@ Networking info:
   (IN DOCKER)
   - Docker doesnt seem to pass on the .local avahi stuff, so that doesnt seem to work.
   Because of this, we are relying on the router to resolve hosts for us.
+
+
+IF RUNNING OUT OF DISK SPACE:
+run "docker container prune"
