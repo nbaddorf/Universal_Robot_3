@@ -566,14 +566,14 @@ void loop() {
     BRpos_diff = BRpos - BRpos_old;
 
     #ifdef DEBUG
-      Serial.print("encoder: ");
-      Serial.println(FRpos); // 2.84
-      Serial.print("speed: ");
-      Serial.println(FRout);
-      Serial.print("speed In: ");
-      Serial.println(Front_Right_Encoder_Vel_Setpoint);
-      Serial.print("diff: ");
-      Serial.println(FRpos_diff);
+      //Serial.print("encoder: ");
+      //Serial.println(FRpos); // 2.84
+      //Serial.print("speed: ");
+      //Serial.println(FRout);
+      //Serial.print("speed In: ");
+     // Serial.println(Front_Right_Encoder_Vel_Setpoint);
+     // Serial.print("diff: ");
+     // Serial.println(FRpos_diff);
     #endif
     
     FLpos_old = FLpos;
@@ -592,18 +592,18 @@ void loop() {
     LOdomPos_diff = check_odom_rollover(&LOdomPos, &LOdomPos_old);
     ROdomPos_diff = check_odom_rollover(&ROdomPos, &ROdomPos_old);
     
-    /*
+    
     #ifdef DEBUG
-      Serial.print("front odom:    ");
-      Serial.println(FOdomPos_diff);
-      Serial.print("back odom:    ");
-      Serial.println(BOdomPos_diff);
-      Serial.print("left odom:    ");
-      Serial.println(LOdomPos_diff);
-      Serial.print("right odom:    ");
-      Serial.println(ROdomPos_diff);
+     // Serial.print("front odom:    ");
+     // Serial.println(FOdomPos_diff);
+     // Serial.print("back odom:    ");
+     // Serial.println(BOdomPos_diff);
+      //Serial.print("left odom:    ");
+      //Serial.println(LOdomPos_diff);
+      //Serial.print("right odom:    ");
+      //Serial.println(ROdomPos_diff);
     #endif
-*/
+
 
   FOdomPos_old = FOdomPos;
   BOdomPos_old = BOdomPos;
@@ -762,6 +762,7 @@ void getOdomValues(int* _f, int* _b, int* _l, int* _r) {
 }
 
 int check_odom_rollover(int* valIn, int* val_old) {
+  /*
   if (*valIn == *val_old) {
       return 0;
   } else if (abs(*valIn - *val_old) >= Odom_Encoder_Half_Count) {
@@ -776,6 +777,10 @@ int check_odom_rollover(int* valIn, int* val_old) {
   } else {
     return *valIn - *val_old;
   }
+  */
+
+  int diff = *valIn - *val_old;
+  return (abs(diff) > Odom_Encoder_Half_Count) ? ((diff > 0) ?  (diff - Odom_Wheel_Encoder_Per_Wheel_Rev) : (diff + Odom_Wheel_Encoder_Per_Wheel_Rev)) : diff;
 }
 
 void BR0() {

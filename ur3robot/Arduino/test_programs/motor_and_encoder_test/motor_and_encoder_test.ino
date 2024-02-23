@@ -123,7 +123,7 @@ void loop() {
     delay(6000);
   }
 
-if (true) {
+if (false) {
     Serial.println("Front Left Motor On");
     setMotorSpeed(-20, -20, -20, -20);
     //delay(1500);
@@ -132,33 +132,38 @@ if (true) {
     //delay(1500);
   }
 
-  if (true) {
+  if (false) {
     char buffer[40];
     sprintf(buffer, "FL: %d. BL: %d. FR: %d. BR: %d.", FLpos, BLpos, FRpos, BRpos);
     Serial.println(buffer);
     delay(10);
   }
 
-  if (false) {
+  if (true) {
     TCA9548A(2);
     Serial.print("left. ");
     Serial.print("\t");
     int test = odom_left.rawAngle();
     Serial.println(test);
-    TCA9548A(0);
-    Serial.print("front. ");
-    Serial.print("\t");
-    Serial.println(odom_front.rawAngle() * AS5600_RAW_TO_DEGREES);
-    TCA9548A(1);
-    Serial.print("back. ");
-    Serial.print("\t");
-    Serial.println(odom_back.rawAngle() * AS5600_RAW_TO_DEGREES);
-    TCA9548A(3);
-    Serial.print("right. ");
-    Serial.print("\t");
-    Serial.println(odom_right.rawAngle() * AS5600_RAW_TO_DEGREES);
+    if (test >= 4500) {
+      Serial.println("TTTTTTTTTTTT");
+    } else if (test < 0) {
+      Serial.println("BBBBBBBBBBBBBBBBB");
+    }
+    //TCA9548A(0);
+    //Serial.print("front. ");
+    //Serial.print("\t");
+    //Serial.println(odom_front.rawAngle() * AS5600_RAW_TO_DEGREES);
+    //TCA9548A(1);
+    //Serial.print("back. ");
+    //Serial.print("\t");
+    //Serial.println(odom_back.rawAngle() * AS5600_RAW_TO_DEGREES);
+    //TCA9548A(3);
+    //Serial.print("right. ");
+    //Serial.print("\t");
+    //Serial.println(odom_right.rawAngle() * AS5600_RAW_TO_DEGREES);
     
-    delay(40);
+    //delay(40);
   }
   //Serial.println(te);
   //Test(&te);
