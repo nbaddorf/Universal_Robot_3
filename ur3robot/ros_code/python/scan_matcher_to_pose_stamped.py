@@ -12,7 +12,7 @@ def poseCb(data):
 def pose_pub(x,y,theta):
     pos = PoseWithCovarianceStamped()
     #filling header with relevant information
-    pos.header.frame_id = "base_link"
+    pos.header.frame_id = "odom" #base_link
     pos.header.stamp = rospy.Time.now()
     #filling payload with relevant information gathered from subscribing
     # to initialpose topic published by RVIZ via rostopic echo initialpose
