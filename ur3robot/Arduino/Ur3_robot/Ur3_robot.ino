@@ -20,7 +20,7 @@
 //#define DEBUG
 
 //uncomment to enable tf
-#define PUBLISH_TF
+//#define PUBLISH_TF
 
 //Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
@@ -645,7 +645,7 @@ void loop() {
   float phi_y = ((Front_mm_diff - Back_mm_diff) / Odom_Width_Between_Wheels_Y);
 
   theta += (phi_x + phi_y) / 2;
-  //theta += (phi_x);
+  //theta += (phi_y);
 
   if (theta >= TWO_PI) {
     theta -= TWO_PI;
@@ -677,8 +677,8 @@ void loop() {
             geometry_msgs::TransformStamped t;
                       
             t.header.frame_id = odom;
-           // t.child_frame_id = base_link;
-           t.child_frame_id = raw_odom;
+            t.child_frame_id = base_link;
+           //t.child_frame_id = raw_odom;
             
             t.transform.translation.x = x/1000;   // convert to metres
             t.transform.translation.y = y/1000;

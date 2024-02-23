@@ -24,12 +24,9 @@
 		<param name="baud" value="115200"/>
 </node>
 
-
-<!--
 <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
     <rosparam command="load" file="$(find ur3robot)/param/ekf/ekf_params.yaml" />
 </node>
--->
 
 <!-- rplidar -->
 <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
