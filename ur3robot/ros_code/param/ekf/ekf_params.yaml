@@ -136,23 +136,23 @@ imu0_twist_rejection_threshold: 1 #was 0.8                #
 imu0_linear_acceleration_rejection_threshold: 0.8  #
 
 
-#pose0: /laser_scan_macher/pose
+pose0: /laser_scan_macher/pose
 # values is x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. 
-#pose0_config: [true, true,  false,
-#               false, false, true,
-#               false, false, false,
-#               false, false, false,
-#               false, false, false]
+pose0_config: [true, true,  false,
+               false, false, true,
+               false, false, false,
+               false, false, false,
+               false, false, false]
 
 # If you have high-frequency data or are running with a low frequency parameter value, then you may want to increase
 # the size of the subscription queue so that more measurements are fused.
-#pose0_queue_size: 1
+pose0_queue_size: 1
 
-#pose0_nodelay: false
+pose0_nodelay: false
 
-#pose0_differential: true
+pose0_differential: false #true
 
-#pose0_relative: false
+pose0_relative: false
 
 
 
