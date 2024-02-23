@@ -150,7 +150,7 @@ pose0_queue_size: 3
 
 pose0_nodelay: false
 
-pose0_differential: false #true
+pose0_differential: true #true
 
 pose0_relative: false
 
