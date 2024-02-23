@@ -20,7 +20,7 @@
 //#define DEBUG
 
 //uncomment to enable tf
-//#define PUBLISH_TF
+#define PUBLISH_TF
 
 //Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
