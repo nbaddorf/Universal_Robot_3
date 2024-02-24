@@ -7,28 +7,28 @@
 
 ros::Publisher pose_pub;
 
-struct myPose {
-  double x;
-  double y;
-  double th;
-}
-
-
 void pos_sub_callback(const geometry_msgs::Pose2D &msg) {
-  //myPose recieved_pos;
-  //recieved_pos.x = msg.x;
-  //recieved_pos.y = msg.y;
-  //recieved_pos.th = msg.th;
 
-  geometry_msgs::PoseWithCovarianceStamped poseStamped;
+  if (pose_pub.getNumSubscribers() > 0) {
+    geometry_msgs::PoseWithCovarianceStamped poseStamped;
+    tf2::Quaternion theta_quat;
 
-  poseStamped.header = msg->header;
-  poseStamped.pose.pose.position.x = msg->x;
-  poseStamped.pose.pose.position.y = msg->y;
-  poseStamped.pose.pose.position.z = 0.0;
+    poseStamped.header.frame_id = "odom";
+    poseStamped.header.stamp = ros::Time::now();
+    poseStamped.pose.pose.position.x = msg.x;
+    poseStamped.pose.pose.position.y = msg.y;
+    poseStamped.pose.pose.position.z = 0.0;
 
-  pose_pub.publish(poseStamped);
-  
+    theta_quat.setRPY(0,0,msg.theta);
+    theta_quat = theta_quat.normalize();
+
+    poseStamped.pose.pose.orientation.x = theta_quat[0];
+    poseStamped.pose.pose.orientation.y = theta_quat[1];
+    poseStamped.pose.pose.orientation.z = theta_quat[2];
+    poseStamped.pose.pose.orientation.w = theta_quat[3];
+    
+    pose_pub.publish(poseStamped);
+  }
 }
 
 int main(int argc, char **argv) {
@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 
   ros::NodeHandle n;
 
-  pose_pub = n.advertise<geometry_msgs::PoseWithCovarianceStamped>("laser_scan_macher/pose", 10);
+  pose_pub = n.advertise<geometry_msgs::PoseWithCovarianceStamped>("laser_scan_macher/pose_stamped", 10);
   ros::Subscriber pos_sub = n.subscribe("laser_scan_macher/pose2D", 10, pos_sub_callback);
 
   ros::Rate loop_rate(10);
