@@ -36,6 +36,7 @@ RUN apt-get update \
     && apt-get install -y \
     ros-melodic-dwa-local-planner \
     ros-melodic-laser-scan-matcher \
+    ros-melodic-rosserial-server \
     && rm -rf /var/lib/apt/lists/*
 
 

@@ -39,7 +39,7 @@ def pose_pub(x,y,theta):
 if __name__ == '__main__':
     try:
         rospy.init_node('scan_macher_to_pose_stamped', anonymous=True)
-        pub = rospy.Publisher('laser_scan_macher/pose', PoseWithCovarianceStamped, queue_size=5)
+        pub = rospy.Publisher('laser_scan_macher/pose_stamped', PoseWithCovarianceStamped, queue_size=5)
         rospy.Subscriber("laser_scan_macher/pose2D", Pose2D, poseCb)
         
         #rate = rospy.Rate(10)
