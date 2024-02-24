@@ -1,0 +1,1 @@
+docker run -it --user ros --network=host --add-host ur3robot.local:127.0.1.1 --ipc=host --device=/dev/ttyUSB0 -v /home/$USER/Universal_Robot_3/ur3robot/ros_code:/home/ros/catkin_ws/src/ur3robot ur3robot_plain_docker_image

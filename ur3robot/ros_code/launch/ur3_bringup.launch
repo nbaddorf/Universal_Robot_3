@@ -39,7 +39,8 @@
 <node name="laser_filter_node" type="laser_filter_node" pkg="ur3robot" output="screen">
 </node> 
 
-<include file="$(find ur3robot)/launch/Testing/laser_matcher.launch" />
+<!-- start the laser scan matcher which is a 3rd source of odom for ekf-->
+<include file="$(find ur3robot)/launch/laser_matcher.launch" />
 
 <!-- AMCL -->
 <include file="$(find ur3robot)/launch/amcl.launch"/>

@@ -35,6 +35,9 @@
 <node name="laser_filter_node" type="laser_filter_node" pkg="ur3robot" output="screen">
 </node> 
 
+<!-- start the laser scan matcher which is a 3rd source of odom for ekf-->
+<include file="$(find ur3robot)/launch/laser_matcher.launch" />
+
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
 

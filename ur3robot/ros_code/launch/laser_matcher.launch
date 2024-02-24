@@ -16,6 +16,6 @@
     <param name="publish_pose" value="true" />
   </node>
 
-  <node name="laser_scan_pose2d_to_pose_stamped" type="scan_matcher_to_pose_stamped.py" pkg="ur3robot" />
+  <!-- <node name="laser_scan_pose2d_to_pose_stamped" type="scan_matcher_to_pose_stamped.py" pkg="ur3robot" /> -->
 
 </launch>
