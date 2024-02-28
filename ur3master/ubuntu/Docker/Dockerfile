@@ -46,6 +46,7 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     mkdir -p /home/${USERNAME}/catkin_ws/src &&\
     cd /home/${USERNAME}/catkin_ws/src &&\
     git clone https://github.com/nbaddorf/rviz_helper_plugin.git &&\
+    
     cd /home/${USERNAME}/catkin_ws &&\
     catkin_make'
 
