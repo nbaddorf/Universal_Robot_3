@@ -26,8 +26,8 @@ void pos_sub_callback(const geometry_msgs::Pose2D &msg) {
     poseStamped.pose.pose.orientation.y = theta_quat[1];
     poseStamped.pose.pose.orientation.z = theta_quat[2];
     poseStamped.pose.pose.orientation.w = theta_quat[3];
-    //auto poseStamped.pose.covariance covArray(36, 0.01);
-    poseStamped.pose.covariance(36, 0.01);
+    auto poseStamped.pose.covariance covArray(36, 0.01);
+    poseStamped.pose.covariance = covArray;
     
     pose_pub.publish(poseStamped);
   }
