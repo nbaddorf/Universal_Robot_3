@@ -82,7 +82,7 @@ odom0: odom
 # if unspecified, effectively making this parameter required for each sensor.
 odom0_config: [false, false,  false,
                false, false, false,
-               true, true, false,
+               true, true, true,
                false, false, true,
                false, false, false]
 
