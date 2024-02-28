@@ -29,8 +29,8 @@ void pos_sub_callback(const geometry_msgs::Pose2D &msg) {
     poseStamped.pose.pose.orientation.w = theta_quat[3];
     //auto covArray(36, 0.01);
     //std::vector<double> covArray(36, 0.01);
-    boost::array<double, 36> covArray(36, 0.01);
-    poseStamped.pose.covariance = covArray; //{0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, };//covArray;
+    //boost::array<double, 36> covArray(36, 0.01);
+    poseStamped.pose.covariance = {0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, };
     
     pose_pub.publish(poseStamped);
   }
