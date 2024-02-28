@@ -45,6 +45,7 @@ USER ros
 RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     mkdir -p /home/${USERNAME}/catkin_ws/src &&\
     cd /home/${USERNAME}/catkin_ws/src &&\
+    git clone https://github.com/nbaddorf/rviz_helper_plugin.git &&\
     cd /home/${USERNAME}/catkin_ws &&\
     catkin_make'
 
@@ -64,6 +65,7 @@ RUN apt-get update \
     && apt-get install -y \
     ros-melodic-plotjuggler-ros \
     && rm -rf /var/lib/apt/lists/*
+
         
 #EXPOSE 8080
 USER root RUN mkdir -p /tmp/.X11-unix
