@@ -145,6 +145,9 @@ add_executable(laser_filter_node cpp/laser_filter_node.cpp)
 add_executable(scan_matcher_to_pose_stamped cpp/scan_matcher_to_pose_stamped.cpp)
 add_executable(odom_analyzer cpp/odom_analyzer.cpp)
 
+add_executable(broad cpp/testing/sub_and_unsub_test/broad.cpp)
+add_executable(reciev cpp/testing/sub_and_unsub_test/reciev.cpp)
+
 ## Specify libraries to link a library or executable target against
 target_link_libraries(kinect_aux_node
    ${catkin_LIBRARIES}
@@ -155,6 +158,9 @@ target_link_libraries(laser_filter_node ${catkin_LIBRARIES})
 
 target_link_libraries(scan_matcher_to_pose_stamped ${catkin_LIBRARIES})
 target_link_libraries(odom_analyzer ${catkin_LIBRARIES})
+
+target_link_libraries(broad ${catkin_LIBRARIES})
+target_link_libraries(reciev ${catkin_LIBRARIES})
 
 # Mark executables and/or libraries for installation
 install(TARGETS kinect_aux_node

@@ -42,7 +42,7 @@ int main(int argc, char **argv)
       std_msgs::String msg;
 
       std::stringstream ss;
-      ss << "hello world " << count;
+      ss << "hello world broad " << count;
       msg.data = ss.str();
 
       ROS_INFO("broad %s", msg.data.c_str());
