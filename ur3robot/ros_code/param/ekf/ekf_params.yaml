@@ -81,14 +81,20 @@ odom0: odom
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
 odom0_config: [false, false,  false,
-               false, false, false,
-               true, true, true,
                false, false, true,
+               true, true, false,
+               false, false, false,
                false, false, false]
+
+#odom0_config: [false, false,  false,
+#               false, false, false,
+#               true, true, false,
+#               false, false, true,
+#               false, false, false]
 
 # If you have high-frequency data or are running with a low frequency parameter value, then you may want to increase
 # the size of the subscription queue so that more measurements are fused.
-odom0_queue_size: 10 #4 #was 2
+odom0_queue_size: 3 #4 #was 2
 
 # [ADVANCED] Large messages in ROS can exhibit strange behavior when they arrive at a high frequency. This is a result
 # of Nagle's algorithm. This option tells the ROS subscriber to use the tcpNoDelay option, which disables Nagle's
@@ -123,12 +129,12 @@ odom0_relative: false
 #"""
 imu0: imu/data_raw
 imu0_config: [false, false, false,
-              false,  false,  false,
+              false,  false,  true,
               false, false, false,
-              false,  false,  false,
-              true,  true,  false]
+              false,  false,  true,
+              true,  false,  false]
 imu0_nodelay: false
-imu0_differential: false
+imu0_differential: true #false
 imu0_relative: true
 imu0_queue_size: 5
 imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
@@ -177,9 +183,9 @@ control_timeout: 0.2
 # Which velocities are being controlled. Order is vx, vy, vz, vroll, vpitch, vyaw.
 control_config: [true, false, false, false, false, true]
 # Places limits on how large the acceleration term will be. Should match your robot's kinematics.
-acceleration_limits: [0.6, 0.0, 0.0, 0.0, 0.0, 2.6]
+acceleration_limits: [1, 0.0, 0.0, 0.0, 0.0, 3]
 # Acceleration and deceleration limits are not always the same for robots.
-deceleration_limits: [0.8, 0.0, 0.0, 0.0, 0.0, 2.8]
+deceleration_limits: [1, 0.0, 0.0, 0.0, 0.0, 3]
 # If your robot cannot instantaneously reach its acceleration limit, the permitted change can be controlled with these
 # gains
 acceleration_gains: [0.8, 0.0, 0.0, 0.0, 0.0, 0.9]

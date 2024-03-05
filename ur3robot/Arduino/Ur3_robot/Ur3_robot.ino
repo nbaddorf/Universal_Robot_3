@@ -159,7 +159,7 @@ char odom[] = "odom";            //was /odom
 // timers for the sub-main loop
 unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
-const float loopTime = 10; // 10
+const float loopTime = 20; // 10
 
 // timers for the sub-battery and buzzer loop
 unsigned long previousBuzzerMillis = 0;  // set up timers
