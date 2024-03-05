@@ -19,13 +19,13 @@
 </node>
 
 <!-- start teensy serial -->
-<!--
+
 <node name="teensy_serial" pkg="rosserial_python" type="serial_node.py" output="screen">
 		<param name="port" value="/dev/ttyACM0"/>
 		<param name="baud" value="115200"/>
 </node>
--->
 
+<!--
 <node name="rosserial_python_message" type="message_info_service.py" pkg="rosserial_python" output="screen">
 </node> 
 
@@ -33,7 +33,7 @@
 		<param name="port" value="/dev/ttyACM0"/>
 		<param name="baud" value="115200"/>
 </node>
-
+-->
 
 <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
     <rosparam command="load" file="$(find ur3robot)/param/ekf/ekf_params.yaml" />
