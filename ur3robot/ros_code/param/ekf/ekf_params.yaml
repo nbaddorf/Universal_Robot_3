@@ -134,7 +134,7 @@ imu0_config: [false, false, false,
               false,  false,  true,
               true,  false,  false]
 imu0_nodelay: false
-imu0_differential: true #false
+imu0_differential: false #false
 imu0_relative: true
 imu0_queue_size: 5
 imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
@@ -183,12 +183,12 @@ control_timeout: 0.2
 # Which velocities are being controlled. Order is vx, vy, vz, vroll, vpitch, vyaw.
 control_config: [true, false, false, false, false, true]
 # Places limits on how large the acceleration term will be. Should match your robot's kinematics.
-acceleration_limits: [1, 0.0, 0.0, 0.0, 0.0, 3]
+acceleration_limits: [1.5, 0.0, 0.0, 0.0, 0.0, 3]
 # Acceleration and deceleration limits are not always the same for robots.
-deceleration_limits: [1, 0.0, 0.0, 0.0, 0.0, 3]
+deceleration_limits: [1.5, 0.0, 0.0, 0.0, 0.0, 3]
 # If your robot cannot instantaneously reach its acceleration limit, the permitted change can be controlled with these
 # gains
-acceleration_gains: [0.8, 0.0, 0.0, 0.0, 0.0, 0.9]
+acceleration_gains: [1, 0.0, 0.0, 0.0, 0.0, 1]
 # If your robot cannot instantaneously reach its deceleration limit, the permitted change can be controlled with these
 # gains
 deceleration_gains: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
