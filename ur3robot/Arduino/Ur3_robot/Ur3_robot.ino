@@ -719,7 +719,9 @@ void loop() {
     odom_msg.twist.twist.linear.y = ((Front_mm_diff + Back_mm_diff) / 2) / loopTime;  // sideways linear velocity                                        // robot does not move sideways
     //odom_msg.twist.twist.angular.z = (((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X) + ((Back_mm_diff - Front_mm_diff) / Odom_Width_Between_Wheels_Y) / 2); * 100;
     odom_msg.twist.twist.angular.z = (theta - theta_old) * (1000/loopTime);
-    //odom_msg.twist.covariance[0] = 0.00005;  //x vel
+    odom_msg.twist.covariance[0] = 0.05;  //x vel
+    odom_msg.twist.covariance[7] = 0.05;  //y vel
+    odom_msg.twist.covariance[35] = 0.05;  //theta vel
     //odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
                                             // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
     //nh.spinOnce();
