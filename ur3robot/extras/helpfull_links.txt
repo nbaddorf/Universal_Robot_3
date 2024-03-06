@@ -17,3 +17,6 @@ Networking info:
 
 IF RUNNING OUT OF DISK SPACE:
 run "docker container prune"
+
+
+imu_data.linear_acceleration_covariance = {0.05, 0, 0, 0, 0.05, 0,0,0,0.5}
