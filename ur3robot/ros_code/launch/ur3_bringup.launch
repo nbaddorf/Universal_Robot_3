@@ -58,9 +58,9 @@
 </node> 
 
 <!-- start the laser scan matcher which is a 3rd source of odom for ekf-->
-<!--
+
 <include file="$(find ur3robot)/launch/laser_matcher.launch" />
--->
+
 
 <!-- AMCL -->
 <include file="$(find ur3robot)/launch/amcl.launch"/>
