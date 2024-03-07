@@ -712,6 +712,10 @@ void loop() {
     odom_msg.pose.pose.position.y = y / 1000;
     odom_msg.pose.pose.position.z = 0.0;
     odom_msg.pose.pose.orientation = tf::createQuaternionFromYaw(theta);
+
+    odom_msg.pose.covariance[0] = 0.05;  //x pose
+    odom_msg.pose.covariance[7] = 0.05;  //y pose
+    odom_msg.pose.covariance[35] = 0.05;  //theta pose
     //odom_msg.pose.pose.orientation.x = angleXtotal;
 
     odom_msg.child_frame_id = base_link;
@@ -722,6 +726,7 @@ void loop() {
     odom_msg.twist.covariance[0] = 0.05;  //x vel
     odom_msg.twist.covariance[7] = 0.05;  //y vel
     odom_msg.twist.covariance[35] = 0.05;  //theta vel
+    
     //odom_msg.twist.covariance[20] = 0.001;   // rotation around z vel
                                             // odom_msg.twist.twist.angular.x = angleXdif;// anglular velocity
     //nh.spinOnce();
