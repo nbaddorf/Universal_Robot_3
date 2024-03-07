@@ -71,6 +71,8 @@ void setup() {
   axis1.setAcceleration(axis1_acceleration * axis1_steps_per_rad);
   axis1.setPinsInverted(false, false, true);
 
+  pinMode(LED, OUTPUT);
+
 }
 
 void loop() {

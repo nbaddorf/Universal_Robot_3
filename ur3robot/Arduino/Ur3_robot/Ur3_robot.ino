@@ -15,12 +15,13 @@
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/Bool.h>
 #include <sensor_msgs/BatteryState.h>
+#include <geometry_msgs/Quaternion.h>
 
 //uncomment to enable debugging
 //#define DEBUG
 
 //uncomment to enable tf
-//#define PUBLISH_TF
+#define PUBLISH_TF
 
 //Drive wheel math
 float Wheel_Diameter = 96;                                      //in mm
@@ -230,6 +231,8 @@ float pos_x_total_mm;
 float pos_y_average_mm_diff;
 float pos_y_total_mm;
 
+float odom_ang_adjuster = 1.00;
+
 //bool odomResetState = false;
 
 //create pid for drivebase
@@ -253,13 +256,14 @@ void velCallback(const geometry_msgs::Twist& vel) {
 }
 
 void pidSet(const geometry_msgs::Vector3& vel) {
-  int p = vel.x;
-  int i = vel.y;
-  int d = vel.z;
-  PID_FL.SetTunings(p, i, d);
-  PID_FR.SetTunings(p, i, d);
-  PID_BL.SetTunings(p, i, d);
-  PID_BR.SetTunings(p, i, d);
+  //int p = vel.x;
+  odom_ang_adjuster = vel.x;
+  //int i = vel.y;
+  //int d = vel.z;
+  //PID_FL.SetTunings(p, i, d);
+  //PID_FR.SetTunings(p, i, d);
+  //PID_BL.SetTunings(p, i, d);
+  //PID_BR.SetTunings(p, i, d);
 }
 
 
@@ -644,7 +648,7 @@ void loop() {
   float phi_x = ((Right_mm_diff - Left_mm_diff) / Odom_Width_Between_Wheels_X);
   float phi_y = ((Front_mm_diff - Back_mm_diff) / Odom_Width_Between_Wheels_Y);
 
-  theta += (phi_x + phi_y) / 2;
+  theta += ((phi_x + phi_y) / 2) * odom_ang_adjuster;
   //theta += (phi_y);
 
   if (theta >= TWO_PI) {
@@ -661,8 +665,10 @@ void loop() {
 
   // calc x and y to broadcast with tf
   //maybe make 2 vars one for sin and other for cos so that the arduino doesnt have to do the math for sin and cos twice.
-  y += (pos_x_average_mm_diff * sin(theta)) + (pos_y_average_mm_diff * cos(theta));
-  x += (pos_x_average_mm_diff * cos(theta)) + (pos_y_average_mm_diff * sin(theta));
+  y += (pos_x_average_mm_diff * sin(theta)) + (pos_y_average_mm_diff * sin(theta + (PI/2)));
+  x += (pos_x_average_mm_diff * cos(theta)) + (pos_y_average_mm_diff * cos(theta + (PI/2)));
+  //y += (pos_y_average_mm_diff * sin(theta + (PI/2)));
+  //x += (pos_y_average_mm_diff * cos(theta + (PI/2)));
 
   #ifdef DEBUG
   //Serial.println(((Left_mm_diff + Right_mm_diff) / 2) / 10);
@@ -683,7 +689,7 @@ void loop() {
             t.transform.translation.x = x/1000;   // convert to metres
             t.transform.translation.y = y/1000;
             t.transform.translation.z = 0;
-
+            /*
             float yaw1 = theta;
             float pitch1=0;
             float roll1 = 0;
@@ -697,6 +703,9 @@ void loop() {
             t.transform.rotation.y = baseqy;
             t.transform.rotation.z = baseqz;
             t.transform.rotation.w = baseqw;
+            */
+            geometry_msgs::Quaternion odom_quat = tf::createQuaternionFromYaw(theta);
+            t.transform.rotation = odom_quat;
             //t.transform.rotation = tf::createQuaternionFromYaw(theta);
             t.header.stamp = nh.now();      
             broadcaster.sendTransform(t);
