@@ -16,6 +16,12 @@ RUN apt-get update \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
+    RUN apt-get update \
+    && apt-get install -y \
+    ros-melodic-image-pipeline \
+    ros-melodic-pcl-ros \
+    && rm -rf /var/lib/apt/lists/*
+
     # Create a non-root user
 ARG USERNAME=ros
 ARG USER_UID=1000
