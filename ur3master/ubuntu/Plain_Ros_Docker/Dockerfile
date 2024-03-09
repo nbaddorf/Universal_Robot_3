@@ -44,7 +44,7 @@ RUN apt-get update \
   # Copy the entrypoint and bashrc scripts so we have 
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
-#COPY bashrc /home/${USERNAME}/.bashrc
+COPY bashrc /home/${USERNAME}/.bashrc
 #COPY supervisord.conf /supervisord.conf
 #COPY conf.d /conf.d
 
