@@ -3,6 +3,7 @@
 set -e
 
 source /opt/ros/melodic/setup.bash
+source /home/ros/catkin_ws/devel/setup.bash
 export ROS_HOSTNAME=nick-ros-master #docker can resolve hosts from router, but not .local avahi
 export ROS_MASTER_URI=http://ur3robot:11311
 
