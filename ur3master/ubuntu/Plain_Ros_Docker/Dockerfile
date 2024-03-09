@@ -41,6 +41,11 @@ COPY entrypoint.sh /entrypoint.sh
 
 USER ros
 
+RUN apt-get update \
+    && apt-get install -y \
+    ros-melodic-image-pipeline\
+    && rm -rf /var/lib/apt/lists/*
+
 RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     mkdir -p /home/${USERNAME}/catkin_ws/src &&\
     cd /home/${USERNAME}/catkin_ws/src &&\
@@ -49,6 +54,8 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
 
 #RUN '
 #    && rm -rf /var/lib/apt/lists/*'
+
+
 
 USER root
 

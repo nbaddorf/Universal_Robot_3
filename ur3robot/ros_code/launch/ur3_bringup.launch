@@ -64,7 +64,7 @@
 -->
 
 <!-- AMCL -->
-<include file="$(find ur3robot)/launch/amcl.launch"/>
+<include file="$(find ur3robot)/launch/amcl.launch"/> <!-- Add remap from particlecloud to amcl/particlecloud-->
 
 <!-- move_base -->
 <include file="$(find ur3robot)/launch/move_base.launch">

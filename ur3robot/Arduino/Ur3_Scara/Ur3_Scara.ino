@@ -4,6 +4,7 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 #include <geometry_msgs/Point.h>
+#include <sensor_msgs/JointState.h>
 #include <AccelStepper.h>
 #include <math.h>
 
@@ -51,6 +52,9 @@ void pointCallback(const geometry_msgs::Point& point) {
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("arm_pos", pointCallback);
+
+sensor_msgs::JointState scara_joints;
+ros::Publisher joint_pub("odom", &odom_msg);
 
 
 void setup() {
