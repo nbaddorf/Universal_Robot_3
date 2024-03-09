@@ -20,6 +20,7 @@ RUN apt-get update \
     && apt-get install -y \
     ros-melodic-image-pipeline \
     ros-melodic-pcl-ros \
+    ros-melodic-pointcloud-to-laserscan \
     && rm -rf /var/lib/apt/lists/*
 
     # Create a non-root user

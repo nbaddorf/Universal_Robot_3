@@ -3,7 +3,7 @@
 set -e
 
 source /opt/ros/melodic/setup.bash
-export ROS_HOSTNAME=nicks-ros-master #docker can resolve hosts from router, but not .local avahi
+export ROS_HOSTNAME=nick-ros-master #docker can resolve hosts from router, but not .local avahi
 export ROS_MASTER_URI=http://ur3robot:11311
 
 #exec supervisord -c /supervisord.conf &
