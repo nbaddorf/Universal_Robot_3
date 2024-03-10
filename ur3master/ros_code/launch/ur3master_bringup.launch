@@ -1,0 +1,9 @@
+<launch>
+
+  <!-- launch rviz -->
+  <include file="$(find ur3master)/launch/rviz.launch"/>
+
+  <!-- launch pointcloud programs -->
+  <include file="$(find ur3master)/launch/pointcloud_filters.launch"/>
+
+</launch>

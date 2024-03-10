@@ -21,6 +21,7 @@ RUN apt-get update \
     ros-melodic-image-pipeline \
     ros-melodic-pcl-ros \
     ros-melodic-pointcloud-to-laserscan \
+    ros-melodic-moveit \
     && rm -rf /var/lib/apt/lists/*
 
 

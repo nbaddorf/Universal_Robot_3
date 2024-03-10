@@ -28,7 +28,7 @@ RUN apt-get update \
     ros-melodic-slam-gmapping\
     ros-melodic-map-server\
     ros-melodic-pcl-ros \
-    ros-melodic-pointcloud-to-laserscan \
+    #ros-melodic-pointcloud-to-laserscan \
     #ros-melodic-
     && rm -rf /var/lib/apt/lists/*
 
@@ -89,7 +89,7 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
     #git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\
     git clone https://github.com/nbaddorf/mpu6050_driver.git &&\
-    git clone https://github.com/corot/rail_mesh_icp.git &&\
+    #git clone https://github.com/corot/rail_mesh_icp.git &&\
     #git clone https://github.com/muhrix/kinect_aux.git &&\
     #echo "test" &&\
     #below is for xbox kinect, freenect requirements

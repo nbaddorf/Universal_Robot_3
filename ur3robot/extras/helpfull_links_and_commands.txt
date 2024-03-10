@@ -19,4 +19,5 @@ IF RUNNING OUT OF DISK SPACE:
 run "docker container prune"
 
 
-imu_data.linear_acceleration_covariance = {0.05, 0, 0, 0, 0.05, 0,0,0,0.5}
+publish kinect tilt from command line:
+rostopic pub /kinect/tilt_angle std_msgs/Float64 -- 0
