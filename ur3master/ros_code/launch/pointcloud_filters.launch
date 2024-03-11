@@ -12,6 +12,7 @@
   
   <node pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pointcloud_manager" output="screen">
     <remap from="~input" to="/camera/depth/points" />
+    <remap from="voxel_grid/output" to="/camera/depth/points_filtered" />
     <rosparam>
       filter_field_name: z
       filter_limit_min: 0.01
@@ -22,7 +23,7 @@
   </node>
 
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-      <remap from="cloud_in" to="/camera/depth/points"/>
+      <remap from="cloud_in" to="/camera/depth/points_filtered"/>
       <remap from="scan" to="/camera/scan" />
       <!-- min height = 0.1,-->
       <rosparam>
