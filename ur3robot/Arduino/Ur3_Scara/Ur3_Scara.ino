@@ -128,7 +128,7 @@ void loop() {
 
     #ifndef DEBUG
       float axis1_cur_rot = axis1.currentPosition() / axis1_steps_per_rad;
-      joint_pos[0] = axis1_cur_rot;
+      joint_pos[0] = axis1_cur_rot * -1;
       joint_pos[1] = 0.0;
       joint_pos[2] = 0.0;
       joint_pos[3] = 0.0; //axis1_cur_rot * -1;
