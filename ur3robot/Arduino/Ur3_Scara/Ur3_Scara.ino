@@ -38,12 +38,17 @@ unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
 const float loopTime = 10; // 10
 
-//double positionArray[] = {0.0, 0.0, 0.0}; //x y z
 struct {
   double x = 0;
   double y = 0;
   double z = 0;
 } arm_position;
+
+char robot_id = "scara";
+char *joint_name[4] = {"base_link_to_tower", "tower_to_scara_arm_base", "scara_arm_base_to_scara_arm_joint", "kinect_rotator_to_kinect_base"};
+float joint_pos[4];
+//float vel[6];
+//float eff[6];
 
 void pointCallback(const geometry_msgs::Point& point) {
   arm_position.x = constrain(point.x, -4, 4); //0.3
@@ -51,10 +56,10 @@ void pointCallback(const geometry_msgs::Point& point) {
   arm_position.z = constrain(point.z, -0.6, 0.6);
 }
 
-ros::Subscriber<geometry_msgs::Point> pointSub("arm_pos", pointCallback);
+ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);
 
 sensor_msgs::JointState scara_joints;
-ros::Publisher joint_pub("odom", &odom_msg);
+ros::Publisher joint_pub("scara/joint_states", &scara_joints);
 
 
 void setup() {
@@ -67,6 +72,7 @@ void setup() {
     nh.initNode();  // init ROS
 
     nh.subscribe(pointSub);
+    nh.advertise(joint_pub);
   #endif
 
   //Define axis 1 stepper
@@ -120,5 +126,24 @@ void loop() {
       axis1_enabled = true;
     }
 
+    #ifndef DEBUG
+      float axis1_cur_rot = axis1.currentPosition() / axis1_steps_per_rad;
+      joint_pos[0] = axis1_cur_rot;
+      joint_pos[1] = 0.0;
+      joint_pos[2] = 0.0;
+      joint_pos[3] = 0.0; //axis1_cur_rot * -1;
+
+      scara_joints.name_length = 4;
+      scara_joints.position_length = 4;
+
+      scara_joints.header.stamp = nh.now();
+      scara_joints.header.frame_id = robot_id;
+      scara_joints.name = joint_name;
+      scara_joints.position = joint_pos;
+
+      joint_pub.publish( &scara_joints);
+    #endif
+
   }
 }
+

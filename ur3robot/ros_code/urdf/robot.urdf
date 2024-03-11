@@ -19,12 +19,20 @@
 		<link name="tower">
 		</link>
 
-		<link name="kinect_base">
+		<link name="scara_arm_base">
+		</link>
+
+		<link name="scara_arm_joint">
+		</link>
+
+		<link name="scara_arm_gripper">
 		</link>
 
 		<link name="kinect_rotator">
 		</link>
-		
+
+		<link name="kinect_base">
+		</link>
 
         <link name="camera_link">
 		</link>
@@ -70,10 +78,33 @@
 			<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
 		</joint>
 
+		<joint name="tower_to_scara_arm_base" type="prismatic"> 
+			<parent link="tower"/>
+			<child link="scara_arm_base"/>
+			<origin xyz="0 0 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 1"/>
+			<limit effort="10" velocity="1.0" lower="0" upper="0.677" /> <!-- INCORRECT VALUE-->
+		</joint>
+
+		<joint name="scara_arm_base_to_scara_arm_joint" type="revolute"> 
+			<parent link="scara_arm_base"/>
+			<child link="scara_arm_joint"/>
+			<origin xyz="0.3 0 0" rpy="0.0 0.0 0.0"/>  <!-- INCORRECT VALUE-->
+			<axis xyz="0 0 1"/>
+			<limit effort="10" velocity="1.0" lower="-3" upper="3" />  <!-- INCORRECT VALUE-->
+		</joint>
+
+		<joint name="scara_arm_joint_to_scara_arm_gripper" type="fixed">
+			<parent link="scara_arm_joint"/>
+			<child link="scara_arm_gripper"/>
+			<origin xyz="0.3 0 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>	
+
 		<joint name="tower_to_kinect_rotator" type="fixed">
 			<parent link="tower"/>
 			<child link="kinect_rotator"/>
-			<origin xyz="0 0.0 0.677" rpy="0.0 0.0 0.0"/>
+			<origin xyz="0 0.0 0.677" rpy="0.0 0.0 0.0"/> <!-- NEEDS CHECKED-->
 			<axis xyz="0 0 0"/>
 		</joint>
 
