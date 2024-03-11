@@ -44,7 +44,7 @@ struct {
   double z = 0;
 } arm_position;
 
-char robot_id = "scara";
+//char robot_id = "";
 char *joint_name[4] = {"base_link_to_tower", "tower_to_scara_arm_base", "scara_arm_base_to_scara_arm_joint", "kinect_rotator_to_kinect_base"};
 float joint_pos[4];
 //float vel[6];
@@ -137,7 +137,7 @@ void loop() {
       scara_joints.position_length = 4;
 
       scara_joints.header.stamp = nh.now();
-      scara_joints.header.frame_id = robot_id;
+      //scara_joints.header.frame_id = robot_id;
       scara_joints.name = joint_name;
       scara_joints.position = joint_pos;
 
