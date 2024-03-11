@@ -4,7 +4,7 @@ import rospy
 from geometry_msgs.msg import Point
 
 def talker():
-    pub = rospy.Publisher('arm_pos', Point, queue_size=10)
+    pub = rospy.Publisher('scara/arm_pos', Point, queue_size=10)
     rospy.init_node('keyboard_publisher', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
