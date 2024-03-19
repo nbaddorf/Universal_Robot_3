@@ -15,3 +15,13 @@ Z system lifting:
     lets say 100rpm max for motor;
     Worm gear is 17:1
     output belt pully spins at 5.8 rpm * 40mm = 235 mm per min
+
+
+
+    arm length distances are 9" from joint to joint
+
+    Axis 1: 
+    20:160 gear ratio
+
+    Axis 3: (elbow joint)
+    20:80 gear ratio
