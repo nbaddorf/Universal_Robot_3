@@ -14,14 +14,14 @@ from cv_bridge import CvBridge, CvBridgeError
 class image_converter:
 
   def __init__(self):
-    self.image_pub = rospy.Publisher("test_image",Image, queue_size=2)
+    self.image_pub = rospy.Publisher("test_image",Image, queue_size=1)
 
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("/camera/ir/image_raw",Image,self.callback)
 
   def callback(self,data):
     try:
-      cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8") #?
+      cv_image = self.bridge.imgmsg_to_cv2(data, "mono16") #?
     except CvBridgeError as e:
       print(e)
 
@@ -29,9 +29,12 @@ class image_converter:
     #if cols > 60 and rows > 60 :
     #  cv2.circle(cv_image, (50,50), 10, 255)
     #gray = cv2.cvtColor(cv_image, cv2.COLOR_MONO2GRAY)
+    #img8 = (cv_image/256).astype('uint8')
+    #img_8bit = cv2.convertScaleAbs(cv_image, alpha=(255.0/65535.0))
 
     blurred = cv2.GaussianBlur(cv_image, (17, 17), 0)
-    #(T, thresh) = cv2.threshold(blurred, 150, 255, cv2.THRESH_BINARY_INV)
+    #(T, thresh) = cv2.threshold(cv_image, 200, 255, cv2.THRESH_BINARY_INV)
+    thresh = cv2.inRange(blurred, 15, 255)
 
       # find contours in the mask and initialize the current
     # (x, y) center of the ball
@@ -62,7 +65,8 @@ class image_converter:
     #cv2.waitKey(3)
 
     try:
-      self.image_pub.publish(self.bridge.cv2_to_imgmsg(blurred, "mono16"))
+      #self.image_pub.publish(self.bridge.cv2_to_imgmsg(blurred, "mono16"))
+      self.image_pub.publish(self.bridge.cv2_to_imgmsg(thresh, "mono8"))
     except CvBridgeError as e:
       print(e)
 
