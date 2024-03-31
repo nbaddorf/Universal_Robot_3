@@ -2,15 +2,15 @@
 
     <arg name="markerSize"      default="0.1016"/>    <!-- in m -->
     <arg name="side"             default="left"/>
-    <arg name="ref_frame"       default="webcam"/>  <!-- leave empty and the pose will be published wrt --> 
+    <arg name="ref_frame"       default="camera_rgb_optical_frame"/>  <!-- leave empty and the pose will be published wrt --> 
 
     <node pkg="aruco_ros" type="marker_publisher" name="aruco_marker_publisher">
-        <remap from="/camera_info" to="/webcam/camera_info" />
-        <remap from="/image" to="/webcam/image_raw" />
+        <remap from="/camera_info" to="/camera/rgb/camera_info" />
+        <remap from="/image" to="/camera/rgb/image_raw" />
         <param name="image_is_rectified" value="True"/>
         <param name="marker_size"        value="$(arg markerSize)"/>
-        <param name="reference_frame"    value="webcam"/>   <!-- frame in which the marker pose will be$ -->
-        <param name="camera_frame"       value="webcam"/>
+        <param name="reference_frame"    value="camera_rgb_optical_frame"/>   <!-- frame in which the marker pose will be$ -->
+        <param name="camera_frame"       value="camera_rgb_optical_frame"/>
     </node>
 
 </launch>
