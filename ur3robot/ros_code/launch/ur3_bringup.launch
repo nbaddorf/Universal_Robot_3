@@ -101,7 +101,7 @@
     <param name="pub_joint_state" value="true"/>
 	<param name="use_imu_for_angle" value="false"/>
     <param name="init_tilt_angle" value="-20"/>
-    <param name="pivot_joint_name" value="kinect_base_to_camera_link" />
+    <param name="pivot_joint_name" value="kinect_pivot_to_camera_depth_frame" />
 </node>
 
 

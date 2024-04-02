@@ -6,4 +6,7 @@
   <!-- launch pointcloud programs -->
   <include file="$(find ur3master)/launch/pointcloud_filters.launch"/>
 
+  <!-- launch aruco program -->
+  <include file="$(find ur3master)/launch/aruco.launch"/>
+
 </launch>
