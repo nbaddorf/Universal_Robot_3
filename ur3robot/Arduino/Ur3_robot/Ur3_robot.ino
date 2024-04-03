@@ -232,6 +232,7 @@ float pos_y_average_mm_diff;
 float pos_y_total_mm;
 
 float odom_ang_adjuster = 1.00;
+int battery_loop_counter = 0;
 
 //bool odomResetState = false;
 
@@ -423,38 +424,46 @@ void loop() {
   if (currentMillis - previousMillis >= loopTime) {  // run a loop every 10ms
     previousMillis = currentMillis;
 
-    //Check Battery Level
-    //1024 bit resolution, 3.3 = 16.5v
-    const float R1 = 30000; // 30kohm
-    const float R2 = 7500; //7.5 kohm
-    int voltageValue = analogRead(voltageSensorPin);
-    double voltage = ((voltageValue * 3.25) / 1024) / (R2/(R1+R2));
-    //float vin = vout / (R2/(R1+R2));
-    #ifndef DEBUG
-      if (voltage <= 11.2) {
-        batt_state.power_supply_health = 3; // Dead
-        if (!low_battery_mode) {
-          previousBuzzerMillis = currentMillis;
+    if (battery_loop_counter == 0) {
+      //Check Battery Level
+      //1024 bit resolution, 3.3 = 16.5v
+      const float R1 = 30000; // 30kohm
+      const float R2 = 7500; //7.5 kohm
+      int voltageValue = analogRead(voltageSensorPin);
+      double voltage = ((voltageValue * 3.25) / 1024) / (R2/(R1+R2));
+      //float vin = vout / (R2/(R1+R2));
+      #ifndef DEBUG
+        if (voltage <= 11.2) {
+          batt_state.power_supply_health = 3; // Dead
+          if (!low_battery_mode) {
+            previousBuzzerMillis = currentMillis;
+          }
+          low_battery_mode = true;
+        } else if (voltage >= 14.0) {
+          batt_state.power_supply_health = 3; //overvoltage
+        } else {
+          if (voltage >= 12.0) {
+            batt_state.power_supply_health = 1; // good
+            low_battery_mode = false;
+          }
         }
-        low_battery_mode = true;
-      } else if (voltage >= 14.0) {
-        batt_state.power_supply_health = 3; //overvoltage
-      } else {
-        if (voltage >= 12.0) {
-          batt_state.power_supply_health = 1; // good
-          low_battery_mode = false;
-        }
-      }
 
-      batt_state.voltage = voltage;
-      batteryState.publish( &batt_state );
-    #endif
+        batt_state.voltage = voltage;
+        batteryState.publish( &batt_state );
+      #endif
+      battery_loop_counter++;
+    } else if (battery_loop_counter >= (1000 / loopTime)) {
+      battery_loop_counter = 0;
+    } else {
+      battery_loop_counter++;
+    }
 
     float modifier_lin = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     float modifier_ang = 1.00;  // scaling factor because the wheels are squashy / there is wheel slip etc.
     
 
     //ACCELERATION code here
+    /*
     const double velXAccelerationPerLoop = velXAcceleration / (1000/loopTime);
     const double velZAccelerationPerLoop = velZAcceleration / (1000/loopTime);
 
@@ -479,6 +488,7 @@ void loop() {
         demandzAccel = constrain(demandzAccel, demandz, 1.0);
       } 
     }
+    */
 
     //forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
     //turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn

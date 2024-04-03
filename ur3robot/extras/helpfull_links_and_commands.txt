@@ -21,3 +21,9 @@ run "docker container prune"
 
 publish kinect tilt from command line:
 rostopic pub /kinect/tilt_angle std_msgs/Float64 -- 0
+
+
+
+I THINK I MAY HAVE A BUG IN ODOM TEENSY CODE MAKING IT DELAY.
+maybe try rosserial python again.
+ALSO TRY SETTING UP NPT TIME SERVER ON MACHINES.
