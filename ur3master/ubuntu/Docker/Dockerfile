@@ -23,6 +23,7 @@ RUN apt-get update \
     ros-melodic-pointcloud-to-laserscan \
     ros-melodic-moveit \
     ros-melodic-aruco-ros \
+    ros-melodic-amcl\
     && rm -rf /var/lib/apt/lists/*
 
     # Create a non-root user
