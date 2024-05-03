@@ -15,6 +15,16 @@ RUN apt-get update \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update \
+    && apt-get install -y \
+    ros-melodic-image-pipeline \
+    ros-melodic-pcl-ros \
+    ros-melodic-pointcloud-to-laserscan \
+    ros-melodic-moveit \
+    ros-melodic-aruco-ros \
+    ros-melodic-amcl \
+    && rm -rf /var/lib/apt/lists/*
+
     # Create a non-root user
 ARG USERNAME=ros
 ARG USER_UID=1000
@@ -35,6 +45,7 @@ RUN apt-get update \
   # Copy the entrypoint and bashrc scripts so we have 
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
+COPY bashrc /home/${USERNAME}/.bashrc
 #COPY bashrc /home/${USERNAME}/.bashrc
 #COPY supervisord.conf /supervisord.conf
 #COPY conf.d /conf.d

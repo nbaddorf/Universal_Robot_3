@@ -16,6 +16,16 @@ RUN apt-get update \
     xvfb \
     && rm -rf /var/lib/apt/lists/*
 
+    RUN apt-get update \
+    && apt-get install -y \
+    ros-melodic-image-pipeline \
+    ros-melodic-pcl-ros \
+    ros-melodic-pointcloud-to-laserscan \
+    ros-melodic-moveit \
+    ros-melodic-aruco-ros \
+    ros-melodic-amcl\
+    && rm -rf /var/lib/apt/lists/*
+
     # Create a non-root user
 ARG USERNAME=ros
 ARG USER_UID=1000
@@ -45,6 +55,8 @@ USER ros
 RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     mkdir -p /home/${USERNAME}/catkin_ws/src &&\
     cd /home/${USERNAME}/catkin_ws/src &&\
+    echo temp &&\
+    git clone https://github.com/nbaddorf/rviz_helper_plugin.git &&\
     cd /home/${USERNAME}/catkin_ws &&\
     catkin_make'
 
