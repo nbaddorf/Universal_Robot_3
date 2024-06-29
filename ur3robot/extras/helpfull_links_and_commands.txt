@@ -24,4 +24,6 @@ rostopic pub /kinect/tilt_angle std_msgs/Float64 -- 0
 
 
 
-I think that amcl is to slow to make predictions, which is causing the tf to be to old. Then the cost map makes a warning about it. 
+I think that amcl is to slow to make predictions, which is causing the tf to be to old. Then the cost map makes a warning about it.
+
+Arduino CAN bus stuff for motor: https://github.com/makerbase-motor/MKS-SERVO57D/blob/master/Example%20Code/Arduino%20Example%20Code/arduino_11_Serial_Speed%20Mode/arduino_11_speedMode/arduino_11_speedMode.ino

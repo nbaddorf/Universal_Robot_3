@@ -13,9 +13,13 @@
 //create ros msgs
 ros::NodeHandle nh;
 
-const int stepper_axis_1_enable_pin = 7;
+const int stepper_axis_1_enable_pin = 7; //A axis
 const int stepper_axis_1_dir_pin = 8;
 const int stepper_axis_1_step_pin = 9;
+
+const int stepper_axis_2_enable_pin = 4; //Z axis
+const int stepper_axis_2_dir_pin = 5;
+const int stepper_axis_2_step_pin = 6;
 
 // Define a stepper and the pins it will use
 AccelStepper axis1(1, stepper_axis_1_step_pin, stepper_axis_1_dir_pin);
