@@ -5,14 +5,14 @@
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -21,14 +21,14 @@
   <visual>
     <origin xyz="-0.105418 -0.06341 -0.487908" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/tower.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
     <origin xyz="-0.105418 -0.06341 -0.487908" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/tower.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -37,14 +37,14 @@
   <visual>
     <origin xyz="-0.143418 -0.06341 -0.829408" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
     <origin xyz="-0.143418 -0.06341 -0.829408" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -53,14 +53,14 @@
   <visual>
     <origin xyz="-0.331194 -0.06341 -0.872808" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
     <origin xyz="-0.331194 -0.06341 -0.872808" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
