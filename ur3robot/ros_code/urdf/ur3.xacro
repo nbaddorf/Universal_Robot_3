@@ -158,14 +158,14 @@
 			<axis xyz="0 0 0"/>
 		</joint>
 
-<joint name="tower_joint" type="continuous">
+<joint name="base_link_to_tower" type="continuous">
   <origin xyz="0.105418 0.06341 0.487908" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tower"/>
   <axis xyz="-0.0 0.0 -1.0"/>
 </joint>
 
-<joint name="arm1_joint" type="prismatic">
+<joint name="tower_to_arm1" type="prismatic">
   <origin xyz="0.038 0.0 0.3415" rpy="0 0 0"/>
   <parent link="tower"/>
   <child link="arm1"/>
@@ -173,7 +173,7 @@
   <limit upper="0.0" lower="0.0" effort="100" velocity="100"/>
 </joint>
 
-<joint name="arm2_joint" type="continuous">
+<joint name="arm1_to_arm2" type="continuous">
   <origin xyz="0.187776 0.0 0.0434" rpy="0 0 0"/>
   <parent link="arm1"/>
   <child link="arm2"/>

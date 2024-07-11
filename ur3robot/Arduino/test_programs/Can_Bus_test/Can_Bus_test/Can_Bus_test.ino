@@ -82,21 +82,28 @@ if ( can1.read(msg) ) {
 
 }
 
-//THIS IS CURRENTLY UNTESTED
-void runToPosition(long rad, uint16_t speed, uint8_t acc) { 
- CAN_message_t msgSend;
+void goHome() {
+  CAN_message_t msgSend;
+  msgSend.len=2;
+  msgSend.id= motor.id;
+  msgSend.buf[0] = 0x91; //go home command
+  msgSend.buf[1] = 0x92; //crc
+
+  can1.write(msgSend);
+}
+
+void runToPosition(long encoder_counts, uint16_t speed, uint8_t acc) { 
+  CAN_message_t msgSend;
   speed = constrain(speed, 0, 3000);
   msgSend.len=8;
   msgSend.id=0x01;
   msgSend.buf[0]=0xF5; //run motor to absolute position mode 4
-  msgSend.buf[1]=speed.highByte(speed); //high byte for speed
-  msgSend.buf[2]=speed.lowByte(speed); //low byte for speed
-  msgSend.buf[3]=acc; //acceleration
-  msgSend.buf[6]=rad.lowByte(rad);
-  rad >>= 8;
-  msgSend.buf[5]=rad.lowByte(rad);
-  rad >>= 8;
-  msgSend.buf[4]=rad.lowByte(rad);
+  msgSend.buf[2]=speed; 
+  msgSend.buf[1]=speed >> 8; 
+  msgSend.buf[3]= acc; //acceleration
+  msgSend.buf[6]=encoder_counts;
+  msgSend.buf[5]=encoder_counts >> 8;
+  msgSend.buf[4]=encoder_counts >> 16;
 
   uint8_t crc = msgSend.id;
   for (int i = 0; i<7; i++) {
