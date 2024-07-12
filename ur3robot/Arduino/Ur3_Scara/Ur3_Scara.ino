@@ -9,7 +9,7 @@
 #include <math.h>
 #include <FlexCAN_T4.h>
 
-#define DEBUG
+//#define DEBUG
 
 //create ros msgs
 ros::NodeHandle nh;
@@ -60,6 +60,7 @@ const int axis2_gear_ratio = 30; //30:1 worm drive, 20:1 belt drive = 40mm per r
 const double axis2_steps_per_mm = (axis2_steps_per_motor_rev * axis2_gear_ratio) / 40.0; //150 steps per mm
 
 const int axis3_gear_ratio = 4; //20:80 teeth
+double axis3_position_old = 0;
 
 bool axis1_enabled = false;
 bool axis2_enabled = false;
@@ -91,6 +92,8 @@ struct can_motor {
   uint8_t id = 0;
   bool sent_home_command = false;
   bool motor_enabled = true;
+  bool sent_get_encoder_command = false;
+  double encoder = 0;
 };
 
 can_motor axis3;
@@ -219,6 +222,10 @@ void loop() {
     if (has_homed && !e_stop) {
       axis1.moveTo(axis1_position);
       axis2.moveTo(axis2_position);
+      if (axis3_position_old != arm_position.y) {
+        runCanToPosition(arm_position.y, 500, 200);
+        axis3_position_old = arm_position.y;
+      }
     }
 
     //Check if arm is connected to ROS and if not connected, turn off arm
@@ -248,11 +255,28 @@ void loop() {
       axis2_enabled = true;
     }
 
+    getCanEncoderVal(axis3);
+
+    if ( can1.read(msg) ) {
+      switch (msg.buf[0]) {
+      case 0x31:
+        axis3.encoder = (returnEncoderRad(msg) / 4.00) - 2.78052;
+        axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
+        axis3.sent_get_encoder_command = false;
+        //Serial.println(axis3.encoder);
+        break;
+      case 0x91:
+        homed.axis3 = (msg.buf[1] == 2);
+        axis3.sent_home_command = !(msg.buf[1] == 2);
+        break;
+      }
+    }
+
     #ifndef DEBUG
       float axis1_cur_rot = axis1.currentPosition() / axis1_steps_per_rad;
       joint_pos[0] = axis1_cur_rot * -1; // tower axis
       joint_pos[1] = axis2.currentPosition() / axis2_steps_per_mm / 1000.00; //Z axis
-      joint_pos[2] = 0.0; // arm2 axis
+      joint_pos[2] = axis3.encoder; // arm2 axis
       joint_pos[3] = 0.0; //kinect rotator
 
       scara_joints.name_length = 4;
@@ -291,7 +315,7 @@ void runCanToPosition(double rad, uint16_t speed, uint8_t acc) {
   speed = constrain(speed, 0, 3000);
   //0x4000 = 1 motor rev. * 4 = 1 arm rev
   //motor max range is 320 deg. 651 is centered
-  Serial.println(constrain(rad, -2.6, 2.6));
+  //Serial.println(constrain(rad, -2.6, 2.6));
   long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, -2.7 * 100, 2.7 * 100) / 100) + 2.78052);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
   //Serial.println(encoder_counts); // should be about 32768 (0x8001) with rad = PI
   msgSend.len = 8;
@@ -336,6 +360,28 @@ void setEStop (can_motor &motor) { //This disables the motor and I think you hav
   can1.write(msgSend);
 }
 
+void getCanEncoderVal(can_motor &motor) {
+  if (!motor.sent_get_encoder_command) {
+    CAN_message_t msgSend;
+    msgSend.len = 2;
+    msgSend.id = motor.id;
+    msgSend.buf[0] = 0x31; //encoder mode
+    msgSend.buf[1] = msgSend.id + msgSend.buf[0]; //checksum
+    motor.sent_get_encoder_command = true;
+    can1.write(msgSend);
+  }
+}
+
+double returnEncoderRad(CAN_message_t recievedMsg) {
+  u_long encoderVal = recievedMsg.buf[2]; //demo 0x01;
+  encoderVal = (encoderVal << 8) | recievedMsg.buf[3];
+  encoderVal = (encoderVal << 8) | recievedMsg.buf[4];
+  encoderVal = (encoderVal << 8) | recievedMsg.buf[5];
+  encoderVal = (encoderVal << 8) | recievedMsg.buf[6];
+
+  return ((encoderVal / double (0x2000)) * PI); // take the encoder then divide by 1/2 rotation then multiply by PI
+}
+
 void setMotorStop (can_motor &motor) {
   CAN_message_t msgSend;
   msgSend.len=8;
@@ -362,14 +408,6 @@ void setMotorStop (can_motor &motor) {
 void home_axis() {
   if (!homed.axis3) {
     goHomeCan(axis3);
-    if (can1.read(msg)) {
-      if (msg.buf[0] == 0x91 && msg.buf[1] == 2) {
-        runCanToPosition(2.7, 700, 200);
-        homed.axis3 = true;
-        axis3.sent_home_command = false;
-      }
-    }
-
   } else if (!homed.axis2) {
     //If axis 2 isnt homed (z axis) then run axis down till it hits the end stop
     if (!digitalRead(limit_2_pin)) {
