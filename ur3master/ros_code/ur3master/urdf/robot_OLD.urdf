@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+	<robot name="ur3">
+
+      <!--  <arg name="pi/2" value="1.5707963267948966" />
+	    <arg name="optical_rotate" value="-$(arg pi/2) 0 -$(arg pi/2)" /> -->
+
+		<link name="base_link">
+		</link>
+		
+		<link name="laser">
+		</link>
+                
+        <link name="webcam">
+		</link>
+
+		<link name="imu">
+		</link>
+
+		<link name="tower">
+		</link>
+
+		<link name="scara_arm_base">
+		</link>
+
+		<link name="scara_arm_joint">
+		</link>
+
+		<link name="scara_arm_gripper">
+		</link>
+
+		<link name="kinect_rotator">
+		</link>
+
+<!-- 
+		<link name="kinect_base">
+		</link>
+-->
+        <link name="kinect_pivot">
+		</link>
+<!-- 
+        <link name="camera_link">
+		</link>
+-->
+		<link name="camera_depth_frame">
+		</link>
+
+		<link name="camera_rgb_frame">
+		</link>
+
+		<link name="camera_depth_optical_frame">
+		</link>
+
+		<link name="camera_rgb_optical_frame">
+		</link>
+
+		<joint name="base_link_to_laser" type="fixed">
+			<parent link="base_link"/>
+			<child link="laser"/>
+			<origin xyz="0 0 0.3429" rpy="0.0 0.0 1.570796"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+      <!-- I think the tf for the webcam is INCORRECT-->
+        <joint name="base_link_to_webcam" type="fixed">
+			<parent link="base_link"/>
+			<child link="webcam"/>
+			<origin xyz="0.21 -0.051 0.27" rpy="0.0 0.0 0"/>
+			<axis xyz="0 0 0"/>
+		</joint>	
+
+		<joint name="base_link_to_imu" type="fixed">
+			<parent link="base_link"/>
+			<child link="imu"/>
+			<origin xyz="-0.198 -0.153 0.458" rpy="0.0 0.0 3.14159"/>
+			<axis xyz="0 0 0"/>
+		</joint>	
+        
+		<joint name="base_link_to_tower" type="revolute"> 
+			<parent link="base_link"/>
+			<child link="tower"/>
+			<origin xyz="0.1 0.060 0.5" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 1"/>
+			<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
+		</joint>
+
+		<joint name="tower_to_scara_arm_base" type="prismatic"> 
+			<parent link="tower"/>
+			<child link="scara_arm_base"/>
+			<origin xyz="0 0 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 1"/>
+			<limit effort="10" velocity="1.0" lower="0" upper="0.677" /> <!-- INCORRECT VALUE-->
+		</joint>
+
+		<joint name="scara_arm_base_to_scara_arm_joint" type="revolute"> 
+			<parent link="scara_arm_base"/>
+			<child link="scara_arm_joint"/>
+			<origin xyz="0.3 0 0" rpy="0.0 0.0 0.0"/>  <!-- INCORRECT VALUE-->
+			<axis xyz="0 0 1"/>
+			<limit effort="10" velocity="1.0" lower="-3" upper="3" />  <!-- INCORRECT VALUE-->
+		</joint>
+
+		<joint name="scara_arm_joint_to_scara_arm_gripper" type="fixed">
+			<parent link="scara_arm_joint"/>
+			<child link="scara_arm_gripper"/>
+			<origin xyz="0.3 0 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>	
+
+		<joint name="tower_to_kinect_rotator" type="fixed">
+			<parent link="tower"/>
+			<child link="kinect_rotator"/>
+			<origin xyz="0 0.0 0.691" rpy="0.0 0.0 0.0"/> <!-- Base of top robot platform to the bottom of the kinect rotator motorized platform where the joint rotates-->
+			<axis xyz="0 0 0"/>
+		</joint>
+
+        <!--
+		<joint name="kinect_pivot_to_camera_link" type="fixed">
+			<parent link="kinect_pivot"/>
+			<child link="camera_link"/>
+			<origin xyz="0.0272 0.0117 0.034" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>	
+
+		-->
+
+		<joint name="kinect_rotator_to_kinect_pivot" type="revolute"> <!-- This should be good --> 
+			<parent link="kinect_rotator"/>
+			<child link="kinect_pivot"/>
+			<!-- <origin xyz="0.0067 0 0.0169" rpy="0.0 0.0 0.0"/> -->
+			<origin xyz="0.0106 0 0.0307" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 1"/>
+			<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
+		</joint>	
+		
+<!-- 
+		<joint name="kinect_pivot_to_camera_link" type="revolute">
+			<parent link="kinect_pivot"/>
+			<child link="camera_link"/>
+			<origin xyz="0.0067 0.0117 0.0169" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 1 0"/>
+			<limit effort="5" velocity="0.5" lower="-0.7679449" upper="0.3141593" />
+		</joint>
+		-->
+
+		<joint name="kinect_pivot_to_camera_depth_frame" type="revolute">
+			<parent link="kinect_pivot"/>
+			<child link="camera_depth_frame"/>
+			<origin xyz="0.029 0.011 0.034" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 1 0"/>
+			<limit effort="5" velocity="0.5" lower="-0.7679449" upper="0.3141593" />
+		</joint>
+  <!-- 
+		<joint name="camera_link_to_camera_depth_frame" type="fixed">
+			<parent link="camera_link"/>
+			<child link="camera_depth_frame"/>
+			<origin xyz="0 -0.02 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<joint name="camera_link_to_camera_rgb_frame" type="fixed">
+			<parent link="camera_link"/>
+			<child link="camera_rgb_frame"/>
+			<origin xyz="0 -0.045 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+		-->
+
+		<joint name="camera_depth_frame_to_camera_rgb_frame" type="fixed">
+			<parent link="camera_depth_frame"/>
+			<child link="camera_rgb_frame"/>
+			<origin xyz="0 -0.026 0" rpy="0.0 0.0 0.0"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<joint name="camera_depth_frame_to_camera_depth_optical_frame" type="fixed">
+			<parent link="camera_depth_frame"/>
+			<child link="camera_depth_optical_frame"/>
+			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<joint name="camera_rgb_frame_to_camera_rgb_optical_frame" type="fixed">
+			<parent link="camera_rgb_frame"/>
+			<child link="camera_rgb_optical_frame"/>
+			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+			<axis xyz="0 0 0"/>
+		</joint>
+
+		<!-- So kinect rotator: to before angler: 6mm forward.-->
+		<!-- forward base to kinect base (with angler) 9.4mm high, 13 degree angle-->
+		<!-- angler to kinect pivot: 7.7mm (strate up from angler)-->
+		<!-- kinect pivot to camera: 34 mm up, 27.2mm forward, 11.7mm sideways-->
+
+		
+	</robot>
