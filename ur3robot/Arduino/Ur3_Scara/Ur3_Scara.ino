@@ -107,8 +107,8 @@ float joint_pos[4];
 
 void pointCallback(const geometry_msgs::Point& point) {
   arm_position.x = constrain(point.x, -4, 4); //0.3
-  arm_position.y = constrain(point.y, -0.3, 0.3);
-  arm_position.z = constrain(point.z, -0.6, 0.6);
+  arm_position.y = constrain(point.y, -2.7, 2.7);
+  arm_position.z = constrain(point.z, 0, 0.6);
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);
