@@ -22,6 +22,7 @@ const int stepper_axis_2_enable_pin = 4; //Z axis
 const int stepper_axis_2_dir_pin = 5;
 const int stepper_axis_2_step_pin = 6;
 
+const int limit_1_pin = 15;
 //These are the xlr ports on top
 const int limit_2_pin = 21;  //axis 2 limit switch but labled limit 1 on top ports
 const int limit_3_pin = 20;
@@ -53,7 +54,7 @@ double axis2_acceleration = 2; //0.01 mm per second per second
 //math for top speeds and accelerations:
 const int axis1_steps_per_motor_rev = 800;
 const int axis1_belt_ratio = 8; //20:160 teeth
-const double axis1_steps_per_rad = (axis1_steps_per_motor_rev * axis1_belt_ratio) / (2.0 * PI); //509.29 steps per rad
+const double axis1_steps_per_rad = (axis1_steps_per_motor_rev * axis1_belt_ratio) / (2.0 * PI); //1018.59 steps per rad
 
 const int axis2_steps_per_motor_rev = 200; //Z axis
 const int axis2_gear_ratio = 30; //30:1 worm drive, 20:1 belt drive = 40mm per rev of pulley (CHECK)
@@ -83,9 +84,12 @@ struct {
   bool axis1 = false;
   bool axis2 = false;
   bool axis3 = false;
-  const int axis1_homing_speed = 10;
-  const int axis2_homing_speed = 5;
+  const double axis1_homing_speed = 0.12;
+  const int axis2_homing_speed = 3;
   const int axis3_homing_speed = 10;
+  const double axis1_offset = ((axis1_steps_per_rad * 2 * PI) * (0.75)) + 25;
+  const double axis2_offset = 0;
+  const double axis3_offset = 2.79052;
 } homed;
 
 struct can_motor {
@@ -106,7 +110,7 @@ float joint_pos[4];
 //float eff[6];
 
 void pointCallback(const geometry_msgs::Point& point) {
-  arm_position.x = constrain(point.x, -4, 4); //0.3
+  arm_position.x = constrain(point.x, -(PI/2.0), (PI * 1.5)); //0.3
   arm_position.y = constrain(point.y, -2.7, 2.7);
   arm_position.z = constrain(point.z, 0, 0.6);
 }
@@ -148,6 +152,7 @@ void setup() {
   pinMode(LED, OUTPUT);
   pinMode(homing_button_pin, INPUT_PULLUP);
   pinMode(e_stop_pin, INPUT_PULLUP);
+  pinMode(limit_1_pin, INPUT);
   pinMode(limit_2_pin, INPUT);
   pinMode(limit_3_pin, INPUT);
 
@@ -219,6 +224,8 @@ void loop() {
     int axis1_position = arm_position.x * axis1_steps_per_rad; //Tower
     int axis2_position = arm_position.z * (axis2_steps_per_mm * 1000.00); //Z axis
 
+    //arm_position.y = 0;
+
     if (has_homed && !e_stop) {
       axis1.moveTo(axis1_position);
       axis2.moveTo(axis2_position);
@@ -260,7 +267,7 @@ void loop() {
     if ( can1.read(msg) ) {
       switch (msg.buf[0]) {
       case 0x31:
-        axis3.encoder = (returnEncoderRad(msg) / 4.00) - 2.78052;
+        axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
         axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
         axis3.sent_get_encoder_command = false;
         //Serial.println(axis3.encoder);
@@ -316,7 +323,7 @@ void runCanToPosition(double rad, uint16_t speed, uint8_t acc) {
   //0x4000 = 1 motor rev. * 4 = 1 arm rev
   //motor max range is 320 deg. 651 is centered
   //Serial.println(constrain(rad, -2.6, 2.6));
-  long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, -2.7 * 100, 2.7 * 100) / 100) + 2.78052);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
+  long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, -2.7 * 100, 2.7 * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
   //Serial.println(encoder_counts); // should be about 32768 (0x8001) with rad = PI
   msgSend.len = 8;
   msgSend.id = 0x01;
@@ -419,7 +426,15 @@ void home_axis() {
       homed.axis2 = true;
     }
   } else if (!homed.axis1) {
-    homed.axis1 = true;
+    if (!digitalRead(limit_1_pin)) {
+      axis1.setSpeed(homed.axis1_homing_speed * axis1_steps_per_rad); //homed.axis1_homing_speed * axis1_steps_per_rad
+    } else { //once the endstop is triggered, set position 0 and tell the motor to move up 3mm. Wont move till all axis are done homing.
+      axis1.setSpeed(0);
+      axis1.stop();
+      axis1.setCurrentPosition(homed.axis1_offset);
+      //arm_position.x = 0.003;
+     homed.axis1 = true;
+    }
   } 
 
   if (homed.axis1 && homed.axis2 && homed.axis3) {
