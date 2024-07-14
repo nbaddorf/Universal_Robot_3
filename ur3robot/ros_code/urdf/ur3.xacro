@@ -2,27 +2,27 @@
 <robot name="ur3" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 <material name="blue">
-    <color rgba="0 0 0.8 1"/>
+    <color rgba="0 0 0.8 0.8"/>
   </material>
 
   <material name="white">
-    <color rgba="1 1 1 1"/>
+    <color rgba="1 1 1 0.8"/>
   </material>
 
   <material name="green">
-    <color rgba="0 0.8 0 1"/>
+    <color rgba="0 0.8 0 0.8"/>
   </material>
 
   <material name="red">
-    <color rgba="0.8 0 0 1"/>
+    <color rgba="0.8 0 0 0.8"/>
   </material>
 
   <material name="gray">
-    <color rgba="1 1 1 0.5"/>
+    <color rgba="1 1 1 0.8"/>
   </material>
 
   <material name="black">
-    <color rgba="0 0 0 0"/>
+    <color rgba="0 0 0 0.8"/>
   </material>
 
 <link name="base_link">
