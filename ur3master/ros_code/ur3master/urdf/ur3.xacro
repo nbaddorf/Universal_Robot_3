@@ -1,13 +1,37 @@
 <?xml version="1.0" ?>
 <robot name="ur3" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+<material name="blue">
+    <color rgba="0 0 0.8 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <material name="green">
+    <color rgba="0 0.8 0 1"/>
+  </material>
+
+  <material name="red">
+    <color rgba="0.8 0 0 1"/>
+  </material>
+
+  <material name="gray">
+    <color rgba="1 1 1 0.5"/>
+  </material>
+
+  <material name="black">
+    <color rgba="0 0 0 0"/>
+  </material>
+
 <link name="base_link">
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
-    <material name="silver_default"/>
+    <material name="gray"/>
   </visual>
   <collision>
     <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -23,7 +47,7 @@
     <geometry>
       <mesh filename="package://ur3master/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
-    <material name="silver_default"/>
+    <material name="black"/>
   </visual>
   <collision>
     <origin xyz="-0.105418 -0.06341 -0.487908" rpy="0 0 0"/>
@@ -39,7 +63,7 @@
     <geometry>
       <mesh filename="package://ur3master/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
-    <material name="silver_default"/>
+    <material name="blue"/>
   </visual>
   <collision>
     <origin xyz="-0.143418 -0.06341 -0.829408" rpy="0 0 0"/>
@@ -55,7 +79,7 @@
     <geometry>
       <mesh filename="package://ur3master/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
-    <material name="silver_default"/>
+    <material name="green"/>
   </visual>
   <collision>
     <origin xyz="-0.331194 -0.06341 -0.872808" rpy="0 0 0"/>
@@ -67,9 +91,6 @@
 
 <link name="laser">
 	</link>
-
-<link name="end_effector">
-  </link>
                 
 <link name="webcam">
 	</link>
@@ -161,33 +182,28 @@
 			<axis xyz="0 0 0"/>
 		</joint>
 
-<joint name="base_link_to_tower" type="continuous">
+<joint name="base_link_to_tower" type="revolute">
   <origin xyz="0.105418 0.06341 0.487908" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tower"/>
   <axis xyz="-0.0 0.0 -1.0"/>
+  <limit effort="10" velocity="100.0" lower="-1.3708" upper="4.71239" />
 </joint>
 
 <joint name="tower_to_arm1" type="prismatic">
-  <origin xyz="0.038 0.0 0.3415" rpy="0 0 0"/>
+  <origin xyz="0.038 0.0 0.3415" rpy="0 0 0"/> <!-- make sure the height on this is correct-->
   <parent link="tower"/>
   <child link="arm1"/>
   <axis xyz="0.0 0.0 1.0"/>
-  <limit upper="0.0" lower="0.0" effort="100" velocity="100"/>
+  <limit upper="0.25" lower="-0.25" effort="100" velocity="100"/>
 </joint>
 
-<joint name="arm1_to_arm2" type="continuous">
+<joint name="arm1_to_arm2" type="revolute">
   <origin xyz="0.187776 0.0 0.0434" rpy="0 0 0"/>
   <parent link="arm1"/>
   <child link="arm2"/>
   <axis xyz="-0.0 -0.0 -1.0"/>
-</joint>
-
-<joint name="arm2_to_end_effector" type="fixed">
-  <origin xyz="0.187776 0.0 0" rpy="0 0 0"/>
-  <parent link="arm2"/>
-  <child link="end_effector"/>
-  <axis xyz="0.0 0.0 0"/>
+   <limit effort="10" velocity="100.0" lower="-2.7" upper="2.7" />
 </joint>
 
 </robot>

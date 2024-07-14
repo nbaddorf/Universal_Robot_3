@@ -72,9 +72,9 @@ unsigned long previousMillis = 0;  // set up timers
 const float loopTime = 10; // 10
 
 struct {
-  double x = 0;
+  double x = PI;
   double y = 0;
-  double z = 0;
+  double z = -0.24;
 } arm_position; // structure with name arm_position.
 
 bool has_homed = false;
@@ -88,7 +88,7 @@ struct {
   const int axis2_homing_speed = 3;
   const int axis3_homing_speed = 10;
   const double axis1_offset = ((axis1_steps_per_rad * 2 * PI) * (0.75)) + 25;
-  const double axis2_offset = 0;
+  const double axis2_offset = axis2_steps_per_mm * -250;
   const double axis3_offset = 2.79052;
 } homed;
 
@@ -110,9 +110,9 @@ float joint_pos[4];
 //float eff[6];
 
 void pointCallback(const geometry_msgs::Point& point) {
-  arm_position.x = constrain(point.x, -(PI/2.0), (PI * 1.5)); //0.3
-  arm_position.y = constrain(point.y, -2.7, 2.7);
-  arm_position.z = constrain(point.z, 0, 0.6);
+  arm_position.x = constrain(point.x, -1.3708, 4.71239); //0.3
+  arm_position.y = constrain(point.y, -2.7, 2.7); 
+  arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement (rough guess)
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);
@@ -281,7 +281,7 @@ void loop() {
 
     #ifndef DEBUG
       float axis1_cur_rot = axis1.currentPosition() / axis1_steps_per_rad;
-      joint_pos[0] = axis1_cur_rot * -1; // tower axis
+      joint_pos[0] = axis1_cur_rot; // tower axis
       joint_pos[1] = axis2.currentPosition() / axis2_steps_per_mm / 1000.00; //Z axis
       joint_pos[2] = axis3.encoder; // arm2 axis
       joint_pos[3] = 0.0; //kinect rotator
@@ -421,8 +421,8 @@ void home_axis() {
       axis2.setSpeed(homed.axis2_homing_speed * -axis2_steps_per_mm);
     } else { //once the endstop is triggered, set position 0 and tell the motor to move up 3mm. Wont move till all axis are done homing.
       axis2.stop();
-      axis2.setCurrentPosition(0);
-      arm_position.z = 0.003;
+      axis2.setCurrentPosition(homed.axis2_offset);
+      //arm_position.z = 0.003;
       homed.axis2 = true;
     }
   } else if (!homed.axis1) {
