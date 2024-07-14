@@ -73,7 +73,7 @@ const float loopTime = 10; // 10
 
 struct {
   double x = PI;
-  double y = 0;
+  double y = -2.6;
   double z = -0.24;
 } arm_position; // structure with name arm_position.
 
@@ -112,7 +112,7 @@ float joint_pos[4];
 void pointCallback(const geometry_msgs::Point& point) {
   arm_position.x = constrain(point.x, -1.3708, 4.71239); //0.3
   arm_position.y = constrain(point.y, -2.7, 2.7); 
-  arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement (rough guess)
+  arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement THIS RATIO IS INCORRECT
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);
@@ -434,6 +434,7 @@ void home_axis() {
       axis1.setCurrentPosition(homed.axis1_offset);
       //arm_position.x = 0.003;
      homed.axis1 = true;
+     runCanToPosition(arm_position.y, 500, 200);
     }
   } 
 
