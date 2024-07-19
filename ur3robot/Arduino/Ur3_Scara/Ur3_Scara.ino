@@ -112,7 +112,7 @@ float joint_pos[4];
 void pointCallback(const geometry_msgs::Point& point) {
   arm_position.x = constrain(point.x, -1.3708, 4.71239); //0.3
   arm_position.y = constrain(point.y, -2.7, 2.7); 
-  arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement THIS RATIO IS INCORRECT
+  arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement I think this is correct
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);

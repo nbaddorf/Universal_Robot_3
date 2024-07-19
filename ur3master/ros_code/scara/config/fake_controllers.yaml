@@ -1,5 +1,5 @@
 controller_list:
-  - name: fake_Scara Arm_controller
+  - name: fake_Scara_Arm_controller
     type: $(arg fake_execution_type)
     joints:
       - base_link_to_tower
@@ -10,5 +10,5 @@ controller_list:
     joints:
       []
 initial:  # Define initial robot poses.
-  - group: Scara Arm
+  - group: Scara_Arm
     pose: T Pose

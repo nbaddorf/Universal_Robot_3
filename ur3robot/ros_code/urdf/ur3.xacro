@@ -89,6 +89,22 @@
   </collision>
 </link>
 
+<link name="end_effector">
+  <visual>
+    <origin xyz="-0.559794 -0.06341 -0.818108" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3master/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver_default"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.559794 -0.06341 -0.818108" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3master/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
 <link name="laser">
 	</link>
                 
@@ -204,6 +220,12 @@
   <child link="arm2"/>
   <axis xyz="-0.0 -0.0 -1.0"/>
    <limit effort="10" velocity="100.0" lower="-2.7" upper="2.7" />
+</joint>
+
+<joint name="arm2_to_end_effector" type="fixed">
+  <origin xyz="0.2286 0.0 -0.0547" rpy="0 0 0"/>
+  <parent link="arm2"/>
+  <child link="end_effector"/>
 </joint>
 
 </robot>
