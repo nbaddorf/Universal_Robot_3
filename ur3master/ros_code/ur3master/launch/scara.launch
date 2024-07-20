@@ -1,15 +1,5 @@
 <launch>
-
-  <!-- launch rviz -->
-  <include file="$(find ur3master)/launch/rviz.launch"/>
-
-  <!-- launch pointcloud programs -->
-  <include file="$(find ur3master)/launch/pointcloud_filters.launch"/>
-
-  <!-- launch aruco program -->
-  <include file="$(find ur3master)/launch/aruco.launch"/>
-
-  <!-- SCARA -->
+<!-- SCARA -->
 
     <!-- specify the planning pipeline -->
   <arg name="pipeline" default="ompl" />
@@ -35,6 +25,12 @@
   <include file="$(find scara)/launch/default_warehouse_db.launch" if="$(arg db)">
     <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
   </include>
+
+  <arg name="open_rviz" default="true"/>
+
+ <!-- rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" required="true">
+    </node>
 
 
 </launch>
