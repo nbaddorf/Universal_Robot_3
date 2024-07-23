@@ -8,13 +8,18 @@
   <arg name="db" default="false" />
   <!-- Allow user to specify database location -->
   <arg name="db_path" default="$(find scara)/default_warehouse_mongo_db" />
-
+  <arg name="debug" default="true" />
   <!-- By default, we will load or override the robot_description -->
   <arg name="load_robot_description" default="true"/>
 
-  <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers configured by default) -->
+  <!-- <rosparam file="$(find scara)/config/ros_controllers.yaml" command="load"/> -->
+
+  <node name="myrobot_hardware_interface" pkg="ur3master" type="myrobot_hardware_interface" respawn="false" output="screen" />
+
+  <include file="$(find scara)/launch/ros_controllers.launch"/>
+
   <include file="$(find scara)/launch/move_group.launch">
-    <arg name="allow_trajectory_execution" value="true"/>
+    <!-- <arg name="allow_trajectory_execution" value="false"/>-->
     <arg name="fake_execution" value="false"/>
     <arg name="info" value="true"/>
     <arg name="pipeline" value="$(arg pipeline)"/>
@@ -22,15 +27,18 @@
   </include>
 
   <!-- If database loading was enabled, start mongodb as well -->
+  <!--
   <include file="$(find scara)/launch/default_warehouse_db.launch" if="$(arg db)">
     <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
   </include>
-
+-->
   <arg name="open_rviz" default="true"/>
+
+  <include file="$(find scara)/launch/ur3_moveit_controller_manager.launch.xml">
+  </include>
 
  <!-- rviz -->
     <node pkg="rviz" type="rviz" name="rviz" required="true">
     </node>
-
 
 </launch>

@@ -75,6 +75,9 @@ EXPOSE 8080
 RUN apt-get update \
     && apt-get install -y \
     ros-melodic-plotjuggler-ros \
+    #ros-melodic-ros-control \
+    ros-melodic-ros-controllers ros-melodic-ros-control \
+    ros-melodic-joint-trajectory-controller \
     && rm -rf /var/lib/apt/lists/*
 
 

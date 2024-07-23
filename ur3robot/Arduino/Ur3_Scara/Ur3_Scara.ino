@@ -116,6 +116,7 @@ void pointCallback(const geometry_msgs::Point& point) {
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);
+ros::Subscriber<sensor_msgs::JointState> joinstates_sub("scara_arm_controller/joint_position_controller", jointstates_callback);
 
 sensor_msgs::JointState scara_joints;
 ros::Publisher joint_pub("scara/joint_states", &scara_joints);

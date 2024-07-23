@@ -10,8 +10,8 @@
 <!-- URDF Publisher -->
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
-   <!--  <param name="source_list" value="[/kinect/tilt/joint_states]" /> -->
-    <rosparam param="source_list">["/kinect/tilt/joint_states", "/scara/joint_states"]</rosparam>
+    <param name="source_list" value="[/kinect/tilt/joint_states]" />
+    <!-- <rosparam param="source_list">["/kinect/tilt/joint_states", "/scara/joint_states"]</rosparam> -->
     <param name="rate" value="85" />
 </node>
 
