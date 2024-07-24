@@ -13,6 +13,8 @@ MyRobot::MyRobot(ros::NodeHandle& nh) : nh_(nh) {
 //Set the frequency of the control loop.
     loop_hz_=10;
     ros::Duration update_freq = ros::Duration(1.0/loop_hz_);
+
+    command_pub = nh_.advertise<geometry_msgs::Point>("/ur3/scara/arm_command",10);
     
 //Run the control loop
     my_control_loop_ = nh_.createTimer(update_freq, &MyRobot::update, this);
@@ -32,13 +34,18 @@ void MyRobot::update(const ros::TimerEvent& e) {
 }
 
 void MyRobot::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
-    for (int i = 0; i < 3; i++) {
+    /*for (int i = 0; i < 3; i++) {
         //string joint_name = msg.name[i];
-        ROS_INFO("[%s]", msg->name[i]);
+        std::vector<std::string> joint_names = msg->name;
+        ROS_INFO("%c", joint_names[0].c_str());
     }
+    */
     //joint_position_[0] = msg.position;
   //joint_position_[1] = 0.0;
   //joint_position_[2] = 0.0;
+
+   boost::mutex::scoped_lock lock(feedback_msg_mutex_);
+  feedback_msg_ = msg;
 }
 
 void MyRobot::init() {
@@ -85,7 +92,7 @@ void MyRobot::init() {
     //registerInterface(&effortJointSaturationInterface);
     //registerInterface(&positionJointSaturationInterface);
 
-    joint_state_sub_ = nh_.subscribe("/scara/joint_states", 1, &MyRobot::JointStateCallback, this);
+    joint_state_sub_ = nh_.subscribe("/ur3/scara/joint_states", 1, &MyRobot::JointStateCallback, this);
    
 }
 
@@ -105,6 +112,15 @@ void MyRobot::read() {
     for (int i = 0; i < 4; ++i)
     {
 */
+
+boost::mutex::scoped_lock feedback_msg_lock(feedback_msg_mutex_, boost::try_to_lock);
+  if (feedback_msg_ && feedback_msg_lock)
+  {
+    for (int i = 0; i < 3; i++) {
+        joint_position_[i] = feedback_msg_->position[i];
+    }
+    //joint_position_[]
+  }
   
 }
 
@@ -117,9 +133,13 @@ void MyRobot::write(ros::Duration elapsed_time) {
   // the output commands need to send are joint_effort_command_[0] for JointA, joint_effort_command_[1] for JointB and 
   //joint_position_command_ for JointC.
   //ROS_INFO("I heard: [%d]", joint_position_command_[0]);
-  joint_position_[0] = joint_position_command_[0];
-  joint_position_[1] = joint_position_command_[1];
-  joint_position_[2] = joint_position_command_[2];
+  //joint_position_[0] = joint_position_command_[0];
+  //joint_position_[1] = joint_position_command_[1];
+  //joint_position_[2] = joint_position_command_[2];
+
+  command_msg.x = joint_position_command_[0];
+  command_msg.z = joint_position_command_[1];
+  command_msg.y = joint_position_command_[3];
 }
 
 int main(int argc, char** argv)

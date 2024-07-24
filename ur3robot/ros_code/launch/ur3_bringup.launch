@@ -10,15 +10,16 @@
 <!-- URDF Publisher -->
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
-    <param name="source_list" value="[/kinect/tilt/joint_states]" />
-    <!-- <rosparam param="source_list">["/kinect/tilt/joint_states", "/scara/joint_states"]</rosparam> -->
+    <!-- <param name="source_list" value="[/kinect/tilt/joint_states]" /> -->
+    <rosparam param="source_list">["/kinect/tilt/joint_states", "/scara_hardware_interface/joint_states"]</rosparam>
     <param name="rate" value="85" />
 </node>
 
+<!-- 
 <node name="mpu_node" pkg="mpu6050_driver" type="mpu6050_node" output="screen">
     <rosparam file="$(find ur3robot)/param/imu/mpu_settings.yaml" command="load"/>
 </node>
-
+-->
 <!-- start teensy serial -->
 <!--
 <node name="teensy_serial" pkg="rosserial_python" type="serial_node.py" output="screen">

@@ -5,8 +5,12 @@
 #include <joint_limits_interface/joint_limits_interface.h>
 #include <controller_manager/controller_manager.h>
 #include <sensor_msgs/JointState.h>
+#include <geometry_msgs/Point.h>
 #include <boost/scoped_ptr.hpp>
+#include "boost/thread.hpp"
 #include <ros/ros.h>
+#include <vector>
+#include <string>
 
 class MyRobot : public hardware_interface::RobotHW 
 {
@@ -17,7 +21,8 @@ class MyRobot : public hardware_interface::RobotHW
         void update(const ros::TimerEvent& e);
         void read();
         void write(ros::Duration elapsed_time);
-        //ros::Publisher joint_state_pub;
+        ros::Publisher command_pub;
+        geometry_msgs::Point command_msg;
         
     protected:
  
@@ -43,5 +48,8 @@ class MyRobot : public hardware_interface::RobotHW
         double loop_hz_;
         boost::shared_ptr<controller_manager::ControllerManager> controller_manager_;
         ros::Subscriber joint_state_sub_;
-        //controller_manager::ControllerManager controller_manager_;
+
+        // This pointer is set from the ROS thread.
+        sensor_msgs::JointState::ConstPtr feedback_msg_;
+        boost::mutex feedback_msg_mutex_;
 };

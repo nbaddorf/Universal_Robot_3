@@ -114,12 +114,18 @@ void pointCallback(const geometry_msgs::Point& point) {
   arm_position.y = constrain(point.y, -2.7, 2.7); 
   arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement I think this is correct
 }
-
-ros::Subscriber<geometry_msgs::Point> pointSub("scara/arm_pos", pointCallback);
-ros::Subscriber<sensor_msgs::JointState> joinstates_sub("scara_arm_controller/joint_position_controller", jointstates_callback);
+/*
+void jointstates_callback(const sensor_msgs::JointState& jointState) {
+  arm_position.x = constrain(jointState.position[0], -1.3708, 4.71239); //0.3
+  arm_position.y = constrain(jointState.position[1], -2.7, 2.7); 
+  arm_position.z = constrain(jointState.position[2] * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement I think this is correct
+}
+*/
+ros::Subscriber<geometry_msgs::Point> pointSub("ur3/scara/arm_command", pointCallback);
+//ros::Subscriber<sensor_msgs::JointState> joinstates_sub("ur3/scara/arm_command", jointstates_callback);
 
 sensor_msgs::JointState scara_joints;
-ros::Publisher joint_pub("scara/joint_states", &scara_joints);
+ros::Publisher joint_pub("ur3/scara/joint_states", &scara_joints);
 
 
 void setup() {
@@ -132,6 +138,7 @@ void setup() {
     nh.initNode();  // init ROS
 
     nh.subscribe(pointSub);
+    //nh.subscribe(joinstates_sub);
     nh.advertise(joint_pub);
   #endif
 

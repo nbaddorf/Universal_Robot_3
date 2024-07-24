@@ -14,9 +14,12 @@
 
   <!-- <rosparam file="$(find scara)/config/ros_controllers.yaml" command="load"/> -->
 
-  <node name="myrobot_hardware_interface" pkg="ur3master" type="myrobot_hardware_interface" respawn="false" output="screen" />
+  <node name="myrobot_hardware_interface" pkg="ur3master" type="myrobot_hardware_interface" respawn="false" output="screen">
+  <remap from="joint_states" to="scara_hardware_interface/joint_states" />
+  </node>
 
-  <include file="$(find scara)/launch/ros_controllers.launch"/>
+  <include file="$(find scara)/launch/ros_controllers.launch">
+  </include>
 
   <include file="$(find scara)/launch/move_group.launch">
     <!-- <arg name="allow_trajectory_execution" value="false"/>-->

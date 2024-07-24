@@ -20,17 +20,6 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
 
-# THIS IS FOR MOVEIT
-#controller_list:
-#  - name: scara_arm_controller
-#    action_ns: follow_joint_trajectory
-#    default: True
-#    type: FollowJointTrajectory
-#    #type: position_controllers/JointTrajectoryController#
-#    joints:
-#      - base_link_to_tower
-#      - tower_to_arm1
-#      - arm1_to_arm2
 controller_list:
   - name: arm_controller
     action_ns: follow_joint_trajectory
