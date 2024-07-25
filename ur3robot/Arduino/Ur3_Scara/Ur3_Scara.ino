@@ -241,9 +241,10 @@ void loop() {
       //if (axis3_position_old != arm_position.y) {
         if (can_loop_counter >= 9) {
           can_loop_counter = 0;
-        } else {
-          runCanToPosition(arm_position.y, 700, 300);
+          runCanToPosition(arm_position.y, 1000, 300);
           axis3_position_old = arm_position.y;
+        } else {
+          
           can_loop_counter++;
         }
       //}
