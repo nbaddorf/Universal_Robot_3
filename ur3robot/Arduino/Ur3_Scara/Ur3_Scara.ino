@@ -62,6 +62,7 @@ const double axis2_steps_per_mm = (axis2_steps_per_motor_rev * axis2_gear_ratio)
 
 const int axis3_gear_ratio = 4; //20:80 teeth
 double axis3_position_old = 0;
+int can_loop_counter = 0;
 
 bool axis1_enabled = false;
 bool axis2_enabled = false;
@@ -110,7 +111,7 @@ float joint_pos[4];
 //float eff[6];
 
 void pointCallback(const geometry_msgs::Point& point) {
-  arm_position.x = constrain(point.x, -1.3708, 4.71239); //0.3
+  arm_position.x = constrain(point.x, -1.0708, 4.71239); //0.3
   arm_position.y = constrain(point.y, -2.7, 2.7); 
   arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement I think this is correct
 }
@@ -237,10 +238,15 @@ void loop() {
     if (has_homed && !e_stop) {
       axis1.moveTo(axis1_position);
       axis2.moveTo(axis2_position);
-      if (axis3_position_old != arm_position.y) {
-        runCanToPosition(arm_position.y, 500, 200);
-        axis3_position_old = arm_position.y;
-      }
+      //if (axis3_position_old != arm_position.y) {
+        if (can_loop_counter >= 9) {
+          can_loop_counter = 0;
+        } else {
+          runCanToPosition(arm_position.y, 700, 300);
+          axis3_position_old = arm_position.y;
+          can_loop_counter++;
+        }
+      //}
     }
 
     //Check if arm is connected to ROS and if not connected, turn off arm

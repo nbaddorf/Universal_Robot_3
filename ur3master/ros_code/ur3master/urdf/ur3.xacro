@@ -203,7 +203,7 @@
   <parent link="base_link"/>
   <child link="tower"/>
   <axis xyz="-0.0 0.0 -1.0"/>
-  <limit effort="10" velocity="100.0" lower="-1.3708" upper="4.71239" />
+  <limit effort="10" velocity="10.0" lower="-1.0708" upper="4.71239" /> <!-- FIX ONE OFTHESE RUNS INTO LIMIT SWITCH BACK-->
 </joint>
 
 <joint name="tower_to_arm1" type="prismatic">
@@ -211,7 +211,7 @@
   <parent link="tower"/>
   <child link="arm1"/>
   <axis xyz="0.0 0.0 1.0"/>
-  <limit upper="0.25" lower="-0.25" effort="100" velocity="100"/>
+  <limit upper="0.25" lower="-0.25" effort="10" velocity="0.006"/>
 </joint>
 
 <joint name="arm1_to_arm2" type="revolute">
@@ -219,7 +219,7 @@
   <parent link="arm1"/>
   <child link="arm2"/>
   <axis xyz="-0.0 -0.0 -1.0"/>
-   <limit effort="10" velocity="100.0" lower="-2.7" upper="2.7" />
+   <limit effort="10" velocity="10" lower="-2.7" upper="2.7" />
 </joint>
 
 <joint name="arm2_to_end_effector" type="fixed">

@@ -40,6 +40,16 @@ arm_controller:
     - base_link_to_tower
     - tower_to_arm1
     - arm1_to_arm2
+  constraints:
+    stopped_velocity_tolerance: 0.001
+
+    base_link_to_tower:
+      goal: 0.01
+    tower_to_arm1:
+      goal: 0.01
+    arm1_to_arm2:
+      goal: 0.01
+
   #gains:
   #  base_link_to_tower:
   #    p: 100

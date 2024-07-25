@@ -12,6 +12,9 @@
   <!-- By default, we will load or override the robot_description -->
   <arg name="load_robot_description" default="true"/>
 
+  <!-- launch pointcloud programs -->
+  <include file="$(find ur3master)/launch/pointcloud_filters.launch"/>
+
   <!-- <rosparam file="$(find scara)/config/ros_controllers.yaml" command="load"/> -->
 
   <node name="myrobot_hardware_interface" pkg="ur3master" type="myrobot_hardware_interface" respawn="false" output="screen">
