@@ -29,3 +29,5 @@ I think that amcl is to slow to make predictions, which is causing the tf to be 
 Arduino CAN bus stuff for motor: https://github.com/makerbase-motor/MKS-SERVO57D/blob/master/Example%20Code/Arduino%20Example%20Code/arduino_11_Serial_Speed%20Mode/arduino_11_speedMode/arduino_11_speedMode.ino
 
 Ros_Control helpful info (example code has a few bugs) (This is moveit related): https://www.rosroboticslearning.com/ros-control. His github code that is better is at https://github.com/bandasaikrishna/ros_control_example/blob/master/ 
+
+rostopic pub /ur3/scara/arm_command geometry_msgs/Point "{x: 3.13271137776, y: -2.7, z: -0.23}"

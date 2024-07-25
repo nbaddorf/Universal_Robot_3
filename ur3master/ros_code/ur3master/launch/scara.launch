@@ -26,7 +26,7 @@
     <arg name="fake_execution" value="false"/>
     <arg name="info" value="true"/>
     <arg name="pipeline" value="$(arg pipeline)"/>
-    <arg name="load_robot_description" value="$(arg load_robot_description)"/>
+    <!-- <arg name="load_robot_description" value="$(arg load_robot_description)"/> -->
   </include>
 
   <!-- If database loading was enabled, start mongodb as well -->

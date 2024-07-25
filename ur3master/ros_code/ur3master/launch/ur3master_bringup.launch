@@ -9,32 +9,5 @@
   <!-- launch aruco program -->
   <include file="$(find ur3master)/launch/aruco.launch"/>
 
-  <!-- SCARA -->
-
-    <!-- specify the planning pipeline -->
-  <arg name="pipeline" default="ompl" />
-
-  <!-- By default, we do not start a database (it can be large) -->
-  <arg name="db" default="false" />
-  <!-- Allow user to specify database location -->
-  <arg name="db_path" default="$(find scara)/default_warehouse_mongo_db" />
-
-  <!-- By default, we will load or override the robot_description -->
-  <arg name="load_robot_description" default="true"/>
-
-  <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers configured by default) -->
-  <include file="$(find scara)/launch/move_group.launch">
-    <arg name="allow_trajectory_execution" value="true"/>
-    <arg name="fake_execution" value="false"/>
-    <arg name="info" value="true"/>
-    <arg name="pipeline" value="$(arg pipeline)"/>
-    <arg name="load_robot_description" value="$(arg load_robot_description)"/>
-  </include>
-
-  <!-- If database loading was enabled, start mongodb as well -->
-  <include file="$(find scara)/launch/default_warehouse_db.launch" if="$(arg db)">
-    <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
-  </include>
-
 
 </launch>
