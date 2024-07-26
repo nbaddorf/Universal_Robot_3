@@ -137,8 +137,8 @@ void MyRobot::write(ros::Duration elapsed_time) {
   //joint_position_[1] = joint_position_command_[1];
   //joint_position_[2] = joint_position_command_[2];
 
-  command_msg.x = joint_position_command_[0];
-  command_msg.z = joint_position_command_[1];
+  //command_msg.x = joint_position_command_[0];
+  //command_msg.z = joint_position_command_[1];
   command_msg.y = joint_position_command_[2];
 
   command_pub.publish(command_msg);

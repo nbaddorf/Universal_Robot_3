@@ -107,6 +107,7 @@ struct can_motor {
   bool sent_home_command = false;
   bool motor_enabled = true;
   bool sent_get_encoder_command = false;
+  bool sent_position_command = false;
   double encoder = 0;
   double lower_limit = 0;
   double upper_limit = 0;
@@ -251,16 +252,18 @@ void loop() {
     if (has_homed && !e_stop) {
       axis1.moveTo(axis1_position);
       axis2.moveTo(axis2_position);
-      //if (axis3_position_old != arm_position.y) {
-        if (can_loop_counter >= 9) {
+      runCanToPosition(axis3, arm_position.y, axis3_top_speed, 150);
+      /* if (can_loop_counter >= 9) {
+      if (axis3_position_old != arm_position.y) {
+        //if (can_loop_counter >= 9) {
           can_loop_counter = 0;
-          runCanToPosition(axis3, arm_position.y, axis3_top_speed, 255);
+          runCanToPosition(axis3, arm_position.y, axis3_top_speed, 150);
           axis3_position_old = arm_position.y;
-        } else {
-          
-          can_loop_counter++;
+      }
+      } else {
+        can_loop_counter++;
         }
-      //}
+        */
     }
 
     //Check if arm is connected to ROS and if not connected, turn off arm
@@ -292,7 +295,7 @@ void loop() {
       axis2_enabled = true;
     }
 
-    getCanEncoderVal(axis3);
+    
 
     if ( can1.read(msg) ) {
       switch (msg.buf[0]) {
@@ -300,12 +303,16 @@ void loop() {
         axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
         //axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
         axis3.sent_get_encoder_command = false;
+        axis3.sent_position_command = false;
         //Serial.println(axis3.encoder);
         break;
       case 0x91:
         homed.axis3 = (msg.buf[1] == 2);
         axis3.sent_home_command = !(msg.buf[1] == 2);
         break;
+      case 0xF5:
+        
+        getCanEncoderVal(axis3);
       }
     }
 
@@ -348,31 +355,34 @@ void goHomeCan(can_motor &motor) {
 }
 
 void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc) { 
-  CAN_message_t msgSend;
-  speed = constrain(speed, 0, 4712);
-  speed = ((speed * 2) / PI) * 60; //convert input of radian/second to revolution/min
-  //0x4000 = 1 motor rev. * 4 = 1 arm rev
-  //motor max range is 320 deg. 651 is centered
-  long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, motor.lower_limit * 100, motor.upper_limit * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
-  //Serial.println(encoder_counts); // should be about 32768 (0x8001) with rad = PI
-  msgSend.len = 8;
-  msgSend.id = motor.id;
-  msgSend.buf[0] = 0xF5; //run motor to absolute position mode 4
-  msgSend.buf[2] = speed; 
-  msgSend.buf[1] = speed >> 8; 
-  msgSend.buf[3] = acc; //acceleration
-  msgSend.buf[6] = encoder_counts;
-  msgSend.buf[5] = encoder_counts >> 8;
-  msgSend.buf[4] = encoder_counts >> 16;
+  if (!motor.sent_position_command) {
+    CAN_message_t msgSend;
+    speed = constrain(speed, 0, 4712);
+    speed = ((speed * 2) / PI) * 60; //convert input of radian/second to revolution/min
+    //0x4000 = 1 motor rev. * 4 = 1 arm rev
+    //motor max range is 320 deg. 651 is centered
+    long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, motor.lower_limit * 100, motor.upper_limit * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
+    //Serial.println(encoder_counts); // should be about 32768 (0x8001) with rad = PI
+    msgSend.len = 8;
+    msgSend.id = motor.id;
+    msgSend.buf[0] = 0xF5; //run motor to absolute position mode 4
+    msgSend.buf[2] = speed; 
+    msgSend.buf[1] = speed >> 8; 
+    msgSend.buf[3] = acc; //acceleration
+    msgSend.buf[6] = encoder_counts;
+    msgSend.buf[5] = encoder_counts >> 8;
+    msgSend.buf[4] = encoder_counts >> 16;
 
-  uint8_t crc = msgSend.id;
-  for (int i = 0; i<7; i++) {
-    crc += msgSend.buf[i];
+    uint8_t crc = msgSend.id;
+    for (int i = 0; i<7; i++) {
+      crc += msgSend.buf[i];
+    }
+
+    msgSend.buf[7] = crc;
+    
+    can1.write(msgSend);
+    motor.sent_position_command = true;
   }
-
-  msgSend.buf[7] = crc;
-  
-  can1.write(msgSend);
 }
 
 void setCanEnable(can_motor &motor, bool enabled) {
@@ -464,7 +474,7 @@ void home_axis() {
       axis1.setCurrentPosition(homed.axis1_offset);
       //arm_position.x = 0.003;
      homed.axis1 = true;
-     //runCanToPosition(arm_position.y, 500, 200);
+     runCanToPosition(axis3, arm_position.y, 500, 200);
     }
   } 
 
