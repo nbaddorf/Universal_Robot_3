@@ -51,7 +51,7 @@ double axis1_acceleration = 0.5; //1 radian per second per second
 double axis2_top_speed = 6; //6 mm per second
 double axis2_acceleration = 2; //2 mm per second per second
 
-double axis3_top_speed = 2; //1 radian per second
+double axis3_top_speed = 3 * 3.1415; //1 radian per second
 double axis3_acceleration = 1; //1 radian per second per second
 
 //math for top speeds and accelerations:
