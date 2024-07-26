@@ -220,7 +220,7 @@
   <parent link="arm1"/>
   <child link="arm2"/>
   <axis xyz="-0.0 -0.0 -1.0"/>
-   <limit effort="10" velocity="0.5" lower="0" upper="5.4" />
+   <limit effort="10" velocity="3.1415" lower="0" upper="5.4" />
 </joint>
 
 <joint name="arm2_to_end_effector" type="fixed">
