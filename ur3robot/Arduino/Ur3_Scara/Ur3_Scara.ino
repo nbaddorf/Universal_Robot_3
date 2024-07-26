@@ -350,7 +350,7 @@ void goHomeCan(can_motor &motor) {
 void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc) { 
   CAN_message_t msgSend;
   speed = constrain(speed, 0, 4712);
-  speed = (speed * 2) / PI; //convert input of radian/second to revolution/s 
+  speed = ((speed * 2) / PI) * 60; //convert input of radian/second to revolution/min
   //0x4000 = 1 motor rev. * 4 = 1 arm rev
   //motor max range is 320 deg. 651 is centered
   long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, motor.lower_limit * 100, motor.upper_limit * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev

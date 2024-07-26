@@ -157,7 +157,7 @@
 <joint name="tower_to_kinect_rotator" type="fixed">
 	<parent link="tower"/>
 	<child link="kinect_rotator"/>
-	<origin xyz="0 0.0 0.691" rpy="0.0 0.0 0.0"/> <!-- Base of top robot platform to the bottom of the kinect rotator motorized platform where the joint rotates-->
+	<origin xyz="0 0.0 0.691" rpy="0.0 0.0 3.1415"/> <!-- Base of top robot platform to the bottom of the kinect rotator motorized platform where the joint rotates-->
 	<axis xyz="0 0 0"/>
 </joint>
 
@@ -168,7 +168,7 @@
 	<origin xyz="0.0106 0 0.0307" rpy="0.0 0.0 0.0"/>
 	<axis xyz="0 0 1"/>
 	<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
-</joint>	
+</joint>
 
 <joint name="kinect_pivot_to_camera_depth_frame" type="revolute">
 	<parent link="kinect_pivot"/>

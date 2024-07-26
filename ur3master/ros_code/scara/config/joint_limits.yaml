@@ -4,16 +4,16 @@
 joint_limits:
   arm1_to_arm2:
     has_velocity_limits: true
-    max_velocity: 100
+    max_velocity: 2
     has_acceleration_limits: false
     max_acceleration: 0
   base_link_to_tower:
     has_velocity_limits: true
-    max_velocity: 100
+    max_velocity: 0.75
     has_acceleration_limits: false
     max_acceleration: 0
   tower_to_arm1:
     has_velocity_limits: true
-    max_velocity: 100
+    max_velocity: 0.006
     has_acceleration_limits: false
     max_acceleration: 0
