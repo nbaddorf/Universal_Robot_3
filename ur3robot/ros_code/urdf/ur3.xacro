@@ -43,14 +43,14 @@
 
 <link name="tower">
   <visual>
-    <origin xyz="-0.105418 -0.06341 -0.487908" rpy="0 0 0"/>
+    <origin xyz="-0.105418 -0.06341 -0.486908" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="black"/>
   </visual>
   <collision>
-    <origin xyz="-0.105418 -0.06341 -0.487908" rpy="0 0 0"/>
+    <origin xyz="-0.105418 -0.06341 -0.486908" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
@@ -59,14 +59,14 @@
 
 <link name="arm1">
   <visual>
-    <origin xyz="-0.143418 -0.06341 -0.829408" rpy="0 0 0"/>
+    <origin xyz="-0.067418 -0.06341 -0.6118" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="blue"/>
   </visual>
   <collision>
-    <origin xyz="-0.143418 -0.06341 -0.829408" rpy="0 0 0"/>
+    <origin xyz="-0.067418 -0.06341 -0.6118" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
@@ -75,14 +75,14 @@
 
 <link name="arm2">
   <visual>
-    <origin xyz="-0.331194 -0.06341 -0.872808" rpy="0 0 0"/>
+    <origin xyz="0.120357 -0.06341 -0.6552" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="green"/>
   </visual>
   <collision>
-    <origin xyz="-0.331194 -0.06341 -0.872808" rpy="0 0 0"/>
+    <origin xyz="0.120357 -0.06341 -0.6552" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
@@ -91,14 +91,14 @@
 
 <link name="end_effector">
   <visual>
-    <origin xyz="-0.559794 -0.06341 -0.818108" rpy="0 0 0"/>
+    <origin xyz="-0.086312 0.034291 -0.6005" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
-    <origin xyz="-0.559794 -0.06341 -0.818108" rpy="0 0 0"/>
+    <origin xyz="-0.086312 0.034291 -0.6005" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://ur3master/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
     </geometry>
@@ -132,98 +132,99 @@
 <link name="camera_rgb_optical_frame">
 	</link>
 
-  <joint name="base_link_to_laser" type="fixed">
-			<parent link="base_link"/>
-			<child link="laser"/>
-			<origin xyz="0 0 0.3429" rpy="0.0 0.0 1.570796"/>
-			<axis xyz="0 0 0"/>
-		</joint>
-      <!-- I think the tf for the webcam is INCORRECT-->
-        <joint name="base_link_to_webcam" type="fixed">
-			<parent link="base_link"/>
-			<child link="webcam"/>
-			<origin xyz="0.21 -0.051 0.27" rpy="0.0 0.0 0"/>
-			<axis xyz="0 0 0"/>
-		</joint>	
+<joint name="base_link_to_laser" type="fixed">
+	<parent link="base_link"/>
+	<child link="laser"/>
+	<origin xyz="0 0 0.3429" rpy="0.0 0.0 1.570796"/>
+	<axis xyz="0 0 0"/>
+</joint>
 
-		<joint name="base_link_to_imu" type="fixed">
-			<parent link="base_link"/>
-			<child link="imu"/>
-			<origin xyz="-0.198 -0.153 0.458" rpy="0.0 0.0 3.14159"/>
-			<axis xyz="0 0 0"/>
-		</joint>	
+<!-- I think the tf for the webcam is INCORRECT-->
+<joint name="base_link_to_webcam" type="fixed">
+	<parent link="base_link"/>
+	<child link="webcam"/>
+	<origin xyz="0.21 -0.051 0.27" rpy="0.0 0.0 0"/>
+	<axis xyz="0 0 0"/>
+</joint>
+
+<joint name="base_link_to_imu" type="fixed">
+	<parent link="base_link"/>
+	<child link="imu"/>
+	<origin xyz="-0.198 -0.153 0.458" rpy="0.0 0.0 3.14159"/>
+	<axis xyz="0 0 0"/>
+</joint>
 
 <joint name="tower_to_kinect_rotator" type="fixed">
-			<parent link="tower"/>
-			<child link="kinect_rotator"/>
-			<origin xyz="0 0.0 0.691" rpy="0.0 0.0 0.0"/> <!-- Base of top robot platform to the bottom of the kinect rotator motorized platform where the joint rotates-->
-			<axis xyz="0 0 0"/>
-		</joint>
+	<parent link="tower"/>
+	<child link="kinect_rotator"/>
+	<origin xyz="0 0.0 0.691" rpy="0.0 0.0 0.0"/> <!-- Base of top robot platform to the bottom of the kinect rotator motorized platform where the joint rotates-->
+	<axis xyz="0 0 0"/>
+</joint>
 
 <joint name="kinect_rotator_to_kinect_pivot" type="revolute"> <!-- This should be good --> 
-			<parent link="kinect_rotator"/>
-			<child link="kinect_pivot"/>
-			<!-- <origin xyz="0.0067 0 0.0169" rpy="0.0 0.0 0.0"/> -->
-			<origin xyz="0.0106 0 0.0307" rpy="0.0 0.0 0.0"/>
-			<axis xyz="0 0 1"/>
-			<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
-		</joint>	
+	<parent link="kinect_rotator"/>
+	<child link="kinect_pivot"/>
+	<!-- <origin xyz="0.0067 0 0.0169" rpy="0.0 0.0 0.0"/> -->
+	<origin xyz="0.0106 0 0.0307" rpy="0.0 0.0 0.0"/>
+	<axis xyz="0 0 1"/>
+	<limit effort="10" velocity="1.0" lower="-3.14159" upper="3.14159" />
+</joint>	
 
 <joint name="kinect_pivot_to_camera_depth_frame" type="revolute">
-			<parent link="kinect_pivot"/>
-			<child link="camera_depth_frame"/>
-			<origin xyz="0.029 0.011 0.034" rpy="0.0 0.0 0.0"/>
-			<axis xyz="0 1 0"/>
-			<limit effort="5" velocity="0.5" lower="-0.7679449" upper="0.3141593" />
-		</joint>
+	<parent link="kinect_pivot"/>
+	<child link="camera_depth_frame"/>
+	<origin xyz="0.029 0.011 0.034" rpy="0.0 0.0 0.0"/>
+	<axis xyz="0 1 0"/>
+	<limit effort="5" velocity="0.5" lower="-0.7679449" upper="0.3141593" />
+</joint>
 
 <joint name="camera_depth_frame_to_camera_rgb_frame" type="fixed">
-			<parent link="camera_depth_frame"/>
-			<child link="camera_rgb_frame"/>
-			<origin xyz="0 -0.026 0" rpy="0.0 0.0 0.0"/>
-			<axis xyz="0 0 0"/>
-		</joint>
+	<parent link="camera_depth_frame"/>
+	<child link="camera_rgb_frame"/>
+	<origin xyz="0 -0.026 0" rpy="0.0 0.0 0.0"/>
+	<axis xyz="0 0 0"/>
+</joint>
 
-		<joint name="camera_depth_frame_to_camera_depth_optical_frame" type="fixed">
-			<parent link="camera_depth_frame"/>
-			<child link="camera_depth_optical_frame"/>
-			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
-			<axis xyz="0 0 0"/>
-		</joint>
+<joint name="camera_depth_frame_to_camera_depth_optical_frame" type="fixed">
+	<parent link="camera_depth_frame"/>
+	<child link="camera_depth_optical_frame"/>
+	<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+	<axis xyz="0 0 0"/>
+</joint>
 
-		<joint name="camera_rgb_frame_to_camera_rgb_optical_frame" type="fixed">
-			<parent link="camera_rgb_frame"/>
-			<child link="camera_rgb_optical_frame"/>
-			<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
-			<axis xyz="0 0 0"/>
-		</joint>
+<joint name="camera_rgb_frame_to_camera_rgb_optical_frame" type="fixed">
+	<parent link="camera_rgb_frame"/>
+	<child link="camera_rgb_optical_frame"/>
+	<origin xyz="0 0 0" rpy="-1.5707963267948966 0 -1.5707963267948966"/>
+	<axis xyz="0 0 0"/>
+</joint>
 
 <joint name="base_link_to_tower" type="revolute">
-  <origin xyz="0.105418 0.06341 0.487908" rpy="0 0 0"/>
+  <origin xyz="0.105418 0.06341 0.486908" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tower"/>
   <axis xyz="-0.0 0.0 -1.0"/>
-  <limit effort="10" velocity="2.0" lower="-1.0708" upper="4.71239" /><!-- FIX ONE OFTHESE RUNS INTO LIMIT SWITCH BACK-->
+  <limit effort="10" velocity="0.75" lower="-4.21239" upper="1.59534" /><!-- Set lower to proper value to prevent tower hitting limit switch-->
 </joint>
 
 <joint name="tower_to_arm1" type="prismatic">
-  <origin xyz="0.038 0.0 0.3415" rpy="0 0 0"/> <!-- make sure the height on this is correct-->
+  <origin xyz="-0.038 0.0 0.124892" rpy="0 0 0"/>
   <parent link="tower"/>
   <child link="arm1"/>
   <axis xyz="0.0 0.0 1.0"/>
-  <limit upper="0.25" lower="-0.25" effort="100" velocity="0.006"/>
+  <limit upper="0.5" lower="0.0" effort="10" velocity="0.006"/> <!-- make sure that the arm can actually go up 0.5-->
 </joint>
 
 <joint name="arm1_to_arm2" type="revolute">
-  <origin xyz="0.187776 0.0 0.0434" rpy="0 0 0"/>
+  <origin xyz="-0.187775 0.0 0.0434" rpy="0 0 0"/>
   <parent link="arm1"/>
   <child link="arm2"/>
   <axis xyz="-0.0 -0.0 -1.0"/>
-   <limit effort="10" velocity="2" lower="-2.7" upper="2.7" />
+   <limit effort="10" velocity="2" lower="0" upper="5.4" />
 </joint>
 
 <joint name="arm2_to_end_effector" type="fixed">
-  <origin xyz="0.2286 0.0 -0.0547" rpy="0 0 0"/>
+  <origin xyz="0.206669 -0.097701 -0.0547" rpy="0 0 0"/>
   <parent link="arm2"/>
   <child link="end_effector"/>
 </joint>

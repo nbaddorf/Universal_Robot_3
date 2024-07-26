@@ -48,8 +48,11 @@ CAN_message_t msg;
 double axis1_top_speed = 0.75; //1 radian per second
 double axis1_acceleration = 0.5; //1 radian per second per second
 
-double axis2_top_speed = 6; //0.02 mm per second
-double axis2_acceleration = 2; //0.01 mm per second per second
+double axis2_top_speed = 6; //6 mm per second
+double axis2_acceleration = 2; //2 mm per second per second
+
+double axis3_top_speed = 2; //1 radian per second
+double axis3_acceleration = 1; //1 radian per second per second
 
 //math for top speeds and accelerations:
 const int axis1_steps_per_motor_rev = 800;
@@ -72,10 +75,16 @@ unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
 const float loopTime = 10; // 10
 
+#ifdef DEBUG
+  bool ros_connected = true;
+#else 
+  bool ros_connected = false;
+#endif
+
 struct {
-  double x = PI;
-  double y = -2.6;
-  double z = -0.24;
+  double x = 0;
+  double y = 0;
+  double z = 0.02;
 } arm_position; // structure with name arm_position.
 
 bool has_homed = false;
@@ -88,9 +97,9 @@ struct {
   const double axis1_homing_speed = 0.12;
   const int axis2_homing_speed = 3;
   const int axis3_homing_speed = 10;
-  const double axis1_offset = ((axis1_steps_per_rad * 2 * PI) * (0.75)) + 25;
-  const double axis2_offset = axis2_steps_per_mm * -250;
-  const double axis3_offset = 2.79052;
+  const double axis1_offset = ((axis1_steps_per_rad * 2 * PI) * (0.25)) + 25;
+  const double axis2_offset = 0;
+  const double axis3_offset = 0.09052;
 } homed;
 
 struct can_motor {
@@ -99,6 +108,8 @@ struct can_motor {
   bool motor_enabled = true;
   bool sent_get_encoder_command = false;
   double encoder = 0;
+  double lower_limit = 0;
+  double upper_limit = 0;
 };
 
 can_motor axis3;
@@ -111,9 +122,9 @@ float joint_pos[4];
 //float eff[6];
 
 void pointCallback(const geometry_msgs::Point& point) {
-  arm_position.x = constrain(point.x, -1.0708, 4.71239); //0.3
-  arm_position.y = constrain(point.y, -2.7, 2.7); 
-  arm_position.z = constrain(point.z * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement I think this is correct
+  arm_position.x = constrain(point.x, -4.21239, 1.59534); //0.3
+  arm_position.y = constrain(point.y, axis3.lower_limit, axis3.upper_limit); 
+  arm_position.z = constrain(point.z * 100, 0.0, 0.5 * 100) / 100;//505 mm total movement I think this is correct
 }
 /*
 void jointstates_callback(const sensor_msgs::JointState& jointState) {
@@ -166,6 +177,8 @@ void setup() {
   pinMode(limit_3_pin, INPUT);
 
   axis3.id = 0x01;
+  axis3.lower_limit = 0.0;
+  axis3.upper_limit = 5.4;
 
   old_e_stop = digitalRead(e_stop_pin); //set e_stop values to whatever they currently are
   setCanEnable(axis3, !old_e_stop); //set motor to be enabled or not
@@ -180,7 +193,7 @@ void loop() {
   nh.spinOnce();  // make sure we listen for ROS messages and activate the callback if there is one
   #endif
 
-  if (!e_stop) {
+  if (!e_stop && ros_connected) {
     if (!has_homed && started_homing) {
       axis1.runSpeed();
       axis2.runSpeed();
@@ -241,7 +254,7 @@ void loop() {
       //if (axis3_position_old != arm_position.y) {
         if (can_loop_counter >= 9) {
           can_loop_counter = 0;
-          runCanToPosition(arm_position.y, 1000, 300);
+          runCanToPosition(axis3, arm_position.y, axis3_top_speed, 255);
           axis3_position_old = arm_position.y;
         } else {
           
@@ -256,8 +269,10 @@ void loop() {
         digitalWrite(LED, HIGH);
         axis1.stop();
         axis2.stop();
+        ros_connected = false;
       } else {
         digitalWrite(LED, LOW);
+        ros_connected = true;
       }
     #endif
 
@@ -283,7 +298,7 @@ void loop() {
       switch (msg.buf[0]) {
       case 0x31:
         axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
-        axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
+        //axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
         axis3.sent_get_encoder_command = false;
         //Serial.println(axis3.encoder);
         break;
@@ -332,16 +347,16 @@ void goHomeCan(can_motor &motor) {
 
 }
 
-void runCanToPosition(double rad, uint16_t speed, uint8_t acc) { 
+void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc) { 
   CAN_message_t msgSend;
-  speed = constrain(speed, 0, 3000);
+  speed = constrain(speed, 0, 4712);
+  speed = (speed * 2) / PI; //convert input of radian/second to revolution/s 
   //0x4000 = 1 motor rev. * 4 = 1 arm rev
   //motor max range is 320 deg. 651 is centered
-  //Serial.println(constrain(rad, -2.6, 2.6));
-  long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, -2.7 * 100, 2.7 * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
+  long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, motor.lower_limit * 100, motor.upper_limit * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
   //Serial.println(encoder_counts); // should be about 32768 (0x8001) with rad = PI
   msgSend.len = 8;
-  msgSend.id = 0x01;
+  msgSend.id = motor.id;
   msgSend.buf[0] = 0xF5; //run motor to absolute position mode 4
   msgSend.buf[2] = speed; 
   msgSend.buf[1] = speed >> 8; 
@@ -449,7 +464,7 @@ void home_axis() {
       axis1.setCurrentPosition(homed.axis1_offset);
       //arm_position.x = 0.003;
      homed.axis1 = true;
-     runCanToPosition(arm_position.y, 500, 200);
+     //runCanToPosition(arm_position.y, 500, 200);
     }
   } 
 
