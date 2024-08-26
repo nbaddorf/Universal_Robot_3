@@ -51,7 +51,7 @@ double axis1_acceleration = 0.5; //1 radian per second per second
 double axis2_top_speed = 6; //6 mm per second
 double axis2_acceleration = 2; //2 mm per second per second
 
-double axis3_top_speed = 1 * 3.1415; //1 radian per second
+double axis3_top_speed = 1; //2 * 3.1415; //1 radian per second
 double axis3_acceleration = 1; //1 radian per second per second
 
 //math for top speeds and accelerations:
@@ -357,8 +357,13 @@ void goHomeCan(can_motor &motor) {
 void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc) { 
   if (!motor.sent_position_command) {
     CAN_message_t msgSend;
-    speed = constrain(speed, 0, 4712);
-    speed = ((speed * 2) / PI) * 60; //convert input of radian/second to revolution/min
+    speed = constrain(speed, 0, 9.00);
+    //speed calc (rad/s to rev/min):
+    // speed = (speed / 2PI) gives us motor revs per second at 16 subdivisions
+    // speed = (speed / 2PI) * 4 gives us arm revs per second at 16 subdivision
+    // speed = (speed / 2PI) * 4 * 60 gives us arm revs per min at 16 subdivison
+    // speed = (speed / 2PI) * 4 * 60 * 8 gives us arm revs per min at 128 subdivison
+    speed = ((speed * 2) / PI) * 60 * 8; //convert input of radian/second to revolution/min
     //0x4000 = 1 motor rev. * 4 = 1 arm rev
     //motor max range is 320 deg. 651 is centered
     long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, motor.lower_limit * 100, motor.upper_limit * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
