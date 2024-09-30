@@ -9,7 +9,7 @@
 #include <math.h>
 #include <FlexCAN_T4.h>
 
-//#define DEBUG
+#define DEBUG
 
 //create ros msgs
 ros::NodeHandle nh;
@@ -39,10 +39,10 @@ bool old_e_stop = true;
 AccelStepper axis1(1, stepper_axis_1_step_pin, stepper_axis_1_dir_pin); //tower
 AccelStepper axis2(1, stepper_axis_2_step_pin, stepper_axis_2_dir_pin); //Z axis
 
-const int LED = 13;
-
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
-CAN_message_t msg;
+//CAN_message_t msg;
+
+const int LED = 13;
 
 //top speeds and accelerations for axis:
 double axis1_top_speed = 0.75; //1 radian per second
@@ -51,7 +51,7 @@ double axis1_acceleration = 0.5; //1 radian per second per second
 double axis2_top_speed = 6; //6 mm per second
 double axis2_acceleration = 2; //2 mm per second per second
 
-double axis3_top_speed = 1; //2 * 3.1415; //1 radian per second
+double axis3_top_speed = 0.5; //2 * 3.1415; //1 radian per second
 double axis3_acceleration = 1; //1 radian per second per second
 
 //math for top speeds and accelerations:
@@ -156,7 +156,7 @@ void setup() {
   #endif
 
   can1.begin();
-  can1.setBaudRate(250000);
+  can1.setBaudRate(500000); //250000
 
   //Testing 
   can1.setMaxMB(16);
@@ -252,6 +252,7 @@ void loop() {
         }
       } else {
         setCanEnable(axis3, true);
+        //setCanMotorSpeed(axis3, 10, 255);
       }
     }
 
@@ -263,7 +264,8 @@ void loop() {
     if (has_homed && !e_stop) {
       axis1.moveTo(axis1_position);
       axis2.moveTo(axis2_position);
-      runCanToPosition(axis3, arm_position.y, axis3_top_speed, 150);
+      runCanToPosition(axis3, arm_position.y, axis3_top_speed, 200);
+      
       /* if (can_loop_counter >= 9) {
       if (axis3_position_old != arm_position.y) {
         //if (can_loop_counter >= 9) {
@@ -354,6 +356,7 @@ void loop() {
 }
 
 void canRecieve(const CAN_message_t &msg) {
+  #ifdef DEBUG
   Serial.print("MB "); Serial.print(msg.mb);
   Serial.print("  OVERRUN: "); Serial.print(msg.flags.overrun);
   Serial.print("  LEN: "); Serial.print(msg.len);
@@ -365,8 +368,10 @@ void canRecieve(const CAN_message_t &msg) {
     Serial.print(msg.buf[i], HEX); Serial.print(" ");
   } Serial.println();
 
+  #endif
+
   switch (msg.buf[0]) {
-      case 0x31:
+      case 0x31: // encoder
         axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
         //axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
         axis3.sent_get_encoder_command = false;
@@ -399,7 +404,7 @@ void goHomeCan(can_motor &motor) {
 
 }
 
-void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc) { 
+void runCanToPosition(can_motor &motor, double rad, double speed, uint8_t acc) { 
   if (!motor.sent_position_command) {
     CAN_message_t msgSend;
     speed = constrain(speed, 0, 9.00);
@@ -408,7 +413,7 @@ void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc)
     // speed = (speed / 2PI) * 4 gives us arm revs per second at 16 subdivision
     // speed = (speed / 2PI) * 4 * 60 gives us arm revs per min at 16 subdivison
     // speed = (speed / 2PI) * 4 * 60 * 8 gives us arm revs per min at 128 subdivison
-    speed = ((speed * 2) / PI) * 60 * 8; //convert input of radian/second to revolution/min
+    uint16_t speedRev = ((speed * 2.00) / PI) * 60.00 * 8.00; //convert input of radian/second to revolution/min
     //0x4000 = 1 motor rev. * 4 = 1 arm rev
     //motor max range is 320 deg. 651 is centered
     long encoder_counts = ((0x4000 * 2) / PI) * ( (constrain(rad * 100, motor.lower_limit * 100, motor.upper_limit * 100) / 100) + homed.axis3_offset);//((0x4000 * 4) * 2) / PI; //0x10000 at 64 subdivision is 1 motor rev
@@ -416,8 +421,8 @@ void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc)
     msgSend.len = 8;
     msgSend.id = motor.id;
     msgSend.buf[0] = 0xF5; //run motor to absolute position mode 4
-    msgSend.buf[2] = speed; 
-    msgSend.buf[1] = speed >> 8; 
+    msgSend.buf[2] = speedRev; 
+    msgSend.buf[1] = speedRev >> 8; 
     msgSend.buf[3] = acc; //acceleration
     msgSend.buf[6] = encoder_counts;
     msgSend.buf[5] = encoder_counts >> 8;
@@ -433,6 +438,31 @@ void runCanToPosition(can_motor &motor, double rad, uint16_t speed, uint8_t acc)
     can1.write(msgSend);
     motor.sent_position_command = true;
   }
+}
+
+void setCanMotorSpeed(can_motor &motor, short speed, uint8_t acc) { //DOESNT WORK
+    CAN_message_t msgSend;
+    msgSend.len = 5;
+    msgSend.id = motor.id;
+
+    //4095 is the max size for unsigned 12 bit number
+    //motor limit is +-3000 RPM (this might be at 16 subdivisions I dont know)
+    uint16_t bin_speed = abs(constrain(speed, -3000, 3000)); // make an uint16 where the lowest 12 bits get set regardless of signedness, and the high-order 4 bits are allways 0. Example for value 4095 (or -4095) value is 0000111111111111.
+    bin_speed = (speed < 0) ? bin_speed | (1U << 15) : bin_speed; // if speed is negative then perform bitwise or. 1U == unsigned int (16 bit minimum) with a value of 1. (0000000000000001). Then left shift it 15 places to result in 1000000000000000.
+
+    msgSend.buf[0] = 0xF6; //run motor in speed mode
+    msgSend.buf[1] = bin_speed >> 8; // shift the high-order bits 8 positions down.
+    msgSend.buf[2] = bin_speed; // sets the 8 bit num to the lowest order 8 bits in our 16 bit number
+    msgSend.buf[3] = acc; //acceleration
+
+    uint8_t crc = msgSend.id;
+    for (int i = 0; i<7; i++) {
+      crc += msgSend.buf[i];
+    }
+
+    msgSend.buf[4] = crc;
+    can1.write(msgSend);
+
 }
 
 void setCanEnable(can_motor &motor, bool enabled) {

@@ -5,13 +5,6 @@ FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can1;
 
 CAN_message_t msg;
 
-struct motor_values {
-  double radians = 0;
-  bool enabled = false;
-  int run_status = 0;
-};
-
-motor_values motor1;
 
 
 void setup() {
@@ -20,37 +13,13 @@ can1.begin();
   can1.setBaudRate(500000);
   Serial.begin(115200);
 //getEncoderVal();
-delay(1000);
+  delay(1000);
 
   setCanMotorSpeed(10, 0);
 }
 
 void loop() {
   
-  /* position control (foc mode)
-msgSend.len=8;
-msgSend.id=0x01;
-msgSend.buf[0]=0xFD;
-msgSend.buf[1]=0x01;
-msgSend.buf[2]=0x40;
-msgSend.buf[3]=0x05;
-msgSend.buf[4]=0x09;
-msgSend.buf[5]=0xC4;
-msgSend.buf[6]=0x00;
-msgSend.buf[7]=0x11;
-*/
-//msgSend.len=2;
-//msgSend.id=0x01;
-//msgSend.buf[0]=0x30;
-//msgSend.buf[1]=0x31;
-//msgSend.buf[2]=0x40;
-//msgSend.buf[3]=0x05;
-//msgSend.buf[4]=0x09;
-//msgSend.buf[5]=0xC4;
-//msgSend.buf[6]=0x00;
-//msgSend.buf[7]=0x11;
-
-
   // put your main code here, to run repeatedly:
 if ( can1.read(msg) ) {
     Serial.print("CAN1 "); 

@@ -11,6 +11,10 @@ export ROSCONSOLE_FORMAT='[${severity}] [${time}] [${node}] [${logger}]: ${messa
 #export ROS_IP=192.168.86.25
 exec supervisord -c /supervisord.conf &
 
+cd ~/catkin_ws
+catkin_make --only-pkg-with-deps ur3master
+cd ~
+
 echo "Provided arguments: $@"
 echo "############################"
 echo ""

@@ -3,21 +3,40 @@
 <param name="/use_sim_time" value="false"/>
 
 <!-- params -->
-<param name="robot_description" command="cat $(find ur3robot)/urdf/robot.urdf" />
+<!-- <param name="robot_description" command="cat $(find ur3robot)/urdf/robot.urdf" /> -->
+<param name="robot_description" command="cat $(find ur3robot)/urdf/ur3.xacro" />
 <arg name="move_forward_only" default="false"/>
 
 <!-- URDF Publisher -->
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
-   <!--  <param name="source_list" value="[/kinect/tilt/joint_states]" /> -->
-    <rosparam param="source_list">["/kinect/tilt/joint_states"]</rosparam>
-    <param name="rate" value="50" />
+    <!-- <param name="source_list" value="[/kinect/tilt/joint_states]" /> -->
+    <rosparam param="source_list">["/kinect/tilt/joint_states", "/scara_hardware_interface/joint_states"]</rosparam>
+    <param name="rate" value="85" />
 </node>
 
+<!-- 
 <node name="mpu_node" pkg="mpu6050_driver" type="mpu6050_node" output="screen">
     <rosparam file="$(find ur3robot)/param/imu/mpu_settings.yaml" command="load"/>
 </node>
+-->
+<!-- start teensy serial -->
+<!--
+<node name="teensy_serial" pkg="rosserial_python" type="serial_node.py" output="screen">
+		<param name="port" value="/dev/ttyACM0"/>
+		<param name="baud" value="115200"/>
+</node>
+-->
 
+<!--
+<node name="rosserial_python_message" type="message_info_service.py" pkg="rosserial_python" output="screen">
+</node> 
+
+<node name="teensy_serial" pkg="rosserial_server" type="serial_node" output="screen">
+		<param name="port" value="/dev/ttyACM0"/>
+		<param name="baud" value="115200"/>
+</node>
+-->
 
 <node name="rosserial_python_message" type="message_info_service.py" pkg="rosserial_python" output="screen">
 </node> 
@@ -31,7 +50,11 @@
 		<param name="port" value="/dev/ttyACM1"/>
 		<param name="baud" value="115200"/>
 </node>
-
+<!-- 
+<node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    <rosparam command="load" file="$(find ur3robot)/param/ekf/ekf_params.yaml" />
+</node>
+-->
 
 <!-- rplidar -->
 <include file="$(find rplidar_ros)/launch/rplidar_a1.launch" />
@@ -39,7 +62,6 @@
 <!-- start cpp python laser filter -->
 <node name="laser_filter_node" type="laser_filter_node" pkg="ur3robot" output="screen">
 </node> 
-
 
 <!--  Webcam  -->
 <include file="$(find ur3robot)/launch/stream_webcam.launch" />
@@ -65,11 +87,8 @@
     <param name="pub_joint_state" value="true"/>
 	<param name="use_imu_for_angle" value="false"/>
     <param name="init_tilt_angle" value="-20"/>
-    <param name="pivot_joint_name" value="kinect_base_to_camera_link" />
+    <param name="pivot_joint_name" value="kinect_pivot_to_camera_depth_frame" />
 </node>
-
-<!-- pointcloud to laserscan -->
-<!-- <include file="$(find ur3robot)/launch/pointcloud_to_laserscan.launch"/> -->
 
 
 </launch>
