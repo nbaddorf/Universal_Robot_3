@@ -87,7 +87,7 @@ const float loopTime = 10; // 10
 
 struct {
   double x = 0;
-  double y = 0;
+  double y = 2;
   double z = 0.02;
 } arm_position; // structure with name arm_position.
 
@@ -116,11 +116,12 @@ struct can_motor {
   double lower_limit = 0;
   double upper_limit = 0;
   double pid_speed = 0;
+  double setpoint = 0;
 };
 
 can_motor axis3;
-
-PID axis3PIDLoop(&axis3.encoder, &axis3.pid_speed, &arm_position.y, 0.5, 0.0, 0.0, P_ON_M, DIRECT);
+double test = 3;
+PID axis3PIDLoop(&axis3.encoder, &axis3.pid_speed, &arm_position.y, 800, 0.001, 0.0, REVERSE);
 
 //char robot_id = "";
 char *joint_name[4] = {"base_link_to_tower", "tower_to_arm1", "arm1_to_arm2", "kinect_rotator_to_kinect_base"};
@@ -204,7 +205,7 @@ void setup() {
   axis2.setPinsInverted(false, false, true);
 
   axis3PIDLoop.SetMode(AUTOMATIC);
-  axis3PIDLoop.SetOutputLimits(-50, 50);
+  axis3PIDLoop.SetOutputLimits(-250, 250);
   axis3PIDLoop.SetSampleTime(30);
 
   pinMode(LED, OUTPUT);
@@ -240,6 +241,7 @@ void loop() {
     } else {
       axis1.run();
       axis2.run();
+      axis3PIDLoop.Compute();
     }
   }
 
@@ -250,8 +252,8 @@ void loop() {
     previousMillis = currentMillis;
 
     getCanEncoderVal(axis3);
-
-    axis3PIDLoop.Compute();
+    axis3.setpoint = arm_position.y;
+    
 
 
     e_stop = digitalRead(e_stop_pin); // if estop is pressed then value is true
@@ -354,7 +356,8 @@ void loop() {
 
     #ifdef PID_TUNE
       pid_helper.y = arm_position.y;
-      pidHelper.publish(pid_helper);
+      pid_helper.z = axis3.pid_speed;
+      pidHelper.publish(&pid_helper);
     #endif
 
 
@@ -398,7 +401,7 @@ void canRecieve(const CAN_message_t &msg) {
   switch (msg.buf[0]) {
       case 0x31: // encoder
         axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
-        //axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
+        axis3.encoder = (axis3.encoder > 6) ? axis3.lower_limit : axis3.encoder;
         axis3.sent_get_encoder_command = false;
         //axis3.sent_position_command = false;
         //Serial.println(axis3.encoder);
@@ -579,7 +582,7 @@ void home_axis() {
       axis1.setCurrentPosition(homed.axis1_offset);
       //arm_position.x = 0.003;
      homed.axis1 = true;
-     runCanToPosition(axis3, arm_position.y, 500, 200);
+     //runCanToPosition(axis3, arm_position.y, 500, 200);
     }
   } 
 
