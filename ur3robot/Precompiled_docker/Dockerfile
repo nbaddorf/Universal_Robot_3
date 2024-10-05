@@ -62,7 +62,7 @@ RUN apt-get update \
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
-COPY ${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
+COPY /${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
 #COPY ../ros_code /home/ros/catkin_ws/src/ur3robot
 
 USER ros
