@@ -31,3 +31,4 @@ Arduino CAN bus stuff for motor: https://github.com/makerbase-motor/MKS-SERVO57D
 Ros_Control helpful info (example code has a few bugs) (This is moveit related): https://www.rosroboticslearning.com/ros-control. His github code that is better is at https://github.com/bandasaikrishna/ros_control_example/blob/master/ 
 
 rostopic pub /ur3/scara/arm_command geometry_msgs/Point "{x: 0, y: 0, z: 0.005}"
+rostopic pub /set_pid geometry_msgs/Vector3 "{x: 40, y: 0.1, z: 0.005}"

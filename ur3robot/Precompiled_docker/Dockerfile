@@ -1,7 +1,7 @@
 FROM ros:melodic
 
 #Add the home path of the ur3 folder.
-#ARG HOME_PATH="/home/nbaddorf"
+ARG HOME_PATH="/home/nbaddorf"
 
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 4B63CF8FDE49746E98FA01DDAD19BAB3CBF125EA
 
@@ -62,7 +62,7 @@ RUN apt-get update \
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
-COPY /home/${USERNAME}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
+COPY ${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
 #COPY ../ros_code /home/ros/catkin_ws/src/ur3robot
 
 USER ros
