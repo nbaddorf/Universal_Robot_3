@@ -9,10 +9,12 @@ def talker():
     rate = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         point = Point()
-        val = float(raw_input("choose rotation value: "))
+        val = float(raw_input("choose rotation 1 value: "))
         point.x = val
-        point.y = 0
-        point.z = 0
+        newVal = float(raw_input("axis3: "))
+        point.y = newVal
+        newestVal = float(raw_input("axis z: "))
+        point.z = newestVal
         pub.publish(point)
         rate.sleep()
 
