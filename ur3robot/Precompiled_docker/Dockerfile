@@ -92,6 +92,7 @@ ADD ros_code_archive.tar.gz /home/${USERNAME}/catkin_ws/src
 RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     #mkdir -p /home/${USERNAME}/catkin_ws/src &&\
     cd /home/${USERNAME}/catkin_ws/src &&\
+    mv /home/${USERNAME}/catkin_ws/src/ros_code /home/${USERNAME}/catkin_ws/src/ur3robot &&\
     git clone https://github.com/Slamtec/rplidar_ros.git &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
     #git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\

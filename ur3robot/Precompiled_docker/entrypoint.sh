@@ -19,5 +19,5 @@ sudo chmod 777 -R /dev/bus/usb
 #cd ~
 
 echo "Provided arguments: $@"
-
+roslaunch ur3robot ur3_bringup.launch
 exec $@
