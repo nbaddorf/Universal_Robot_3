@@ -62,7 +62,8 @@ RUN apt-get update \
 # our container's environment set up correctly
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
-COPY /${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
+#COPY /${HOME_PATH}/Universal_Robot_3/ur3robot/ros_code /home/ros/catkin_ws/src/ur3robot
+
 #COPY ../ros_code /home/ros/catkin_ws/src/ur3robot
 
 USER ros
@@ -81,9 +82,15 @@ USER ros
 
 #RUN apt-get install -y 
 
+RUN /bin/bash -c 'cd /home/${USERNAME} && \
+    mkdir -p /home/${USERNAME}/catkin_ws/src &&\
+    cd /home/${USERNAME}/catkin_ws/src'
+
+# load in archive of ros code
+ADD ros_code_archive.tar.gz /home/${USERNAME}/catkin_ws/src
 
 RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
-    mkdir -p /home/${USERNAME}/catkin_ws/src &&\
+    #mkdir -p /home/${USERNAME}/catkin_ws/src &&\
     cd /home/${USERNAME}/catkin_ws/src &&\
     git clone https://github.com/Slamtec/rplidar_ros.git &&\
     git clone https://github.com/Brazilian-Institute-of-Robotics/i2c_device_ros.git &&\
