@@ -36,9 +36,11 @@ rostopic pub /set_pid geometry_msgs/Vector3 "{x: 40, y: 0.1, z: 0.005}"
 For ikfast config 
 https://www.hamzamerzic.info/ikfast_generator/ online ikfast_generator
 
+https://github.com/yijiangh/Choreo/blob/7c98fd29120e5ce75d2b8ed17bc49488ad983cb6/framefab_robot/abb/framefab_irb6600/framefab_irb6600_support/doc/ikfast_tutorial.rst
+
 create package: catkin_create_pkg my_scara_ikfast_package
 mkdir include
 paste the ikfast.cpp into the include folder.
 run catkin_make
 then cd back into the include and run:
-rosrun moveit_kinematics create_ikfast_moveit_plugin.py ur3 Scara_Arm  my_scara_ikfast_plugin base_link end_effector ur3_scara_ikfast.cpp
+rosrun moveit_kinematics create_ikfast_moveit_plugin.py ur3 Scara_Arm  my_scara_ikfast_plugin base_link end_effector ur3_scara_ikfast.cpp --moveit_config_pkg scara
