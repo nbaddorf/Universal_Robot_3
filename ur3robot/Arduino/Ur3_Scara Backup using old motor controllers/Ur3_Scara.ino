@@ -8,8 +8,11 @@
 #include <AccelStepper.h>
 #include <math.h>
 #include <FlexCAN_T4.h>
+#include <PID_v1.h>
+#include <geometry_msgs/Vector3.h>
 
-#define DEBUG
+//#define DEBUG
+#define PID_TUNE
 
 //create ros msgs
 ros::NodeHandle nh;
@@ -67,6 +70,7 @@ const int axis3_gear_ratio = 4; //20:80 teeth
 double axis3_position_old = 0;
 int can_loop_counter = 0;
 
+
 bool axis1_enabled = false;
 bool axis2_enabled = false;
 
@@ -83,7 +87,7 @@ const float loopTime = 10; // 10
 
 struct {
   double x = 0;
-  double y = 0;
+  double y = 2;
   double z = 0.02;
 } arm_position; // structure with name arm_position.
 
@@ -111,16 +115,28 @@ struct can_motor {
   double encoder = 0;
   double lower_limit = 0;
   double upper_limit = 0;
+  double pid_speed = 0;
+  double setpoint = 0;
 };
 
 can_motor axis3;
-
+double test = 3;
+PID axis3PIDLoop(&axis3.encoder, &axis3.pid_speed, &arm_position.y, 800, 0.001, 0.0, REVERSE);
 
 //char robot_id = "";
 char *joint_name[4] = {"base_link_to_tower", "tower_to_arm1", "arm1_to_arm2", "kinect_rotator_to_kinect_base"};
 float joint_pos[4];
 //float vel[6];
 //float eff[6];
+
+#ifdef PID_TUNE
+  void pidSet(const geometry_msgs::Vector3& vel) {
+    double p=vel.x;
+    double i=vel.y;
+    double d=vel.z;
+    axis3PIDLoop.SetTunings(p,i,d);
+  }
+#endif
 
 void pointCallback(const geometry_msgs::Point& point) {
   arm_position.x = constrain(point.x, -4.21239, 1.59534); //0.3
@@ -134,12 +150,19 @@ void jointstates_callback(const sensor_msgs::JointState& jointState) {
   arm_position.z = constrain(jointState.position[2] * 100, -0.25 * 100, 0.25 * 100) / 100;//505 mm total movement I think this is correct
 }
 */
+
+
 ros::Subscriber<geometry_msgs::Point> pointSub("ur3/scara/arm_command", pointCallback);
 //ros::Subscriber<sensor_msgs::JointState> joinstates_sub("ur3/scara/arm_command", jointstates_callback);
 
 sensor_msgs::JointState scara_joints;
 ros::Publisher joint_pub("ur3/scara/joint_states", &scara_joints);
 
+#ifdef PID_TUNE
+  ros::Subscriber<geometry_msgs::Vector3> pidSub("set_pid", pidSet);
+  geometry_msgs::Vector3 pid_helper;
+  ros::Publisher pidHelper("pid_helper", &pid_helper);
+#endif
 
 void setup() {
 
@@ -153,6 +176,10 @@ void setup() {
     nh.subscribe(pointSub);
     //nh.subscribe(joinstates_sub);
     nh.advertise(joint_pub);
+    #ifdef PID_TUNE
+      nh.subscribe(pidSub);
+      nh.advertise(pidHelper);
+    #endif
   #endif
 
   can1.begin();
@@ -176,6 +203,10 @@ void setup() {
   axis2.setMaxSpeed(axis2_top_speed * axis2_steps_per_mm);
   axis2.setAcceleration(axis2_acceleration * axis2_steps_per_mm);
   axis2.setPinsInverted(false, false, true);
+
+  axis3PIDLoop.SetMode(AUTOMATIC);
+  axis3PIDLoop.SetOutputLimits(-250, 250);
+  axis3PIDLoop.SetSampleTime(30);
 
   pinMode(LED, OUTPUT);
   pinMode(homing_button_pin, INPUT_PULLUP);
@@ -210,6 +241,7 @@ void loop() {
     } else {
       axis1.run();
       axis2.run();
+      axis3PIDLoop.Compute();
     }
   }
 
@@ -218,6 +250,10 @@ void loop() {
 
   if (currentMillis - previousMillis >= loopTime) {  // run a loop every 10ms
     previousMillis = currentMillis;
+
+    getCanEncoderVal(axis3);
+    axis3.setpoint = arm_position.y;
+    
 
 
     e_stop = digitalRead(e_stop_pin); // if estop is pressed then value is true
@@ -233,7 +269,10 @@ void loop() {
     if (e_stop != old_e_stop) { //if estop is activated reset active motors to needing homing
       if (e_stop) {
 
-        setMotorStop(axis3);
+        //setMotorStop(axis3);
+        //setCanEnable(axis3, false); //disable motor
+        axis3PIDLoop.SetMode(MANUAL);
+        setCanMotorSpeed(axis3, 0, 255);
         setCanEnable(axis3, false); //disable motor
 
         if (axis1.isRunning()) {
@@ -251,6 +290,7 @@ void loop() {
           started_homing = false;
         }
       } else {
+        axis3PIDLoop.SetMode(AUTOMATIC);
         setCanEnable(axis3, true);
         //setCanMotorSpeed(axis3, 10, 255);
       }
@@ -264,7 +304,9 @@ void loop() {
     if (has_homed && !e_stop) {
       axis1.moveTo(axis1_position);
       axis2.moveTo(axis2_position);
-      runCanToPosition(axis3, arm_position.y, axis3_top_speed, 200);
+      //runCanToPosition(axis3, arm_position.y, axis3_top_speed, 200);
+      
+      setCanMotorSpeed(axis3, axis3.pid_speed, 255);
       
       /* if (can_loop_counter >= 9) {
       if (axis3_position_old != arm_position.y) {
@@ -285,6 +327,7 @@ void loop() {
         digitalWrite(LED, HIGH);
         axis1.stop();
         axis2.stop();
+        setCanMotorSpeed(axis3, 0, 0);
         ros_connected = false;
       } else {
         digitalWrite(LED, LOW);
@@ -308,31 +351,16 @@ void loop() {
       axis2_enabled = true;
     }
 
-    
-    /*
-    if ( can1.read(msg) ) {
-      
-      switch (msg.buf[0]) {
-      case 0x31:
-        axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
-        //axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
-        axis3.sent_get_encoder_command = false;
-        axis3.sent_position_command = false;
-        //Serial.println(axis3.encoder);
-        break;
-      case 0x91:
-        homed.axis3 = (msg.buf[1] == 2);
-        axis3.sent_home_command = !(msg.buf[1] == 2);
-        break;
-      case 0xF5:
-        
-        getCanEncoderVal(axis3);
-        break;
-      }
-    }
-    */
 
     #ifndef DEBUG
+
+    #ifdef PID_TUNE
+      pid_helper.y = arm_position.y;
+      pid_helper.z = axis3.pid_speed;
+      pidHelper.publish(&pid_helper);
+    #endif
+
+
       float axis1_cur_rot = axis1.currentPosition() / axis1_steps_per_rad;
       joint_pos[0] = axis1_cur_rot; // tower axis
       joint_pos[1] = axis2.currentPosition() / axis2_steps_per_mm / 1000.00; //Z axis
@@ -373,18 +401,18 @@ void canRecieve(const CAN_message_t &msg) {
   switch (msg.buf[0]) {
       case 0x31: // encoder
         axis3.encoder = (returnEncoderRad(msg) / 4.00) - homed.axis3_offset;
-        //axis3.encoder = (axis3.encoder > 6) ? -2.7 : (constrain(axis3.encoder * 100, -2.8 * 100, 2.8 * 100) / 100.00);
+        axis3.encoder = (axis3.encoder > 6) ? axis3.lower_limit : axis3.encoder;
         axis3.sent_get_encoder_command = false;
-        axis3.sent_position_command = false;
+        //axis3.sent_position_command = false;
         //Serial.println(axis3.encoder);
         break;
       case 0x91:
         homed.axis3 = (msg.buf[1] == 2);
         axis3.sent_home_command = !(msg.buf[1] == 2);
         break;
-      case 0xF5:
+      case 0xF5: //return from motor in absolute position command
         
-        getCanEncoderVal(axis3);
+        //getCanEncoderVal(axis3);
         break;
       }
 }
@@ -554,7 +582,7 @@ void home_axis() {
       axis1.setCurrentPosition(homed.axis1_offset);
       //arm_position.x = 0.003;
      homed.axis1 = true;
-     runCanToPosition(axis3, arm_position.y, 500, 200);
+     //runCanToPosition(axis3, arm_position.y, 500, 200);
     }
   } 
 

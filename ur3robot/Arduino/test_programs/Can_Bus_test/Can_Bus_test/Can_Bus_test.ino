@@ -11,6 +11,8 @@ struct motor_values {
   int run_status = 0;
 };
 
+int numLoop = 1;
+
 motor_values motor1;
 
 
@@ -21,8 +23,10 @@ can1.begin();
   Serial.begin(115200);
 //getEncoderVal();
 delay(1000);
+getEncoderVal(numLoop);
 
-  setCanMotorSpeed(10, 0);
+
+  //setCanMotorSpeed(10, 0);
 }
 
 void loop() {
@@ -53,20 +57,29 @@ msgSend.buf[7]=0x11;
 
   // put your main code here, to run repeatedly:
 if ( can1.read(msg) ) {
-    Serial.print("CAN1 "); 
-    Serial.print("MB: "); Serial.print(msg.mb);
-    Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
-    Serial.print("  EXT: "); Serial.print(msg.flags.extended );
-    Serial.print("  LEN: "); Serial.print(msg.len);
-    Serial.print(" DATA: ");
+  
+  //if (numLoop > 3) {
+  //  numLoop = 1;
+  //  Serial.println();
+  //}
+    //Serial.print("CAN1 "); 
+    //Serial.print("MB: "); Serial.print(msg.mb);
+    //Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
+    //Serial.print("  EXT: "); Serial.print(msg.flags.extended );
+    //Serial.print("  LEN: "); Serial.print(msg.len);
+    //Serial.print(" DATA: ");
     for ( uint8_t i = 0; i < 8; i++ ) {
-      Serial.print(msg.buf[i], HEX); Serial.print(" ");
+      //Serial.print(msg.buf[i], HEX); Serial.print(" ");
     }
-    Serial.print("  TS: "); Serial.println(msg.timestamp);
+    //Serial.print("  TS: "); Serial.println(msg.timestamp);
 
     switch (msg.buf[0]) {
       case 0x31:
         motor1.radians = returnEncoderRad(msg);
+        //Serial.print(msg.id);
+        Serial.print("motor: ");
+        Serial.println(motor1.radians);
+        //Serial.print(" ");
         break;
       case 0xF3:
         motor1.enabled = (msg.buf[1] == 0x01) ? true : false;
@@ -79,8 +92,18 @@ if ( can1.read(msg) ) {
     
 
     delay(100);
-    getEncoderVal();
+    getEncoderVal(1);
+    //numLoop++;
+
+   
+  
+
+  //
   }
+
+      
+  
+  
 
 }
 
@@ -141,12 +164,12 @@ void runToPosition(long encoder_counts, uint16_t speed, uint8_t acc) {
   can1.write(msgSend);
 }
 
-void getEncoderVal() {
+void getEncoderVal(int id) {
   CAN_message_t msgSend;
   msgSend.len=2;
-  msgSend.id=0x01;
+  msgSend.id=id;
   msgSend.buf[0]=0x31; //encoder mode
-  msgSend.buf[1]=0x32; //checksum
+  msgSend.buf[1]=msgSend.buf[0] + id; //checksum
 
   can1.write(msgSend);
 }
