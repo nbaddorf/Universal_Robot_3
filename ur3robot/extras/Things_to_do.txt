@@ -1,0 +1,4 @@
+* Tighten up scara axis 3 joint
+* Set scara velocity limits and goal tolerances
+* Check scara arm amp draw.
+* Check out can motor controllers reporting back current in manual

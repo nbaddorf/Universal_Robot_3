@@ -24,8 +24,8 @@
 #define PUBLISH_TF
 
 //Drive wheel math
-float Wheel_Diameter = 96;                                      //in mm
-float Wheel_Radious = Wheel_Diameter / 2;                       //in mm
+float Wheel_Diameter = 98;                                      //in mm
+float Wheel_Radious = Wheel_Diameter / 2000.00;                       //in m
 float Wheel_Circumference = (2 * PI * (Wheel_Radious / 1000));  //Wheel Circumference in meters (0.30159289 m per rev)
 float Wheel_Rev_Per_Meter = 1 / Wheel_Circumference;
 // if wheel diam = 96 then wheel rev per meter = 3.31741 in calc agithnd arduino = 3.32
@@ -63,7 +63,10 @@ float Encoder_Counts_Per_Half_Circumference = Distance_Between_Wheels_Half_Circu
 float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Half_Circumference / PI; // 1.12
 */
 
-float Distance_Between_Wheels = 415;   //383                                                                                           //in mm                                                                                        //distance between left wheels and right wheels in mm
+const float Distance_Between_Wheels = 425; //(width) in mm   //distance between left wheels and right wheels in mm
+const float Distance_Front_To_Rear = 206; //(length) in mm
+const float Wheel_Separation_Width = Distance_Between_Wheels / 2000.00; //in m. Supposed to be divided in half.   
+const float Wheel_Separation_Length = Distance_Front_To_Rear / 2000.00; //in m. Supposed to be divided in half. 
 float Distance_Between_Wheels_Half_Circumference = (PI * Distance_Between_Wheels) / 2;     //601.6 mm for 180 deg. = pi radians        
 float Encoder_Counts_Per_Pi_Radian = Distance_Between_Wheels_Half_Circumference * Encoder_Counts_Per_MM; //2236.8 encoder counts
 float Encoder_Counts_Per_Radian = Encoder_Counts_Per_Pi_Radian / PI; // 711.997 encoder counts per radian
@@ -80,8 +83,9 @@ bool low_battery_mode = false;
 //float tau = 0.1;
 //float a = tau / (tau + ST);
 
-const double velXAcceleration = 0.5; //mps^2 CHANGE THIS TO PROPER ACCELLERATION
-const double velZAcceleration = 0.5; //mps^2
+//const double velXAcceleration = 0.5; //mps^2 CHANGE THIS TO PROPER ACCELLERATION
+//const double velZAcceleration = 0.5; //mps^2
+ 
 
 
 
@@ -92,6 +96,7 @@ double ki = 15;  //15
 double kd = 0;   //0
 
 float demandx;
+float demandy;
 float demandz;
 
 //create ros msgs
@@ -253,6 +258,7 @@ PID PID_BR(&BRpos_diff, &BRout, &Back_Right_Encoder_Vel_Setpoint, kp, ki, kd, DI
 
 void velCallback(const geometry_msgs::Twist& vel) {
   demandx = constrain(vel.linear.x, -0.25, 0.25);
+  demandy = constrain(vel.linear.y, -0.25, 0.25);
   demandz = constrain(vel.angular.z, -0.6, 0.6);
 }
 
@@ -489,10 +495,10 @@ void loop() {
       } 
     }
     */
-
     //forward = demandxAccel * (Encoder_Counts_Per_Meter * modifier_lin);
     //turn = demandzAccel * (Encoder_Counts_Per_Radian * modifier_ang); // tells us how many encoder counts per second to turn
-    
+     
+    /*
     forward = demandx * (Encoder_Counts_Per_Meter * modifier_lin);
     turn = demandz * (Encoder_Counts_Per_Radian * modifier_ang); //142.39
 
@@ -506,7 +512,17 @@ void loop() {
     Front_Right_Encoder_Vel_Setpoint = Right_Motor_Speed;
     Back_Left_Encoder_Vel_Setpoint = Left_Motor_Speed;
     Back_Right_Encoder_Vel_Setpoint = Right_Motor_Speed;
-    
+    */
+
+   // rad/s to encoder/10ms
+   const float rad_to_encoder = (Encoder_Per_Wheel_Rev / (2 * PI)) / (1000 / loopTime);
+
+
+    Front_Left_Encoder_Vel_Setpoint = ((1/Wheel_Radious)*(demandx-demandy-(Wheel_Separation_Width + Wheel_Separation_Length)*demandz)) * rad_to_encoder;
+    Front_Right_Encoder_Vel_Setpoint = ((1/Wheel_Radious)*(demandx+demandy+(Wheel_Separation_Width + Wheel_Separation_Length)*demandz)) * rad_to_encoder;
+    Back_Left_Encoder_Vel_Setpoint = ((1/Wheel_Radious)*(demandx+demandy-(Wheel_Separation_Width + Wheel_Separation_Length)*demandz)) * rad_to_encoder;
+    Back_Right_Encoder_Vel_Setpoint = ((1/Wheel_Radious)*(demandx-demandy+(Wheel_Separation_Width + Wheel_Separation_Length)*demandz)) * rad_to_encoder;
+
     //Compute PID speeds
     PID_FL.Compute();
     PID_FR.Compute();

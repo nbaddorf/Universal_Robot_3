@@ -57,7 +57,7 @@ double axis1_acceleration = 0.5; //1 radian per second per second
 double axis2_top_speed = 6; //6 mm per second
 double axis2_acceleration = 2; //2 mm per second per second
 
-double axis3_top_speed = 0.5; //2 * 3.1415; //1 radian per second
+double axis3_top_speed = 0.5; //2 * 3.1415; //1 radian per second (temp 7.8125 rad per second)
 double axis3_acceleration = 1; //1 radian per second per second
 
 //math for top speeds and accelerations:
@@ -145,9 +145,12 @@ float joint_pos[4];
 #endif
 
 void pointCallback(const geometry_msgs::Point& point) {
+  //arm_position.x = constrain(point.x, axis1.lower_limit, axis1.upper_limit);
+  //arm_position.y = constrain(point.y, axis3.lower_limit, axis3.upper_limit); 
+  //arm_position.z = constrain(point.z, axis2.lower_limit, axis2.upper_limit);//505 mm total movement I think this is correct
   arm_position.x = constrain(point.x, axis1.lower_limit, axis1.upper_limit);
   arm_position.y = constrain(point.y, axis3.lower_limit, axis3.upper_limit); 
-  arm_position.z = constrain(point.z, axis2.lower_limit, axis2.upper_limit);//505 mm total movement I think this is correct
+  arm_position.z = constrain(point.z, axis2.lower_limit, axis2.upper_limit);
 }
 
 ros::Subscriber<geometry_msgs::Point> pointSub("ur3/scara/arm_command", pointCallback);
@@ -210,8 +213,8 @@ void setup() {
   //pinMode(limit_3_pin, INPUT); //Limit port 2 on top of robot
 
   axis1.id = 0x01;
-  axis1.lower_limit = -4.21239;
-  axis1.upper_limit = 1.59534;
+  axis1.lower_limit = -4.600;
+  axis1.upper_limit = 1.0;
 
   axis2.id = 0x02;
   axis2.lower_limit = 0.0;
