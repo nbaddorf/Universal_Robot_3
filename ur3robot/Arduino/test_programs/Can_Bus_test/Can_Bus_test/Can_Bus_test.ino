@@ -23,7 +23,7 @@ can1.begin();
   Serial.begin(115200);
 //getEncoderVal();
 delay(1000);
-getEncoderVal(numLoop);
+getEncoderVal(2);
 
 
   //setCanMotorSpeed(10, 0);
@@ -92,7 +92,7 @@ if ( can1.read(msg) ) {
     
 
     delay(100);
-    getEncoderVal(1);
+    getEncoderVal(2);
     //numLoop++;
 
    

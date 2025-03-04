@@ -13,6 +13,12 @@
 //#define DEBUG
 //#define PID_TUNE
 
+/*
+Axis 3: offset = 2.6279
+position after home: -2.6
+other end stop: 2.4
+*/
+
 //create ros msgs
 ros::NodeHandle nh;
 
@@ -77,7 +83,7 @@ unsigned long currentMillis;
 unsigned long previousMillis = 0;  // set up timers
 const float loopTime = 10; // 10
 unsigned long previousPIDMillis = 0;  // set up timers
-const float PIDloopTime = 30; 
+const float PIDloopTime = 40; //was 30
 
 #ifdef DEBUG
   bool ros_connected = true;
@@ -87,11 +93,11 @@ const float PIDloopTime = 30;
 
 struct {
   double x = 0;
-  double y = 0.0;
+  double y = -2.6;
   double z = 0.003;
 } arm_position; // structure with name arm_position.
 
-bool has_homed = false; // RESET BACK
+bool has_homed = false; // SHOULD BE false
 bool started_homing = false;
 
 struct {
@@ -103,14 +109,15 @@ struct {
   //const int axis3_homing_speed = 10;
   const double axis1_offset = 4.63239; //encoder offset in rad
   const double axis2_offset = 0;
-  const double axis3_offset = 0.06452; // encoder offset in rad 0.09052
+  const double axis3_offset = 2.6279; // encoder offset in rad 0.09052
 } homed;
 
 struct can_motor {
   uint8_t id = 0;
   bool sent_home_command = false;
   bool motor_enabled = true;
-  bool sent_get_encoder_command = false;
+  //bool sent_get_encoder_command = false;
+  uint8_t request_encoder_counter = 0;
   bool sent_position_command = false;
   double encoder = 0; // Value to store encoder position.
   double lower_limit = 0; // Lower limit of movement allowed (in m or rad) (Used in constrain for input value)
@@ -186,7 +193,6 @@ void setup() {
   can1.begin();
   can1.setBaudRate(500000); //250000
 
-  //Testing 
   can1.setMaxMB(16);
   can1.enableFIFO();
   can1.enableFIFOInterrupt();
@@ -195,15 +201,15 @@ void setup() {
 
   axis1PIDLoop.SetMode(AUTOMATIC);
   axis1PIDLoop.SetOutputLimits(-250, 250);
-  axis1PIDLoop.SetSampleTime(30);
+  axis1PIDLoop.SetSampleTime(PIDloopTime);
 
   axis2PIDLoop.SetMode(AUTOMATIC);
   axis2PIDLoop.SetOutputLimits(-200, 200);
-  axis2PIDLoop.SetSampleTime(30);
+  axis2PIDLoop.SetSampleTime(PIDloopTime);
 
   axis3PIDLoop.SetMode(AUTOMATIC);
   axis3PIDLoop.SetOutputLimits(-250, 250);
-  axis3PIDLoop.SetSampleTime(30);
+  axis3PIDLoop.SetSampleTime(PIDloopTime);
 
   pinMode(LED, OUTPUT);
   pinMode(homing_button_pin, INPUT_PULLUP);
@@ -212,7 +218,7 @@ void setup() {
   //pinMode(limit_2_pin, INPUT); //Limit port 1 on top of robot
   //pinMode(limit_3_pin, INPUT); //Limit port 2 on top of robot
 
-  axis1.id = 0x01;
+  axis1.id = 0x01; // This might not be working
   axis1.lower_limit = -4.600;
   axis1.upper_limit = 1.0;
 
@@ -221,8 +227,8 @@ void setup() {
   axis2.upper_limit = 0.5;
 
   axis3.id = 0x03;
-  axis3.lower_limit = 0.0;
-  axis3.upper_limit = 5.4;
+  axis3.lower_limit = homed.axis3_offset * -1;
+  axis3.upper_limit = 2.4;
 
 
   old_e_stop = digitalRead(e_stop_pin); //set e_stop values to whatever they currently are
@@ -311,6 +317,7 @@ void loop() {
       }
     }
 
+
     //Check if arm is connected to ROS and if not connected, turn off arm
     #ifndef DEBUG
       if (!nh.connected()) {
@@ -324,6 +331,15 @@ void loop() {
         ros_connected = true;
       }
     #endif
+
+    /*
+    Serial.print("axis1: ");
+    Serial.println(axis1.encoder);
+    Serial.print("axis2: ");
+    Serial.println(axis2.encoder);
+    Serial.print("axis3: ");
+    Serial.println(axis3.encoder);
+    */
 
     #ifndef DEBUG
 
@@ -378,18 +394,28 @@ void canRecieve(const CAN_message_t &msg) {
           case 1:
             axis1.encoder = (returnEncoderRad(msg) / axis1_gear_ratio) - homed.axis1_offset;
             axis1.encoder = (axis1.encoder > axis1.upper_limit + 5) ? axis1.lower_limit : axis1.encoder;
-            axis1.sent_get_encoder_command = false;
+            //axis1.sent_get_encoder_command = false;
+            axis1.request_encoder_counter = 0;
+            //Serial.print("axis1: ");
+            //Serial.println(axis1.encoder);
             break;
           case 2:
             axis2.encoder = 1647099.33 - (returnEncoderRad(msg)) - homed.axis2_offset; //54903.31 is the vars overflow.
             axis2.encoder = (axis2.encoder > 2500) ? 0.0 : axis2.encoder;
             axis2_current_pos = (axis2.encoder * axis2_mm_per_rad) / 1000;
-            axis2.sent_get_encoder_command = false;
+            //axis2.sent_get_encoder_command = false;
+            axis2.request_encoder_counter = 0;
+            //Serial.print("axis2: ");
+            //Serial.println(axis2.encoder);
             break;
           case 3:
             axis3.encoder = (returnEncoderRad(msg) / axis3_gear_ratio) - homed.axis3_offset;
             axis3.encoder = (axis3.encoder > 6) ? axis3.lower_limit : axis3.encoder;
-            axis3.sent_get_encoder_command = false;
+            //axis3.sent_get_encoder_command = false;
+            axis3.request_encoder_counter = 0;
+            //Serial.print("axis3: ");
+            //Serial.println(axis3.encoder, 5);
+            
             break;
         }
         break;
@@ -527,15 +553,23 @@ void setEStop (can_motor &motor) { //This disables the motor and I think you hav
 }
 
 void getCanEncoderVal(can_motor &motor) {
-  if (!motor.sent_get_encoder_command) {
+  //if (!motor.sent_get_encoder_command) {
+  if (motor.request_encoder_counter == 0) {
     CAN_message_t msgSend;
     msgSend.len = 2;
     msgSend.id = motor.id;
     msgSend.buf[0] = 0x31; //encoder mode
     msgSend.buf[1] = msgSend.id + msgSend.buf[0]; //checksum
-    motor.sent_get_encoder_command = true;
+    //motor.sent_get_encoder_command = true;
     can1.write(msgSend);
+    motor.request_encoder_counter++;
+  } else if (motor.request_encoder_counter > 3) {
+    motor.request_encoder_counter = 0;
+  } else {
+    motor.request_encoder_counter++;
   }
+
+  
 }
 
 double returnEncoderRad(CAN_message_t recievedMsg) {

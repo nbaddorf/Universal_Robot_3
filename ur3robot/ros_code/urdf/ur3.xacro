@@ -45,14 +45,14 @@
   <visual>
     <origin xyz="-0.105418 -0.06341 -0.486908" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/tower.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3_description/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="black"/>
   </visual>
   <collision>
     <origin xyz="-0.105418 -0.06341 -0.486908" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/tower.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3_description/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -61,14 +61,46 @@
   <visual>
     <origin xyz="-0.067418 -0.06341 -0.6118" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3_description/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="blue"/>
   </visual>
   <collision>
     <origin xyz="-0.067418 -0.06341 -0.6118" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3_description/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="arm_camera">
+  <visual>
+    <origin xyz="0.348957 -0.06341 -0.6205" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3_description/meshes/arm_camera.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver_default"/>
+  </visual>
+  <collision>
+    <origin xyz="0.348957 -0.06341 -0.6205" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3_description/meshes/arm_camera.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="end_effector">
+  <visual>
+    <origin xyz="0.315207 -0.06341 -0.6005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3_description/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver_default"/>
+  </visual>
+  <collision>
+    <origin xyz="0.315207 -0.06341 -0.6005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://ur3_description/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -77,33 +109,18 @@
   <visual>
     <origin xyz="0.120357 -0.06341 -0.6552" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3_description/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="green"/>
   </visual>
   <collision>
     <origin xyz="0.120357 -0.06341 -0.6552" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3_description/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
 
-<link name="end_effector">
-  <visual>
-    <origin xyz="-0.086312 0.034291 -0.6005" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://ur3master/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver_default"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.086312 0.034291 -0.6005" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://ur3master/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
 
 <link name="laser">
 	</link>
@@ -203,7 +220,7 @@
   <origin xyz="0.105418 0.06341 0.486908" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tower"/>
-  <axis xyz="-0.0 0.0 -1.0"/>
+  <axis xyz="0.0 -0.0 1.0"/>
   <limit effort="10" velocity="0.75" lower="-4.21239" upper="1.59534" /><!-- Set lower to proper value to prevent tower hitting limit switch-->
 </joint>
 
@@ -215,18 +232,24 @@
   <limit upper="0.5" lower="0.0" effort="10" velocity="0.006"/> <!-- make sure that the arm can actually go up 0.5-->
 </joint>
 
+<joint name="arm2_to_camera" type="fixed">
+  <origin xyz="-0.2286 0.0 -0.0347" rpy="0 0 0"/>
+  <parent link="arm2"/>
+  <child link="camera"/>
+</joint>
+
+<joint name="arm2_to_end_effector" type="fixed">
+  <origin xyz="-0.19485 0.0 -0.0547" rpy="0 0 0"/>
+  <parent link="arm2"/>
+  <child link="end_effector"/>
+</joint>
+
 <joint name="arm1_to_arm2" type="revolute">
   <origin xyz="-0.187775 0.0 0.0434" rpy="0 0 0"/>
   <parent link="arm1"/>
   <child link="arm2"/>
-  <axis xyz="-0.0 -0.0 -1.0"/>
-   <limit effort="10" velocity="0.31415" lower="0" upper="5.4" />
-</joint>
-
-<joint name="arm2_to_end_effector" type="fixed">
-  <origin xyz="0.206669 -0.097701 -0.0547" rpy="0 0 0"/>
-  <parent link="arm2"/>
-  <child link="end_effector"/>
+  <axis xyz="0.0 0.0 -1.0"/>
+  <limit effort="10" velocity="0.31415" lower="0" upper="5.4" /> <!-- fix the bounderies -->
 </joint>
 
 </robot>
