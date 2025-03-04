@@ -2,3 +2,7 @@
 * Set scara velocity limits and goal tolerances
 * Check scara arm amp draw.
 * Check out can motor controllers reporting back current in manual
+
+
+*set arm2 movement limits in both urdf files
+*run moveit setup assistant to include camera and end effector
