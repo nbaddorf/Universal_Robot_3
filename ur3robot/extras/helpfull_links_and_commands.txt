@@ -44,3 +44,7 @@ paste the ikfast.cpp into the include folder.
 run catkin_make
 then cd back into the include and run:
 rosrun moveit_kinematics create_ikfast_moveit_plugin.py ur3 Scara_Arm  my_scara_ikfast_plugin base_link end_effector ur3_scara_ikfast.cpp --moveit_config_pkg scara
+
+
+I installed jetpack on the Jetson (Not in docker)
+ - sudo apt install nvidia-jetpack

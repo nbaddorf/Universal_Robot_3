@@ -1,0 +1,9 @@
+Darknet Ros stuff:
+
+git clone --recursive https://github.com/leggedrobotics/darknet_ros.git --single-branch feature/ci-mel
+odic-and-noetic
+
+catkin_make -DCATKIN_WHITELIST_PACKAGES="darknet_ros;darknet_ros_msgs"
+
+NOTE: When you run catkin_make with a flag, it seems to remember that flag for future times you run catkin_make
+So if you build only for ur3master with dependencies, it wont build darknet_ros unless you whitelist it when you run catkin_make
