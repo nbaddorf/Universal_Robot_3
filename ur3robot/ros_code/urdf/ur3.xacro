@@ -36,7 +36,7 @@
   <collision>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3master/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -45,14 +45,14 @@
   <visual>
     <origin xyz="-0.105418 -0.06341 -0.486908" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/tower.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="black"/>
   </visual>
   <collision>
     <origin xyz="-0.105418 -0.06341 -0.486908" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/tower.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/tower.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -61,14 +61,14 @@
   <visual>
     <origin xyz="-0.067418 -0.06341 -0.6118" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="blue"/>
   </visual>
   <collision>
     <origin xyz="-0.067418 -0.06341 -0.6118" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -77,14 +77,14 @@
   <visual>
     <origin xyz="0.348957 -0.06341 -0.6205" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm_camera.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm_camera.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
     <origin xyz="0.348957 -0.06341 -0.6205" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm_camera.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm_camera.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -93,14 +93,14 @@
   <visual>
     <origin xyz="0.315207 -0.06341 -0.6005" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="silver_default"/>
   </visual>
   <collision>
     <origin xyz="0.315207 -0.06341 -0.6005" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/end_effector.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -109,14 +109,14 @@
   <visual>
     <origin xyz="0.120357 -0.06341 -0.6552" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="green"/>
   </visual>
   <collision>
     <origin xyz="0.120357 -0.06341 -0.6552" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://ur3_description/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://ur3robot/meshes/arm2.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -220,8 +220,8 @@
   <origin xyz="0.105418 0.06341 0.486908" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tower"/>
-  <axis xyz="0.0 -0.0 1.0"/>
-  <limit effort="10" velocity="0.75" lower="-4.21239" upper="1.59534" /><!-- Set lower to proper value to prevent tower hitting limit switch-->
+  <axis xyz="0.0 0.0 -1.0"/> 
+  <limit effort="10" velocity="0.75" lower="-1.59534" upper="4.21239" /><!-- Set lower to proper value to prevent tower hitting limit switch-->
 </joint>
 
 <joint name="tower_to_arm1" type="prismatic">
@@ -249,7 +249,7 @@
   <parent link="arm1"/>
   <child link="arm2"/>
   <axis xyz="0.0 0.0 -1.0"/>
-  <limit effort="10" velocity="0.31415" lower="0" upper="5.4" /> <!-- fix the bounderies -->
+  <limit effort="10" velocity="0.31415" lower="-2.6" upper="2.4" /> <!-- fix the bounderies -->
 </joint>
 
 </robot>

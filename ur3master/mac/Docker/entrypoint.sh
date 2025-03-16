@@ -12,7 +12,8 @@ export ROSCONSOLE_FORMAT='[${severity}] [${time}] [${node}] [${logger}]: ${messa
 exec supervisord -c /supervisord.conf &
 
 cd ~/catkin_ws
-catkin_make --only-pkg-with-deps ur3master
+#catkin_make --only-pkg-with-deps ur3master
+catkin_make
 cd ~
 
 echo "Provided arguments: $@"
