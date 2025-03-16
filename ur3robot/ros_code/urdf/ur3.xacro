@@ -232,10 +232,10 @@
   <limit upper="0.5" lower="0.0" effort="10" velocity="0.006"/> <!-- make sure that the arm can actually go up 0.5-->
 </joint>
 
-<joint name="arm2_to_camera" type="fixed">
+<joint name="arm2_to_arm_camera" type="fixed">
   <origin xyz="-0.2286 0.0 -0.0347" rpy="0 0 0"/>
   <parent link="arm2"/>
-  <child link="camera"/>
+  <child link="arm_camera"/>
 </joint>
 
 <joint name="arm2_to_end_effector" type="fixed">
