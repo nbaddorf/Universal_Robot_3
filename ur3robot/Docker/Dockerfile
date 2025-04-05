@@ -12,6 +12,7 @@ RUN apt-get update \
     net-tools \
     cmake \
     netcat \
+    #libopencv-dev \
     build-essential \
     libusb-1.0-0-dev \
     ros-melodic-video-stream-opencv \
