@@ -220,8 +220,8 @@
   <origin xyz="0.105418 0.06341 0.486908" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tower"/>
-  <axis xyz="0.0 0.0 -1.0"/> 
-  <limit effort="10" velocity="0.75" lower="-1.59534" upper="4.21239" /><!-- Set lower to proper value to prevent tower hitting limit switch-->
+  <axis xyz="0.0 0.0 -1.0"/>
+  <limit effort="10" velocity="0.75" lower="-4.21239" upper="1.59534" /><!-- Set lower to proper value to prevent tower hitting limit switch-->
 </joint>
 
 <joint name="tower_to_arm1" type="prismatic">
