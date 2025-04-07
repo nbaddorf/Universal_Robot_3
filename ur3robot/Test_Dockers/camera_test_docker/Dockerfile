@@ -14,6 +14,10 @@ RUN apt-get update \
     netcat \
     build-essential \
     libusb-1.0-0-dev \
+    ros-melodic-cv-bridge \
+    ros-melodic-image-transport \
+    ros-melodic-camera-info-manager \
+    ros-melodic-dynamic-reconfigure \
     #ros-melodic-video-stream-opencv \
     #ros-melodic-joint-state-publisher\
     #ros-melodic-robot-state-publisher\

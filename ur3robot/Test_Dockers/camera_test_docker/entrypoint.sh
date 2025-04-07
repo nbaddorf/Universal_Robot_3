@@ -15,7 +15,7 @@ sudo chmod 777 /dev/i2c-1
 sudo chmod 777 -R /dev/bus/usb
 
 cd ~/catkin_ws
-catkin_make --only-pkg-with-deps ur3robot
+catkin_make --only-pkg-with-deps video_stream_opencv
 cd ~
 
 echo "Provided arguments: $@"

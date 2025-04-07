@@ -1,5 +1,7 @@
 #!/bin/bash
 
+###### Docker file needs rebuilt for entrypoint chainges to take affect
+
 set -e
 
 export ROS_HOSTNAME=ur3robot #.local

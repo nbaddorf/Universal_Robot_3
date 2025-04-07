@@ -1,0 +1,57 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  auto_exposure: true
+  brightness: 0.501960784314
+  buffer_queue_size: 1
+  camera_info_url: file:////home/ros/catkin_ws/src/ur3robot/camera_calibration/ost.yaml
+  camera_name: webcam
+  contrast: 0.125490196078
+  exposure: 0.5
+  flip_horizontal: false
+  flip_vertical: true
+  fps: 3.0
+  frame_id: webcam
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      auto_exposure: true
+      brightness: 0.501960784314
+      buffer_queue_size: 1
+      camera_info_url: file:////home/ros/catkin_ws/src/ur3robot/camera_calibration/ost.yaml
+      camera_name: webcam
+      contrast: 0.125490196078
+      exposure: 0.5
+      flip_horizontal: false
+      flip_vertical: true
+      fps: 3.0
+      frame_id: webcam
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      height: 0
+      hue: 0.5
+      id: 0
+      loop_videofile: false
+      name: Default
+      output_encoding: bgr8
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      reopen_on_read_failure: false
+      saturation: 0.64
+      set_camera_fps: 3.0
+      start_frame: 0
+      state: true
+      stop_frame: -1
+      type: ''
+      width: 0
+    state: []
+  height: 0
+  hue: 0.5
+  loop_videofile: false
+  output_encoding: bgr8
+  reopen_on_read_failure: false
+  saturation: 0.64
+  set_camera_fps: 3.0
+  start_frame: 0
+  stop_frame: -1
+  width: 0
+state: []

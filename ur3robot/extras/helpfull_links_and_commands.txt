@@ -51,3 +51,9 @@ I installed jetpack on the Jetson (Not in docker) NOT CURRENTLY USING IT
 
 Reset catkin flags.
  catkin_make -DCATKIN_WHITELIST_PACKAGES=""
+
+
+Video Stream OpenCV
+The code sets the hue, exposure and some other settings to the camera to stay fixed. Tune those.
+Comment out that part of the code at line 291 to make the camera auto set these settings. The one 
+downside is that color values change as the camera adjusts.
