@@ -1,7 +1,7 @@
 !!python/object/new:dynamic_reconfigure.encoding.Config
 dictitems:
   auto_exposure: true
-  brightness: 0.501960784314
+  brightness: 0.15
   buffer_queue_size: 1
   camera_info_url: file:////home/ros/catkin_ws/src/ur3robot/camera_calibration/ost.yaml
   camera_name: webcam
@@ -14,7 +14,7 @@ dictitems:
   groups: !!python/object/new:dynamic_reconfigure.encoding.Config
     dictitems:
       auto_exposure: true
-      brightness: 0.501960784314
+      brightness: 0.15
       buffer_queue_size: 1
       camera_info_url: file:////home/ros/catkin_ws/src/ur3robot/camera_calibration/ost.yaml
       camera_name: webcam
@@ -36,7 +36,7 @@ dictitems:
         state: []
       parent: 0
       reopen_on_read_failure: false
-      saturation: 0.64
+      saturation: 0.3
       set_camera_fps: 3.0
       start_frame: 0
       state: true
@@ -49,7 +49,7 @@ dictitems:
   loop_videofile: false
   output_encoding: bgr8
   reopen_on_read_failure: false
-  saturation: 0.64
+  saturation: 0.3
   set_camera_fps: 3.0
   start_frame: 0
   stop_frame: -1

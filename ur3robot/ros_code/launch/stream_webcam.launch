@@ -13,4 +13,6 @@
  <arg name="camera_info_url" value="file:///$(find ur3robot)/camera_calibration/ost.yaml" />
 </include>
 
+<node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam" args="load /webcam/webcam_stream $(find ur3robot)/param/camera/config_raw.yaml" />
+
 </launch>
