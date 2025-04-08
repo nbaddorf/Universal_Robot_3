@@ -14,6 +14,7 @@ RUN apt-get update \
     netcat \
     build-essential \
     libusb-1.0-0-dev \
+    python3-pip \
     ros-melodic-cv-bridge \
     ros-melodic-image-transport \
     ros-melodic-camera-info-manager \
@@ -94,6 +95,8 @@ RUN /bin/bash -c 'source /opt/ros/melodic/setup.bash &&\
     #git clone https://github.com/mateusmenezes95/mpu6050_driver.git &&\
     git clone https://github.com/nbaddorf/mpu6050_driver.git &&\
     git clone https://github.com/ros-drivers/video_stream_opencv.git &&\
+    #git clone https://github.com/qq44642754a/Yolov8_ros.git &&\
+    git clone https://github.com/TPODAvia/yolov8_ros.git &&\
     #git clone https://github.com/corot/rail_mesh_icp.git &&\
     #git clone https://github.com/muhrix/kinect_aux.git &&\
     #echo "test" &&\
